@@ -32,31 +32,32 @@ def file_path(file_name):
 pygame.init()
 screen = pygame.display.set_mode((800, 600))
 pygame.display.set_caption("Space Invaders 2020")
-icon = pygame.image.load(file_path('tank-icon.png'))
+icon = pygame.image.load('data/tank-icon.png')
 pygame.display.set_icon(icon)
-background = pygame.image.load(file_path('background.png'))
-mixer.music.load(file_path('background.wav'))
+background = pygame.image.load('data/background.png')
+mixer.music.load('data/background.wav')
 mixer.music.play(-1)
 
-enemy_skin = [pygame.image.load(file_path('spaceship.png')), \
-                pygame.image.load(file_path('spaceship2.png')), \
-                pygame.image.load(file_path('spaceship3.png')), \
-                pygame.image.load(file_path('spaceship4.png')), \
-                pygame.image.load(file_path('spaceship5.png')), \
-                pygame.image.load(file_path('spaceship6.png')), \
-                pygame.image.load(file_path('boss.png'))]
+enemy_skin = [pygame.image.load('data/spaceship.png'), \
+                pygame.image.load('data/spaceship2.png'), \
+                pygame.image.load('data/spaceship3.png'), \
+                pygame.image.load('data/spaceship4.png'), \
+                pygame.image.load('data/spaceship5.png'), \
+                pygame.image.load('data/spaceship6.png'), \
+                pygame.image.load('data/boss.png')]
 
-package_icon = [pygame.image.load(file_path('aid-icon.png')), \
-                pygame.image.load(file_path('aircraft-icon.png')), \
-                pygame.image.load(file_path('reload-icon.png')), \
-                pygame.image.load(file_path('speed-icon.png')), \
-                pygame.image.load(file_path('splash-icon.png')), \
-                pygame.image.load(file_path('thunder-icon.png'))]
+package_icon = [pygame.image.load('data/aid-icon.png'), \
+                pygame.image.load('data/aircraft-icon.png'), \
+                pygame.image.load('data/reload-icon.png'), \
+                pygame.image.load('data/speed-icon.png'), \
+                pygame.image.load('data/splash-icon.png'), \
+                pygame.image.load('data/thunder-icon.png')]
 
 class Player(pygame.sprite.Sprite):
     """ Player class"""
     def __init__(self):
-        self.icon = pygame.image.load(file_path('tank.png'))
+        #self.icon = pygame.image.load(file_path('tank.png'))
+        self.icon = pygame.image.load('data/tank.png')
         self.position_x = 370
         self.position_y = 480
         self.position_x_change = 0
@@ -101,7 +102,7 @@ class Player(pygame.sprite.Sprite):
 
     def upgrade(self):
         """Upgrade icon and agility"""
-        self.icon = pygame.image.load(file_path('aircraft.png'))
+        self.icon = pygame.image.load('data/aircraft.png')
         self.agility = 8
         self.health = 3
 
@@ -118,8 +119,8 @@ class Player(pygame.sprite.Sprite):
 class Missile(pygame.sprite.Sprite):
     """Missile class"""
     def __init__(self):
-        self.icon = pygame.image.load(file_path('fire.png'))
-        self.sound = mixer.Sound(file_path('shoot.wav'))
+        self.icon = pygame.image.load('data/fire.png')
+        self.sound = mixer.Sound('data/shoot.wav')
         self.position_x = 0
         self.position_y = 0
         self.position_y_change = 10
@@ -140,12 +141,6 @@ class Missile(pygame.sprite.Sprite):
             return True
         else:
             return False
-
-    def upgrade(self):
-        """Changes in weapon"""
-        self.sound = mixer.Sound(file_path('shoot2.wav'))
-        self.icon = pygame.image.load(file_path('missile.png'))
-        self.position_y_change = 13
 
 class Enemy(pygame.sprite.Sprite):
     """Enemy class"""
@@ -234,7 +229,7 @@ class Text():
     def __init__(self, size, color):
         self.value = 0
         self.text = ""
-        self.font = pygame.font.Font(file_path("space_age.ttf"), size)
+        self.font = pygame.font.Font("data/space_age.ttf", size)
         self.color = color
 
     def draw(self, position_x, position_y):
@@ -277,7 +272,7 @@ class Package(pygame.sprite.Sprite):
         self.position_y_change = 1
         self.state = False
         self.icon = 0
-        self.sound = mixer.Sound(file_path('package-sound.wav'))
+        self.sound = mixer.Sound('data/package-sound.wav')
         self.range = 50
         self.type = 0
 
@@ -310,9 +305,9 @@ class Package(pygame.sprite.Sprite):
         if self.type == 'hitpoints':
             ship.health += 1
         elif self.type == 'skin':
-            ship.icon = pygame.image.load(file_path('aircraft.png'))
-            missile.sound = mixer.Sound(file_path('shoot2.wav'))
-            missile.icon = pygame.image.load(file_path('missile.png'))
+            ship.icon = pygame.image.load('data/aircraft.png')
+            missile.sound = mixer.Sound('data/shoot2.wav')
+            missile.icon = pygame.image.load('data/missile.png')
         elif self.type == 'agility':
             ship.agility += 1
         elif self.type == 'missile_range':
@@ -331,7 +326,7 @@ class Package(pygame.sprite.Sprite):
 
 def intro(state):
     """Intro"""
-    txt_file = open(file_path('intro.txt'), 'r')
+    txt_file = open('data/intro.txt', 'r')
     from_file = txt_file.readlines()
     text = []
 
@@ -340,7 +335,7 @@ def intro(state):
     for index in from_file:
         text.append(index.strip()) # Delete new line characters
 
-    intro_font = pygame.font.Font(file_path("BebasNeue-Regular.ttf"), 22)
+    intro_font = pygame.font.Font("data/BebasNeue-Regular.ttf", 22)
 
     for index, _ in enumerate(text):
         render_line = intro_font.render(text[index], True, (255, 255, 255))
