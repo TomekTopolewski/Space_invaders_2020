@@ -16,21 +16,17 @@ Nikita Golubev  https://www.flaticon.com/authors/nikita-golubev"
 
 Music thanks to www.freesound.org"""
 
-import os
 import math
 import random
 import pygame
 
 from pygame import mixer
 
-def file_path(file_name):
-    """File path"""
-    main_dir = os.path.split(os.path.abspath(__file__))[0]
-    data_dir = os.path.join(main_dir, "data")
-    return os.path.join(data_dir, file_name)
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
 
 pygame.init()
-screen = pygame.display.set_mode((800, 600))
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Space Invaders 2020")
 icon = pygame.image.load('data/tank-icon.png')
 pygame.display.set_icon(icon)
@@ -61,36 +57,8 @@ class Player(pygame.sprite.Sprite):
         self.icon = pygame.image.load('data/tank.png')
         self.position_x = 370
         self.position_y = 480
-        self.position_x_change = 0
-        self.position_y_change = 0
         self.agility = 6
         self.health = 3
-
-    def _check_edges(self):
-        """Don't let player escape the screen"""
-        # Special cases for corners
-        if self.position_y >= 536 and self.position_x == 736:
-            self.position_x = 736
-            self.position_y = 536
-        elif self.position_y >= 536 and self.position_x == 0:
-            self.position_x = 0
-            self.position_y = 536
-        elif self.position_y <= 0 and self.position_x == 736:
-            self.position_x = 736
-            self.position_y = 0
-        elif self.position_y <= 0 and self.position_x == 0:
-            self.position_x = 0
-            self.position_y = 0
-
-        # General rules
-        if self.position_x <= 0:
-            self.position_x = 0
-        elif self.position_x >= 736:
-            self.position_x = 736
-        elif self.position_y <= 0:
-            self.position_y = 0
-        elif self.position_y >= 536:
-            self.position_y = 536
 
     def is_collision(self, position_x, position_y):
         """Check if player collide with enemy"""
@@ -100,22 +68,6 @@ class Player(pygame.sprite.Sprite):
             return True
         else:
             return False
-
-    def upgrade(self):
-        """Upgrade icon and agility"""
-        self.icon = pygame.image.load('data/aircraft.png')
-        self.agility = 8
-        self.health = 3
-
-    def move(self):
-        """Player's move"""
-        self.position_x += self.position_x_change
-        self.position_y += self.position_y_change
-        self._check_edges()
-
-    def draw(self):
-        """Draw player's position"""
-        screen.blit(self.icon, (self.position_x, self.position_y))
 
 class Missile(pygame.sprite.Sprite):
     """Missile class"""
@@ -246,8 +198,8 @@ class Text():
 class Explosion(pygame.sprite.Sprite):
     """Clas for handling explosions"""
     def __init__(self):
-        self.explosion = pygame.image.load(file_path('explosion.png'))
-        self.sound = mixer.Sound(file_path('explosion.wav'))
+        self.explosion = pygame.image.load('data/explosion.png')
+        self.sound = mixer.Sound('data/explosion.wav')
         self.position_x = 0
         self.position_y = 0
         self.last = 0
@@ -405,33 +357,15 @@ def main_loop(state):
 
     while number_of_enemies < 5:
         enemies.append(Enemy())
-        #enemy_missile.append(Missile())
         number_of_enemies += 1
 
-    # Main while loop
     while state:
         screen.blit(background, (0, 0))
 
-        # Read keyboard
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 state = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    player.position_x_change = -player.agility
-                if event.key == pygame.K_RIGHT:
-                    player.position_x_change = player.agility
-                if event.key == pygame.K_UP:
-                    player.position_y_change = -player.agility
-                if event.key == pygame.K_DOWN:
-                    player.position_y_change = player.agility
-                if event.key == pygame.K_SPACE or event.key == pygame.K_LSHIFT:
-                    if not player_missile.state: # One missile at a time
-                        player_missile.position_x = player.position_x
-                        player_missile.position_y = player.position_y
-                        player_missile.fly(player_missile.position_x, \
-                                            player_missile.position_y, 16, 10)
-                        player_missile.sound.play()
                 if event.key == pygame.K_p:
                     pause = True
                     pause_txt.draw_text(265, 200)
@@ -444,13 +378,23 @@ def main_loop(state):
                             if _event.type == pygame.KEYDOWN:
                                 if _event.key == pygame.K_p:
                                     pause = False
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or \
-                                event.key == pygame.K_UP or event.key == pygame.K_DOWN:
-                    player.position_x_change = 0
-                    player.position_y_change = 0
 
-        player.move()
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_LEFT] and player.position_x > player.agility:
+            player.position_x -= player.agility
+        elif keys[pygame.K_RIGHT] and player.position_x < SCREEN_WIDTH - pygame.Surface.get_width(player.icon) - player.agility:
+            player.position_x += player.agility
+        elif keys[pygame.K_UP] and player.position_y > player.agility:
+            player.position_y -= player.agility
+        elif keys[pygame.K_DOWN] and player.position_y < SCREEN_HEIGHT - pygame.Surface.get_height(player.icon) - player.agility:
+            player.position_y += player.agility
+        elif keys[pygame.K_SPACE] or keys[pygame.K_LSHIFT]:
+            if not player_missile.state:
+                player_missile.position_x = player.position_x + 16
+                player_missile.position_y = player.position_y + 10
+                player_missile.sound.play()
+                player_missile.state = True
 
         # Fly enemy missile after they launch
         for _i, _ in enumerate(enemy_missile):
@@ -500,8 +444,6 @@ def main_loop(state):
                     player_missile.state = False
                     explosion.sound.play()
                     explosion.splash(player_missile.position_x, player_missile.position_y)
-
-            player.draw()
 
             score.draw(10, 10)
             player_txt.draw_text(10, 50)
@@ -569,7 +511,7 @@ def main_loop(state):
             if random.randint(0, 600) == 42:
                 #and not enemy_missile[i].state:
                 enemy_missile.append(Missile())
-                enemy_missile[-1].icon = pygame.image.load(file_path('atomic-bomb.png'))
+                enemy_missile[-1].icon = pygame.image.load('data/atomic-bomb.png')
                 enemy_missile[-1].position_y_change = 4
                 enemy_missile[-1].position_x = enemies[i].position_x # Take coordinates
                 enemy_missile[-1].position_y = enemies[i].position_y
@@ -578,7 +520,7 @@ def main_loop(state):
 
         # Fly the player's missile
         if player_missile.state:
-            player_missile.fly(player_missile.position_x, player_missile.position_y, 0, 0)
+            screen.blit(player_missile.icon, (player_missile.position_x, player_missile.position_y))
             player_missile.position_y -= player_missile.position_y_change
 
         # Fly the package and open
@@ -642,7 +584,7 @@ def main_loop(state):
                         state = False
                         main_loop(True)
 
-        player.draw()
+        screen.blit(player.icon, (player.position_x, player.position_y))
         explosion.splash_last(explosion.position_x, explosion.position_y)
         pygame.display.update() # Update display each time
 
