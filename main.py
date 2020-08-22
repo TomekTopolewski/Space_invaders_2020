@@ -38,22 +38,20 @@ background = pygame.image.load(file_path('background.png'))
 mixer.music.load(file_path('background.wav'))
 mixer.music.play(-1)
 
-enemy_skin = []
-enemy_skin.append(pygame.image.load(file_path('spaceship.png')))
-enemy_skin.append(pygame.image.load(file_path('spaceship2.png')))
-enemy_skin.append(pygame.image.load(file_path('spaceship3.png')))
-enemy_skin.append(pygame.image.load(file_path('spaceship4.png')))
-enemy_skin.append(pygame.image.load(file_path('spaceship5.png')))
-enemy_skin.append(pygame.image.load(file_path('spaceship6.png')))
-enemy_skin.append(pygame.image.load(file_path('boss.png')))
+enemy_skin = [pygame.image.load(file_path('spaceship.png')), \
+                pygame.image.load(file_path('spaceship2.png')), \
+                pygame.image.load(file_path('spaceship3.png')), \
+                pygame.image.load(file_path('spaceship4.png')), \
+                pygame.image.load(file_path('spaceship5.png')), \
+                pygame.image.load(file_path('spaceship6.png')), \
+                pygame.image.load(file_path('boss.png'))]
 
-package_icon = []
-package_icon.append(pygame.image.load(file_path('aid-icon.png')))      # 0
-package_icon.append(pygame.image.load(file_path('aircraft-icon.png'))) # 1
-package_icon.append(pygame.image.load(file_path('reload-icon.png')))   # 2
-package_icon.append(pygame.image.load(file_path('speed-icon.png')))    # 3
-package_icon.append(pygame.image.load(file_path('splash-icon.png')))   # 4
-package_icon.append(pygame.image.load(file_path('thunder-icon.png')))  # 5
+package_icon = [pygame.image.load(file_path('aid-icon.png')), \
+                pygame.image.load(file_path('aircraft-icon.png')), \
+                pygame.image.load(file_path('reload-icon.png')), \
+                pygame.image.load(file_path('speed-icon.png')), \
+                pygame.image.load(file_path('splash-icon.png')), \
+                pygame.image.load(file_path('thunder-icon.png'))]
 
 class Player(pygame.sprite.Sprite):
     """ Player class"""
