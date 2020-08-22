@@ -37,6 +37,7 @@ pygame.display.set_icon(icon)
 background = pygame.image.load('data/background.png')
 mixer.music.load('data/background.wav')
 mixer.music.play(-1)
+clock = pygame.time.Clock()
 
 enemy_skin = [pygame.image.load('data/spaceship.png'), \
                 pygame.image.load('data/spaceship2.png'), \
@@ -354,6 +355,7 @@ def intro(state):
 
 def main_loop(state):
     """Main loop"""
+    clock.tick(25)
     pause = False
     game_over_status = False
     pygame.display.update()
