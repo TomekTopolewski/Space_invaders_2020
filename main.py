@@ -28,8 +28,8 @@ SCREEN_HEIGHT = 600
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Space Invaders 2020")
-icon = pygame.image.load('data/tank-icon.png')
-pygame.display.set_icon(icon)
+window_icon = pygame.image.load('data/tank-icon.png')
+pygame.display.set_icon(window_icon)
 background = pygame.image.load('data/background.png')
 mixer.music.load('data/background.wav')
 mixer.music.play(-1)
@@ -70,14 +70,14 @@ class Player(pygame.sprite.Sprite):
 
 class Missile(pygame.sprite.Sprite):
     """Missile class"""
-    def __init__(self):
-        self.icon = pygame.image.load('data/fire.png')
-        self.sound = mixer.Sound('data/shoot.wav')
+    def __init__(self, icon, sound, position_y_change, m_range):
+        self.icon = icon
+        self.sound = sound
         self.position_x = 0
         self.position_y = 0
-        self.position_y_change = 10
+        self.position_y_change = position_y_change
         self.state = False
-        self.range = 40
+        self.range = m_range
 
     def is_collision(self, position_x, position_y):
         """Check if missile hit the target"""
@@ -232,23 +232,21 @@ class Package(pygame.sprite.Sprite):
             self.icon = package_icon[1]
         elif self.type == 'agility':
             self.icon = package_icon[5]
-        elif self.type == 'missile_range':
-            self.icon = package_icon[4]
-        elif self.type == 'missle_speed':
-            self.icon = package_icon[3]
         elif self.type == 'gun_reload':
             self.icon = package_icon[2]
 
-    def open(self, ship, gun):
+    def open(self, ship, gun, is_upgraded):
         """Modify values based on package type"""
         if self.type == 'hitpoints':
             ship.health += 1
         elif self.type == 'skin':
             ship.icon = pygame.image.load('data/aircraft.png')
+            is_upgraded = True
         elif self.type == 'agility':
             ship.agility += 1
         elif self.type == 'gun_reload':
             gun.reload_step += 5
+        return is_upgraded
 
     def is_collision(self, position_x, position_y):
         """Check if player pick up a package"""
@@ -319,6 +317,7 @@ def main_loop(state):
     enemy_missile = []
     player_missile = []
     number_of_enemies = 0
+    is_upgraded = False
 
     while number_of_enemies < 5:
         enemies.append(Enemy())
@@ -350,7 +349,12 @@ def main_loop(state):
             player.position_y += player.agility
         elif keys[pygame.K_SPACE] or keys[pygame.K_LSHIFT]:
             if not gun.is_reloading:
-                player_missile.append(Missile())
+                if is_upgraded:
+                    player_missile.append(Missile(pygame.image.load('data/missile.png'), \
+                                        mixer.Sound('data/shoot2.wav'), 10, 40))
+                else:
+                    player_missile.append(Missile(pygame.image.load('data/fire.png'), \
+                                        mixer.Sound('data/shoot.wav'), 10, 40))
                 launch_x = (pygame.Surface.get_width(player.icon) / 2) - \
                                         (pygame.Surface.get_width(player_missile[-1].icon) / 2)
                 launch_y = (pygame.Surface.get_height(player.icon) / 2) - \
@@ -450,9 +454,7 @@ def main_loop(state):
 
         # Launch enemy's missile
         if random.randint(0, 100) == 42:
-            enemy_missile.append(Missile())
-            enemy_missile[-1].icon = pygame.image.load('data/atomic-bomb.png')
-            enemy_missile[-1].position_y_change = 3
+            enemy_missile.append(Missile(pygame.image.load('data/atomic-bomb.png'), 0, 3, 40))
             launch_x = (pygame.Surface.get_width(enemies[i].icon) / 2) - \
                                         (pygame.Surface.get_width(enemy_missile[-1].icon) / 2)
             launch_y = (pygame.Surface.get_height(enemies[i].icon) / 2) - \
@@ -486,10 +488,11 @@ def main_loop(state):
         # Open package
         for i, _ in enumerate(package):
             if package[i].is_collision(player.position_x, player.position_y):
-                package[i].open(player, gun)
+                is_upgraded = package[i].open(player, gun, is_upgraded)
                 package[i].sound.play()
                 package[i].state = False
                 hitpoints.value = player.health
+                print(is_upgraded)
 
         # Enemy's missile hit player
         for i, _ in enumerate(enemy_missile):
