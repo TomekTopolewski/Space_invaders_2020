@@ -198,12 +198,12 @@ class Explosion(pygame.sprite.Sprite):
         self.last = 10
         self.position_x = position_x
         self.position_y = position_y
-        screen.blit(self.explosion, (position_x, position_y))
+        screen.blit(self.explosion, (int(position_x), int(position_y)))
 
     def splash_last(self, position_x, position_y):
         """Maintain explosion spalsh"""
         if self.last > 0:
-            screen.blit(self.explosion, (position_x, position_y))
+            screen.blit(self.explosion, (int(position_x), int(position_y)))
             self.last -= 1
 
 class Package(pygame.sprite.Sprite):
@@ -349,31 +349,30 @@ def main_loop(state):
                     pause = True
                     pause_txt.draw_text(265, 200)
                     pygame.display.update()
-                    while pause:
-                        for _event in pygame.event.get():
-                            if _event.type == pygame.QUIT:
-                                pause = False
-                                state = False
-                            if _event.type == pygame.KEYDOWN:
-                                if _event.key == pygame.K_p:
-                                    pause = False
 
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_LEFT] and player.position_x > player.agility:
             player.position_x -= player.agility
-        elif keys[pygame.K_RIGHT] and player.position_x < SCREEN_WIDTH - pygame.Surface.get_width(player.icon) - player.agility:
+        elif keys[pygame.K_RIGHT] and player.position_x < SCREEN_WIDTH - \
+                            pygame.Surface.get_width(player.icon) - player.agility:
             player.position_x += player.agility
         elif keys[pygame.K_UP] and player.position_y > player.agility:
             player.position_y -= player.agility
-        elif keys[pygame.K_DOWN] and player.position_y < SCREEN_HEIGHT - pygame.Surface.get_height(player.icon) - player.agility:
+        elif keys[pygame.K_DOWN] and player.position_y < SCREEN_HEIGHT - \
+                            pygame.Surface.get_height(player.icon) - player.agility:
             player.position_y += player.agility
         elif keys[pygame.K_SPACE] or keys[pygame.K_LSHIFT]:
             if not player_missile.state:
-                player_missile.position_x = player.position_x + 16
-                player_missile.position_y = player.position_y + 10
+                launch_x = (pygame.Surface.get_width(player.icon) / 2) - \
+                                        (pygame.Surface.get_width(player_missile.icon) / 2)
+                launch_y = (pygame.Surface.get_height(player.icon) / 2) - \
+                                        (pygame.Surface.get_height(player_missile.icon) / 2)
+                player_missile.position_x = player.position_x + launch_x
+                player_missile.position_y = player.position_y - launch_y
                 player_missile.sound.play()
                 player_missile.state = True
+
 
         # Enemy's move
         for i, _ in enumerate(enemies):
@@ -401,7 +400,8 @@ def main_loop(state):
                         package[-1].position_x = enemies[i].position_x
                         package[-1].position_y = enemies[i].position_y
                         package[-1].state = True
-                        screen.blit(package[-1].icon, (package[-1].position_x, package[-1].position_y))
+                        screen.blit(package[-1].icon, \
+                            (package[-1].position_x, package[-1].position_y))
 
                     enemies[i] = Enemy()
 
@@ -423,8 +423,10 @@ def main_loop(state):
 
         # Check if enemy leave the screen
         for i, _ in enumerate(enemies):
-            if enemies[i].position_y > 550:
+            if enemies[i].position_y > (SCREEN_HEIGHT - \
+                                    (pygame.Surface.get_height(player.icon) / 2)):
                 player.health -= 1
+
                 if player.health >= 1:
                     enemies[i] = Enemy()
                     enemies[i].level(score.value)
@@ -442,41 +444,42 @@ def main_loop(state):
         for i, _ in enumerate(enemies):
             if player.is_collision(enemies[i].position_x, enemies[i].position_y):
                 player.health -= 1
+
                 if player.health >= 1:
                     explosion.sound.play()
                     enemies[i] = Enemy()
                     enemies[i].level(score.value)
                     player.position_x = 0
-                    player.position_y = 536
+                    player.position_y = SCREEN_HEIGHT - pygame.Surface.get_height(player.icon)
                     hitpoints.value = player.health
                 else:
                     hitpoints.value = player.health
-                    screen.blit(background, (0, 0))
-                    game_over.draw_text(130, 200)
-                    score.draw(320, 260)
-                    play_again_txt.draw_text(80, 500)
-                    pygame.display.update()
                     game_over_status = True
 
-        # Launch enemy missile
+        # Launch enemy's missile
         if random.randint(0, 100) == 42:
             enemy_missile.append(Missile())
             enemy_missile[-1].icon = pygame.image.load('data/atomic-bomb.png')
             enemy_missile[-1].position_y_change = 3
-            enemy_missile[-1].position_x = enemies[i].position_x + 32
-            enemy_missile[-1].position_y = enemies[i].position_y + 32
+            enemy_missile[-1].position_x = enemies[i].position_x + \
+                                        (pygame.Surface.get_width(player.icon) / 2)
+            enemy_missile[-1].position_y = enemies[i].position_y + \
+                                        (pygame.Surface.get_height(player.icon) / 2)
             enemy_missile[-1].state = True
-            screen.blit(enemy_missile[-1].icon, (enemy_missile[-1].position_x, enemy_missile[-1].position_y))
+            screen.blit(enemy_missile[-1].icon,\
+                 (int(enemy_missile[-1].position_x), int(enemy_missile[-1].position_y)))
 
         # Fly enemy's missile
         for i, _ in enumerate(enemy_missile):
             if enemy_missile[i].state:
-                screen.blit(enemy_missile[i].icon, (enemy_missile[i].position_x, enemy_missile[i].position_y))
+                screen.blit(enemy_missile[i].icon, \
+                            (int(enemy_missile[i].position_x), int(enemy_missile[i].position_y)))
                 enemy_missile[i].position_y += enemy_missile[i].position_y_change
 
         # Fly the player's missile
         if player_missile.state:
-            screen.blit(player_missile.icon, (player_missile.position_x, player_missile.position_y))
+            screen.blit(player_missile.icon, \
+                            (int(player_missile.position_x), int(player_missile.position_y)))
             player_missile.position_y -= player_missile.position_y_change
 
         # Fly the package
@@ -496,11 +499,12 @@ def main_loop(state):
                 missile_range_txt.value = player_missile.range
                 missile_speed_txt.value = player_missile.position_y_change
 
-        # Enemy missile hit player
+        # Enemy's missile hit player
         for i, _ in enumerate(enemy_missile):
             if enemy_missile[i].is_collision(player.position_x, player.position_y):
                 player.health -= 1
                 hitpoints.value = player.health
+
                 if player.health > 0:
                     explosion.splash(enemy_missile[i].position_x, enemy_missile[i].position_y)
                     explosion.sound.play()
@@ -508,24 +512,25 @@ def main_loop(state):
                 elif player.health == 0:
                     explosion.splash(enemy_missile[i].position_x, enemy_missile[i].position_y)
                     explosion.sound.play()
-                    screen.blit(background, (0, 0))
-                    game_over.draw_text(130, 200)
-                    score.draw(320, 260)
-                    play_again_txt.draw_text(80, 500)
-                    pygame.display.update()
                     game_over_status = True
 
-        #Enemy missile leave the screen
+        #Enemy's missile leave the screen
         for i, _ in enumerate(enemy_missile):
             if enemy_missile[i].position_y > SCREEN_HEIGHT:
                 enemy_missile[i].state = False
 
-        # Player missile leave the screen
+        # Player's missile leave the screen
         if player_missile.position_y < 0:
             player_missile.state = False
 
         #Game over
         while game_over_status:
+            screen.blit(background, (0, 0))
+            game_over.draw_text(130, 200)
+            score.draw(320, 260)
+            play_again_txt.draw_text(80, 500)
+            pygame.display.update()
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     game_over_status = False
@@ -535,6 +540,16 @@ def main_loop(state):
                         game_over_status = False
                         state = False
                         main_loop(True)
+
+        # Pause
+        while pause:
+            for _event in pygame.event.get():
+                if _event.type == pygame.QUIT:
+                    pause = False
+                    state = False
+                if _event.type == pygame.KEYDOWN:
+                    if _event.key == pygame.K_p:
+                        pause = False
 
         score.draw(10, 10)
         player_txt.draw_text(10, 50)
