@@ -46,8 +46,6 @@ enemy_skin = [pygame.image.load('data/spaceship.png'), \
 package_icon = [pygame.image.load('data/aid-icon.png'), \
                 pygame.image.load('data/aircraft-icon.png'), \
                 pygame.image.load('data/reload-icon.png'), \
-                pygame.image.load('data/speed-icon.png'), \
-                pygame.image.load('data/splash-icon.png'), \
                 pygame.image.load('data/thunder-icon.png')]
 
 class Player(pygame.sprite.Sprite):
@@ -231,7 +229,7 @@ class Package(pygame.sprite.Sprite):
         elif self.type == 'skin':
             self.icon = package_icon[1]
         elif self.type == 'agility':
-            self.icon = package_icon[5]
+            self.icon = package_icon[3]
         elif self.type == 'gun_reload':
             self.icon = package_icon[2]
 
@@ -277,12 +275,12 @@ def intro(state):
     pygame.display.update()
     while state:
 
-        for j in pygame.event.get():
-            if j.type == pygame.QUIT:
+        for i in pygame.event.get():
+            if i.type == pygame.QUIT:
                 state = False
                 pygame.quit()
-            if j.type == pygame.KEYDOWN:
-                if j.key == pygame.K_SPACE:
+            if i.type == pygame.KEYDOWN:
+                if i.key == pygame.K_SPACE:
                     state = False
 
 def main_loop(state):
