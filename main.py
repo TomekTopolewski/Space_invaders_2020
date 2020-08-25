@@ -22,36 +22,62 @@ import pygame
 
 from pygame import mixer
 
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+if not pygame.mixer:
+    print("Pygame mixer module not available")
+
+def load(filename):
+    "Loading files"
+    if 'png' in filename:
+        try:
+            image = pygame.image.load(filename)
+            return image
+        except pygame.error:
+            print(pygame.get_error())
+            # Instead of raising an error print rectangle
+    elif 'wav' in filename:
+        try:
+            sound = mixer.Sound(filename)
+            return sound
+        except FileNotFoundError:
+            print("Can't load file")
+            # Load None object sound, of something like that
+    else:
+        print('File not supported')
 
 pygame.init()
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+# Initialize manually mixer module with more than 8 channels
+screen_params = (800, 600)
+screen = pygame.display.set_mode((screen_params[0], screen_params[1]))
 pygame.display.set_caption("Space Invaders 2020")
-window_icon = pygame.image.load('data/tank-icon.png')
+window_icon = load('data/tank-icon.png')
 pygame.display.set_icon(window_icon)
-background = pygame.image.load('data/background.png')
-mixer.music.load('data/background.wav')
+background = load('data/background.png')
+
+try:
+    mixer.music.load('data/background.wav')
+except FileNotFoundError:
+    print("Can't load background music")
+    # Load None object sound, of something like that
+
 mixer.music.play(-1)
 clock = pygame.time.Clock()
+enemy_skin = [load('data/spaceship.png'), \
+                load('data/spaceship2.png'), \
+                load('data/spaceship3.png'), \
+                load('data/spaceship4.png'), \
+                load('data/spaceship5.png'), \
+                load('data/spaceship6.png'), \
+                load('data/boss.png')]
 
-enemy_skin = [pygame.image.load('data/spaceship.png'), \
-                pygame.image.load('data/spaceship2.png'), \
-                pygame.image.load('data/spaceship3.png'), \
-                pygame.image.load('data/spaceship4.png'), \
-                pygame.image.load('data/spaceship5.png'), \
-                pygame.image.load('data/spaceship6.png'), \
-                pygame.image.load('data/boss.png')]
-
-package_icon = [pygame.image.load('data/aid-icon.png'), \
-                pygame.image.load('data/aircraft-icon.png'), \
-                pygame.image.load('data/reload-icon.png'), \
-                pygame.image.load('data/thunder-icon.png')]
+package_icon = [load('data/aid-icon.png'), \
+                load('data/aircraft-icon.png'), \
+                load('data/reload-icon.png'), \
+                load('data/thunder-icon.png')]
 
 class Player(pygame.sprite.Sprite):
     """ Player class"""
     def __init__(self):
-        self.icon = pygame.image.load('data/tank.png')
+        self.icon = load('data/tank.png')
         self.position_x = 370
         self.position_y = 480
         self.agility = 6
@@ -132,7 +158,7 @@ class Enemy(pygame.sprite.Sprite):
         if self.position_x <= 0:
             self.position_x_change = -self.position_x_change
             self.position_y += self.position_y_change
-        elif self.position_x >= SCREEN_WIDTH - pygame.Surface.get_width(self.icon):
+        elif self.position_x >= screen_params[0] - pygame.Surface.get_width(self.icon):
             self.position_x_change = -self.position_x_change
             self.position_y += self.position_y_change
 
@@ -153,7 +179,7 @@ class Enemy(pygame.sprite.Sprite):
         if self.position_x <= 0:
             self.position_x += self.position_x_change
             self.step = 0
-        elif self.position_x >= SCREEN_WIDTH - pygame.Surface.get_width(self.icon):
+        elif self.position_x >= screen_params[0] - pygame.Surface.get_width(self.icon):
             self.position_x += -self.position_x_change
             self.step = 0
 
@@ -190,8 +216,8 @@ class Text():
 class Explosion(pygame.sprite.Sprite):
     """Class for handling explosions"""
     def __init__(self):
-        self.explosion = pygame.image.load('data/explosion.png')
-        self.sound = mixer.Sound('data/explosion.wav')
+        self.explosion = load('data/explosion.png')
+        self.sound = load('data/explosion.wav')
         self.position_x = 0
         self.position_y = 0
         self.last = 0
@@ -217,7 +243,7 @@ class Package(pygame.sprite.Sprite):
         self.position_y_change = 1
         self.state = False
         self.icon = 0
-        self.sound = mixer.Sound('data/package-sound.wav')
+        self.sound = load('data/package-sound.wav')
         self.range = 50
         self.type = 0
         self.agility = 1
@@ -238,7 +264,7 @@ class Package(pygame.sprite.Sprite):
         if self.type == 'hitpoints':
             ship.health += 1
         elif self.type == 'skin':
-            ship.icon = pygame.image.load('data/aircraft.png')
+            ship.icon = load('data/aircraft.png')
             is_upgraded = True
         elif self.type == 'agility':
             ship.agility += 1
@@ -337,22 +363,22 @@ def main_loop(state):
 
         if keys[pygame.K_LEFT] and player.position_x > player.agility:
             player.position_x -= player.agility
-        elif keys[pygame.K_RIGHT] and player.position_x < SCREEN_WIDTH - \
+        elif keys[pygame.K_RIGHT] and player.position_x < screen_params[0] - \
                             pygame.Surface.get_width(player.icon) - player.agility:
             player.position_x += player.agility
         elif keys[pygame.K_UP] and player.position_y > player.agility:
             player.position_y -= player.agility
-        elif keys[pygame.K_DOWN] and player.position_y < SCREEN_HEIGHT - \
+        elif keys[pygame.K_DOWN] and player.position_y < screen_params[1] - \
                             pygame.Surface.get_height(player.icon) - player.agility:
             player.position_y += player.agility
         elif keys[pygame.K_SPACE] or keys[pygame.K_LSHIFT]:
             if not gun.is_reloading:
                 if is_upgraded:
-                    player_missile.append(Missile(pygame.image.load('data/missile.png'), \
-                                        mixer.Sound('data/shoot2.wav'), 10, 40))
+                    player_missile.append(Missile(load('data/missile.png'), \
+                                        load('data/shoot2.wav'), 10, 40))
                 else:
-                    player_missile.append(Missile(pygame.image.load('data/fire.png'), \
-                                        mixer.Sound('data/shoot.wav'), 10, 40))
+                    player_missile.append(Missile(load('data/fire.png'), \
+                                        load('data/shoot.wav'), 10, 40))
                 launch_x = (pygame.Surface.get_width(player.icon) / 2) - \
                                         (pygame.Surface.get_width(player_missile[-1].icon) / 2)
                 launch_y = (pygame.Surface.get_height(player.icon) / 2) - \
@@ -417,7 +443,7 @@ def main_loop(state):
 
         # Check if enemy leave the screen
         for i, _ in enumerate(enemies):
-            if enemies[i].position_y > (SCREEN_HEIGHT - \
+            if enemies[i].position_y > (screen_params[1] - \
                                     (pygame.Surface.get_height(player.icon) / 2)):
                 player.health -= 1
 
@@ -444,7 +470,7 @@ def main_loop(state):
                     enemies[i] = Enemy()
                     enemies[i].level(score.value)
                     player.position_x = 0
-                    player.position_y = SCREEN_HEIGHT - pygame.Surface.get_height(player.icon)
+                    player.position_y = screen_params[1] - pygame.Surface.get_height(player.icon)
                     hitpoints.value = player.health
                 else:
                     hitpoints.value = player.health
@@ -452,7 +478,7 @@ def main_loop(state):
 
         # Launch enemy's missile
         if random.randint(0, 100) == 42:
-            enemy_missile.append(Missile(pygame.image.load('data/atomic-bomb.png'), 0, 3, 40))
+            enemy_missile.append(Missile(load('data/atomic-bomb.png'), 0, 3, 40))
             launch_x = (pygame.Surface.get_width(enemies[i].icon) / 2) - \
                                         (pygame.Surface.get_width(enemy_missile[-1].icon) / 2)
             launch_y = (pygame.Surface.get_height(enemies[i].icon) / 2) - \
@@ -490,7 +516,6 @@ def main_loop(state):
                 package[i].sound.play()
                 package[i].state = False
                 hitpoints.value = player.health
-                print(is_upgraded)
 
         # Enemy's missile hit player
         for i, _ in enumerate(enemy_missile):
@@ -509,7 +534,7 @@ def main_loop(state):
 
         # Enemy's missile leave the screen
         for i, _ in enumerate(enemy_missile):
-            if enemy_missile[i].position_y > SCREEN_HEIGHT:
+            if enemy_missile[i].position_y > screen_params[1]:
                 enemy_missile[i].state = False
 
         # Player's missile leave the screen
