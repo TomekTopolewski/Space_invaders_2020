@@ -25,42 +25,54 @@ from pygame import mixer
 if not pygame.mixer:
     print("Pygame mixer module not available")
 
+class NoneSound:
+    """Empty sound"""
+    def play(self):
+        """Play"""
+
 def load(filename):
     "Loading files"
     if 'png' in filename:
         try:
             image = pygame.image.load(filename)
-            return image
         except pygame.error:
-            print(pygame.get_error())
-            # Instead of raising an error print rectangle
+            default = pygame.Surface((64, 64))
+            pygame.draw.rect(default, \
+                (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), \
+                (0, 0, 64, 64))
+            image = default
+        return image
     elif 'wav' in filename:
         try:
             sound = mixer.Sound(filename)
-            return sound
         except FileNotFoundError:
-            print("Can't load file")
-            # Load None object sound, of something like that
+            sound = NoneSound()
+        return sound
     else:
         print('File not supported')
 
 pygame.init()
-# Initialize manually mixer module with more than 8 channels
 screen_params = (800, 600)
 screen = pygame.display.set_mode((screen_params[0], screen_params[1]))
 pygame.display.set_caption("Space Invaders 2020")
 window_icon = load('data/tank-icon.png')
 pygame.display.set_icon(window_icon)
-background = load('data/background.png')
+clock = pygame.time.Clock()
 
 try:
-    mixer.music.load('data/background.wav')
-except FileNotFoundError:
-    print("Can't load background music")
-    # Load None object sound, of something like that
+    background = pygame.image.load('data/background.png')
+except pygame.error:
+    background = pygame.Surface((screen_params[0], screen_params[1]))
+    background.fill((0, 0, 0))
 
-mixer.music.play(-1)
-clock = pygame.time.Clock()
+try:
+    background_sound = mixer.music.load('data/background.wav')
+except pygame.error:
+    background_sound = None
+
+if background_sound:
+    mixer.music.play(-1)
+
 enemy_skin = [load('data/spaceship.png'), \
                 load('data/spaceship2.png'), \
                 load('data/spaceship3.png'), \
@@ -197,10 +209,13 @@ class Enemy(pygame.sprite.Sprite):
 
 class Text():
     """Text class"""
-    def __init__(self, size, color):
+    def __init__(self, size, color, font_path):
         self.value = 0
         self.text = ""
-        self.font = pygame.font.Font("data/space_age.ttf", size)
+        try:
+            self.font = pygame.font.Font(font_path, size)
+        except FileNotFoundError:
+            self.font = pygame.font.Font(None, size)
         self.color = color
 
     def draw(self, position_x, position_y):
@@ -283,8 +298,11 @@ class Package(pygame.sprite.Sprite):
 
 def intro(state):
     """Intro"""
-    txt_file = open('data/intro.txt', 'r')
-    from_file = txt_file.readlines()
+    try:
+        txt_file = open('data/intro.txt', 'r')
+        from_file = txt_file.readlines()
+    except FileNotFoundError:
+        from_file = ["Can't load intro, press space to play anyway"]
     text = []
 
     line_y_position = [10, 50, 50, 150, 150, 200, 250, 250, 350, 350, 400, 450, 550, 550]
@@ -292,10 +310,10 @@ def intro(state):
     for index in from_file:
         text.append(index.strip()) # Delete new line characters
 
-    intro_font = pygame.font.Font("data/BebasNeue-Regular.ttf", 22)
+    intro_txt = Text(22, (255, 255, 255), "data/BebasNeue-Regular.ttf")
 
     for index, _ in enumerate(text):
-        render_line = intro_font.render(text[index], True, (255, 255, 255))
+        render_line = intro_txt.font.render(text[index], True, intro_txt.color)
         screen.blit(render_line, (20, line_y_position[index]))
 
     pygame.display.update()
@@ -314,25 +332,24 @@ def main_loop(state):
     clock.tick(25)
     pause = False
     game_over_status = False
-    pygame.display.update()
 
     player = Player()
     gun = Gun()
     explosion = Explosion()
 
-    score = Text(32, (0, 0, 0))
+    score = Text(32, (0, 0, 0), 'data/space_age.ttf')
     score.text = "Score: "
 
-    play_again_txt = Text(32, (0, 0, 0))
+    play_again_txt = Text(32, (0, 0, 0), 'data/space_age.ttf')
     play_again_txt.text = "Press space to play again"
 
-    game_over = Text(72, (47, 79, 79))
+    game_over = Text(72, (47, 79, 79), 'data/space_age.ttf')
     game_over.text = "Game Over!"
 
-    pause_txt = Text(72, (47, 79, 79))
+    pause_txt = Text(72, (47, 79, 79), 'data/space_age.ttf')
     pause_txt.text = "Pause"
 
-    hitpoints = Text(22, (0, 0, 0))
+    hitpoints = Text(22, (0, 0, 0), 'data/space_age.ttf')
     hitpoints.text = "HP: "
     hitpoints.value = player.health
 
