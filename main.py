@@ -30,30 +30,39 @@ class NoneSound:
     def play(self):
         """Play"""
 
-def load(filename):
-    "Loading files"
-    if 'png' in filename or 'bmp' in filename or 'jpg' in filename:
-        try:
-            image = pygame.image.load(filename)
-        except pygame.error:
-            default = pygame.Surface((64, 64))
-            pygame.draw.rect(default, \
+def load_image(filename):
+    "Loading images"
+    try:
+        image = pygame.image.load(filename)
+    except pygame.error:
+        default = pygame.Surface((64, 64))
+        pygame.draw.rect(default, \
                 (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), \
                 (0, 0, 64, 64))
-            image = default
-        return image
-    elif 'wav' in filename or 'mp3' in filename:
-        try:
-            sound = mixer.Sound(filename)
-        except FileNotFoundError:
-            sound = NoneSound()
-        return sound
+        image = default
+    return image
+
+def load_sound(filename):
+    """Loading sounds"""
+    try:
+        sound = mixer.Sound(filename)
+    except FileNotFoundError:
+        sound = NoneSound()
+    return sound
+
+def load_music(filename):
+    """Load background music"""
+    try:
+        music = mixer.music.load(filename)
+    except pygame.error:
+        music = False
+    return music
 
 pygame.init()
 screen_params = (800, 600)
 screen = pygame.display.set_mode((screen_params[0], screen_params[1]))
 pygame.display.set_caption("Space Invaders 2020")
-window_icon = load('data/tank-icon.png')
+window_icon = load_image('data/tank-icon.png')
 pygame.display.set_icon(window_icon)
 clock = pygame.time.Clock()
 
@@ -63,26 +72,21 @@ except pygame.error:
     background = pygame.Surface((screen_params[0], screen_params[1]))
     background.fill((0, 0, 0))
 
-try:
-    background_sound = mixer.music.load('data/background.wav')
-except pygame.error:
-    background_sound = False
-
-if background_sound != False:
+if load_music('data/background.wav') is not False:
     mixer.music.play(-1)
 
-enemy_skin = [load('data/spaceship.png'), \
-                load('data/spaceship2.png'), \
-                load('data/spaceship3.png'), \
-                load('data/spaceship4.png'), \
-                load('data/spaceship5.png'), \
-                load('data/spaceship6.png'), \
-                load('data/boss.png')]
+enemy_skin = [load_image('data/spaceship.png'), \
+                load_image('data/spaceship2.png'), \
+                load_image('data/spaceship3.png'), \
+                load_image('data/spaceship4.png'), \
+                load_image('data/spaceship5.png'), \
+                load_image('data/spaceship6.png'), \
+                load_image('data/boss.png')]
 
-package_icon = [load('data/aid-icon.png'), \
-                load('data/aircraft-icon.png'), \
-                load('data/reload-icon.png'), \
-                load('data/thunder-icon.png')]
+package_icon = [load_image('data/aid-icon.png'), \
+                load_image('data/aircraft-icon.png'), \
+                load_image('data/reload-icon.png'), \
+                load_image('data/thunder-icon.png')]
 
 class Player(pygame.sprite.Sprite):
     """ Player class"""
@@ -125,11 +129,11 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_SPACE] or keys[pygame.K_LSHIFT]:
             if not gun.is_reloading:
                 if is_upgraded:
-                    player_missile.append(Missile(load('data/missile.png'), \
-                                        load('data/shoot2.wav'), -10))
+                    player_missile.append(Missile(load_image('data/missile.png'), \
+                                        load_sound('data/shoot2.wav'), -10))
                 else:
-                    player_missile.append(Missile(load('data/fire.png'), \
-                                        load('data/shoot.wav'), -10))
+                    player_missile.append(Missile(load_image('data/fire.png'), \
+                                        load_sound('data/shoot.wav'), -10))
 
                 launch_x = (pygame.Surface.get_width(self.icon) / 2) - \
                                         (pygame.Surface.get_width(player_missile[-1].icon) / 2)
@@ -251,7 +255,7 @@ class Enemy(pygame.sprite.Sprite):
     def shoot(self, enemy_missile):
         """Shoot"""
         if random.randint(0, 350) == 42:
-            enemy_missile.append(Missile(load('data/atomic-bomb.png'), 0, 3,))
+            enemy_missile.append(Missile(load_image('data/atomic-bomb.png'), 0, 3,))
 
             launch_x = (pygame.Surface.get_width(self.icon) / 2) - \
                                         (pygame.Surface.get_width(enemy_missile[-1].icon) / 2)
@@ -289,8 +293,8 @@ class Text():
 class Explosion(pygame.sprite.Sprite):
     """Class for handling explosions"""
     def __init__(self):
-        self.icon = load('data/explosion.png')
-        self.sound = load('data/explosion.wav')
+        self.icon = load_image('data/explosion.png')
+        self.sound = load_sound('data/explosion.wav')
         self.position = [0, 0]
         self.last = 0
 
@@ -314,7 +318,7 @@ class Package(pygame.sprite.Sprite):
         self.velocity = 1
         self.state = False
         self.icon = 0
-        self.sound = load('data/package-sound.wav')
+        self.sound = load_sound('data/package-sound.wav')
         self.range = 50
         self.type = 0
         self.velocity = 1
@@ -335,7 +339,7 @@ class Package(pygame.sprite.Sprite):
         if self.type == 'hitpoints':
             ship.hitpoints += 1
         elif self.type == 'skin':
-            ship.icon = load('data/aircraft.png')
+            ship.icon = load_image('data/aircraft.png')
             is_upgraded = True
         elif self.type == 'velocity':
             ship.velocity += 1
@@ -432,7 +436,7 @@ def main_loop(state):
     """Main loop"""
     clock.tick(25)
 
-    player = Player(load('data/tank.png'), 6, 3)
+    player = Player(load_image('data/tank.png'), 6, 3)
     gun = Gun()
     explosion = Explosion()
 
