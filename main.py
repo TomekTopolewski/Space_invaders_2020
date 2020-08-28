@@ -478,14 +478,16 @@ def main_loop(state):
         player.move()
         player.shoot(player_missile, gun, is_upgraded)
 
-        # Enemy's move
+        # Enemy's move and health bar
         for i, _ in enumerate(enemies):
             if enemies[i].adv_move_flag:
                 enemies[i].advanced_move(1, 70)
             else:
                 enemies[i].move()
 
-        # Check player's missile hit
+            enemies[i].draw_hp()
+
+        # Check if player's missile hit enemy
         for i, _ in enumerate(enemies):
             hit_point_x = enemies[i].position[0] + (pygame.Surface.get_width(enemies[i].icon) / 2)
             hit_point_y = enemies[i].position[1] + (pygame.Surface.get_height(enemies[i].icon) / 2)
@@ -526,14 +528,26 @@ def main_loop(state):
                         if score.value > 65 and random.randint(0, 15) == 1:
                             enemies[i].boss()
                     else:
-                        player_missile[_i].state = False
                         explosion.sound.play()
                         explosion.splash(player_missile[_i].position[0], \
                                                     player_missile[_i].position[1])
+                        player_missile[_i].state = False
+                        player_missile.pop(_i)
 
-        # Health bar
-        for i, _ in enumerate(enemies):
-            enemies[i].draw_hp()
+        # Check if player's missile hit enemy's missile
+        for i, _ in enumerate(enemy_missile):
+            hit_point_x = enemy_missile[i].position[0] + (pygame.Surface.get_width(enemy_missile[i].icon) / 2)
+            hit_point_y = enemy_missile[i].position[1] + (pygame.Surface.get_height(enemy_missile[i].icon) / 2)
+
+            for _i, _ in enumerate(player_missile):
+                if player_missile[_i].is_collision(hit_point_x, hit_point_y) and \
+                                                            player_missile[_i].state:
+                    player_missile[_i].state = False
+                    explosion.sound.play()
+                    explosion.splash(player_missile[_i].position[0], \
+                                                        player_missile[_i].position[1])
+                    enemy_missile.pop(i)
+                    player_missile.pop(_i)
 
         # Check if enemy leave the screen
         for i, _ in enumerate(enemies):
@@ -575,17 +589,23 @@ def main_loop(state):
         for i, _ in enumerate(enemy_missile):
             enemy_missile[i].move()
 
+            if enemy_missile[i].position[1] > screen_params[1]:
+                enemy_missile[i].state = False
+                enemy_missile.pop(i)
+
         # Fly the player's missile
         for i, _ in enumerate(player_missile):
             player_missile[i].move()
 
-        # Fly the package
+            if player_missile[i].position[1] < -100:
+                player_missile[i].state = False
+                player_missile.pop(i)
+
+        # Fly and open the package
         for i, _ in enumerate(package):
             if package[i].state:
                 package[i].move()
 
-        # Open package
-        for i, _ in enumerate(package):
             if package[i].is_collision(player.position[0], player.position[1]):
                 is_upgraded = package[i].open(player, gun, is_upgraded)
                 package[i].sound.play()
@@ -602,21 +622,12 @@ def main_loop(state):
                     explosion.splash(enemy_missile[i].position[0], enemy_missile[i].position[1])
                     explosion.sound.play()
                     enemy_missile[i].state = False
+                    enemy_missile.pop(i)
                 elif player.hitpoints == 0:
                     explosion.splash(enemy_missile[i].position[0], enemy_missile[i].position[1])
                     explosion.sound.play()
                     state = False
                     game_over(score)
-
-        # Enemy's missile leave the screen
-        for i, _ in enumerate(enemy_missile):
-            if enemy_missile[i].position[1] > screen_params[1]:
-                enemy_missile[i].state = False
-
-        # Player's missile leave the screen
-        for i, _ in enumerate(player_missile):
-            if player_missile[i].position[1] < -100:
-                player_missile[i].state = False
 
         # Reload
         if gun.is_reloading:
