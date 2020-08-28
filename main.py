@@ -14,6 +14,8 @@ smalllikeart -  https://www.flaticon.com/authors/smalllikeart
 vectors-market  https://www.flaticon.com/authors/vectors-market
 Nikita Golubev  https://www.flaticon.com/authors/nikita-golubev"
 
+Background made by vectorpouch and Someone? from www.freepik.com
+
 Music thanks to www.freesound.org"""
 
 import math
@@ -59,34 +61,35 @@ def load_music(filename):
     return music
 
 pygame.init()
-screen_params = (800, 600)
+screen_params = (1024, 592)
 screen = pygame.display.set_mode((screen_params[0], screen_params[1]))
 pygame.display.set_caption("Space Invaders 2020")
-window_icon = load_image('data/tank-icon.png')
+window_icon = load_image('data/icons/aircraft-icon.png')
 pygame.display.set_icon(window_icon)
 clock = pygame.time.Clock()
 
 try:
-    background = pygame.image.load('data/background.png')
+    background = [pygame.image.load('data/images/background_001.jpg'), \
+                            pygame.image.load('data/images/background_002.jpg')]
 except pygame.error:
     background = pygame.Surface((screen_params[0], screen_params[1]))
     background.fill((0, 0, 0))
 
-if load_music('data/background.wav') is not False:
+if load_music('data/sound/background.wav') is not False:
     mixer.music.play(-1)
 
-enemy_skin = [load_image('data/spaceship.png'), \
-                load_image('data/spaceship2.png'), \
-                load_image('data/spaceship3.png'), \
-                load_image('data/spaceship4.png'), \
-                load_image('data/spaceship5.png'), \
-                load_image('data/spaceship6.png'), \
-                load_image('data/boss.png')]
+enemy_skin = [load_image('data/icons/enemy_001.png'), \
+                load_image('data/icons/enemy_002.png'), \
+                load_image('data/icons/enemy_003.png'), \
+                load_image('data/icons/enemy_004.png'), \
+                load_image('data/icons/enemy_005.png'), \
+                load_image('data/icons/enemy_006.png'), \
+                load_image('data/icons/enemy_007.png')]
 
-package_icon = [load_image('data/aid-icon.png'), \
-                load_image('data/aircraft-icon.png'), \
-                load_image('data/reload-icon.png'), \
-                load_image('data/thunder-icon.png')]
+package_icon = [load_image('data/icons/box_003.png'), \
+                load_image('data/icons/box_004.png'), \
+                load_image('data/icons/box_001.png'), \
+                load_image('data/icons/box_002.png')]
 
 class Player(pygame.sprite.Sprite):
     """ Player class"""
@@ -129,11 +132,11 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_SPACE] or keys[pygame.K_LSHIFT]:
             if not gun.is_reloading:
                 if is_upgraded:
-                    player_missile.append(Missile(load_image('data/missile.png'), \
-                                        load_sound('data/shoot2.wav'), -10))
+                    player_missile.append(Missile(load_image('data/icons/missile_001.png'), \
+                                        load_sound('data/sound/shoot2.wav'), -8))
                 else:
-                    player_missile.append(Missile(load_image('data/fire.png'), \
-                                        load_sound('data/shoot.wav'), -10))
+                    player_missile.append(Missile(load_image('data/icons/missile_002.png'), \
+                                        load_sound('data/sound/shoot.wav'), -8))
 
                 launch_x = (pygame.Surface.get_width(self.icon) / 2) - \
                                         (pygame.Surface.get_width(player_missile[-1].icon) / 2)
@@ -154,7 +157,7 @@ class Missile(pygame.sprite.Sprite):
         self.position = [0, 0]
         self.velocity = velocity
         self.state = False
-        self.range = 40
+        self.range = 50
 
     def is_collision(self, position_x, position_y):
         """Check if missile hit the target"""
@@ -182,7 +185,7 @@ class Enemy(pygame.sprite.Sprite):
     """Enemy class"""
     def __init__(self):
         self.icon = enemy_skin[0]
-        self.position = [random.randint(5, 730), random.randint(5, 10)]
+        self.position = [random.randint(5, screen_params[0]- 100), random.randint(5, 10)]
         self.velocity = 2
         self.step = 0 # Fly y-axis counter used for changes in x-direction
         self.step_direction = False
@@ -254,8 +257,8 @@ class Enemy(pygame.sprite.Sprite):
 
     def shoot(self, enemy_missile):
         """Shoot"""
-        if random.randint(0, 350) == 42:
-            enemy_missile.append(Missile(load_image('data/atomic-bomb.png'), 0, 3,))
+        if random.randint(0, 700) == 666:
+            enemy_missile.append(Missile(load_image('data/icons/missile_003.png'), 0, 2,))
 
             launch_x = (pygame.Surface.get_width(self.icon) / 2) - \
                                         (pygame.Surface.get_width(enemy_missile[-1].icon) / 2)
@@ -293,8 +296,8 @@ class Text():
 class Explosion(pygame.sprite.Sprite):
     """Class for handling explosions"""
     def __init__(self):
-        self.icon = load_image('data/explosion.png')
-        self.sound = load_sound('data/explosion.wav')
+        self.icon = load_image('data/icons/explosion.png')
+        self.sound = load_sound('data/sound/explosion.wav')
         self.position = [0, 0]
         self.last = 0
 
@@ -318,7 +321,7 @@ class Package(pygame.sprite.Sprite):
         self.velocity = 1
         self.state = False
         self.icon = 0
-        self.sound = load_sound('data/package-sound.wav')
+        self.sound = load_sound('data/sound/package-sound.wav')
         self.range = 50
         self.type = 0
         self.velocity = 1
@@ -339,7 +342,7 @@ class Package(pygame.sprite.Sprite):
         if self.type == 'hitpoints':
             ship.hitpoints += 1
         elif self.type == 'skin':
-            ship.icon = load_image('data/aircraft.png')
+            ship.icon = load_image('data/icons/player_002.png')
             is_upgraded = True
         elif self.type == 'velocity':
             ship.velocity += 1
@@ -364,18 +367,18 @@ class Package(pygame.sprite.Sprite):
 def intro(state):
     """Intro"""
     try:
-        txt_file = open('data/intro.txt', 'r')
+        txt_file = open('ReadMe.txt', 'r')
         from_file = txt_file.readlines()
     except FileNotFoundError:
         from_file = ["Can't load intro, press space to play anyway"]
     text = []
 
-    line_y_position = [10, 50, 50, 150, 150, 200, 250, 250, 350, 350, 400, 450, 550, 550]
+    line_y_position = [10, 40, 70, 100, 130, 190, 220, 250, 300]
 
     for index in from_file:
         text.append(index.strip()) # Delete new line characters
 
-    intro_txt = Text(22, (255, 255, 255), "data/BebasNeue-Regular.ttf")
+    intro_txt = Text(22, (255, 255, 255), "data/fonts/BebasNeue-Regular.ttf")
 
     for index, _ in enumerate(text):
         render_line = intro_txt.font.render(text[index], True, intro_txt.color)
@@ -394,16 +397,20 @@ def intro(state):
 
 def game_over(score):
     """Game over"""
-    game_over_txt = Text(72, (47, 79, 79), 'data/space_age.ttf')
+    game_over_txt = Text(72, (255, 255, 255), 'data/fonts/space_age.ttf')
     game_over_txt.text = "Game Over!"
 
-    play_again_txt = Text(32, (0, 0, 0), 'data/space_age.ttf')
+    play_again_txt = Text(32, (255, 255, 255), 'data/fonts/space_age.ttf')
     play_again_txt.text = "Press space to play again"
 
-    screen.blit(background, (0, 0))
-    game_over_txt.draw_text(130, 200)
-    score.draw(320, 260)
-    play_again_txt.draw_text(80, 500)
+    if score.value > 70:
+        screen.blit(background[0], (0, 0))
+    else:
+        screen.blit(background[1], (0, 0))
+
+    game_over_txt.draw_text(250, 200)
+    score.draw(400, 260)
+    play_again_txt.draw_text(230, 500)
     pygame.display.update()
     game_over_status = True
 
@@ -418,9 +425,9 @@ def game_over(score):
 
 def pause():
     """Pause"""
-    pause_txt = Text(72, (47, 79, 79), 'data/space_age.ttf')
+    pause_txt = Text(72, (255, 255, 255), 'data/fonts/space_age.ttf')
     pause_txt.text = "Pause"
-    pause_txt.draw_text(265, 200)
+    pause_txt.draw_text(370, 200)
     pygame.display.update()
     pause_status = True
 
@@ -434,16 +441,16 @@ def pause():
 
 def main_loop(state):
     """Main loop"""
-    clock.tick(25)
+    clock.tick(23)
 
-    player = Player(load_image('data/tank.png'), 6, 3)
+    player = Player(load_image('data/icons/player_001.png'), 6, 3)
     gun = Gun()
     explosion = Explosion()
 
-    score = Text(32, (0, 0, 0), 'data/space_age.ttf')
+    score = Text(32, (255, 255, 255), 'data/fonts/space_age.ttf')
     score.text = "Score: "
 
-    hitpoints = Text(22, (0, 0, 0), 'data/space_age.ttf')
+    hitpoints = Text(22, (255, 255, 255), 'data/fonts/space_age.ttf')
     hitpoints.text = "HP: "
     hitpoints.value = player.hitpoints
 
@@ -459,7 +466,11 @@ def main_loop(state):
         number_of_enemies += 1
 
     while state:
-        screen.blit(background, (0, 0))
+
+        if score.value > 70:
+            screen.blit(background[0], (0, 0))
+        else:
+            screen.blit(background[1], (0, 0))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -537,6 +548,7 @@ def main_loop(state):
                     hitpoints.value = player.hitpoints
                 else:
                     hitpoints.value = player.hitpoints
+                    state = False
                     game_over(score)
 
         # Player's collision with enemy
@@ -553,6 +565,7 @@ def main_loop(state):
                     hitpoints.value = player.hitpoints
                 else:
                     hitpoints.value = player.hitpoints
+                    state = False
                     game_over(score)
 
         # Enemy's shoot
@@ -593,6 +606,7 @@ def main_loop(state):
                 elif player.hitpoints == 0:
                     explosion.splash(enemy_missile[i].position[0], enemy_missile[i].position[1])
                     explosion.sound.play()
+                    state = False
                     game_over(score)
 
         # Enemy's missile leave the screen
