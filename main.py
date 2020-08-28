@@ -176,8 +176,9 @@ class Enemy(pygame.sprite.Sprite):
         self.step = 0 # Fly y-axis counter used for changes in x-direction
         self.step_direction = False
         self.adv_move_flag = False
-        self.hitpoints = 1
+        self.hitpoints = 2
         self.drop_rate = 2
+        self.cell = pygame.Surface.get_width(self.icon) / self.hitpoints
 
     def level(self, score_value):
         "Progress mechanism"
@@ -192,10 +193,8 @@ class Enemy(pygame.sprite.Sprite):
         elif score_value > 40 and score_value <= 50:
             self.icon = enemy_skin[4]
             self.adv_move_flag = True
-            self.hitpoints = 2
         elif score_value > 50:
             self.icon = enemy_skin[5]
-            self.hitpoints = 2
 
     def move(self):
         """Enemy's move"""
@@ -207,6 +206,8 @@ class Enemy(pygame.sprite.Sprite):
         elif self.position[0] >= screen_params[0] - pygame.Surface.get_width(self.icon):
             self.velocity = -self.velocity
             self.position[1] += -self.velocity * 15
+
+        screen.blit(self.icon, (self.position[0], self.position[1]))
 
     def advanced_move(self, velocity, step):
         """Enemy's advanced move"""
@@ -233,6 +234,7 @@ class Enemy(pygame.sprite.Sprite):
             self.position[1] += self.velocity
 
         self.step += 1
+        screen.blit(self.icon, (self.position[0], self.position[1]))
 
     def boss(self):
         """Boss"""
@@ -257,6 +259,13 @@ class Enemy(pygame.sprite.Sprite):
             enemy_missile[-1].state = True
             screen.blit(enemy_missile[-1].icon,\
                     (int(enemy_missile[-1].position[0]), int(enemy_missile[-1].position[1])))
+
+    def draw_hp(self):
+        """Draw hitpoints bar"""
+        surface = pygame.Surface((pygame.Surface.get_width(self.icon), 4))
+        pygame.draw.rect(surface, (255, 80, 80), (0, 0, pygame.Surface.get_width(self.icon), 4))
+        pygame.draw.rect(surface, (0, 255, 0), (0, 0, self.cell * self.hitpoints, 4))
+        screen.blit(surface, (self.position[0], self.position[1] - 5))
 
 class Text():
     """Text class"""
@@ -475,7 +484,6 @@ def main_loop(state):
                 enemies[i].advanced_move(1, 70)
             else:
                 enemies[i].move()
-            screen.blit(enemies[i].icon, (enemies[i].position[0], enemies[i].position[1]))
 
         # Check player's missile hit
         for i, _ in enumerate(enemies):
@@ -486,6 +494,7 @@ def main_loop(state):
                 if player_missile[_i].is_collision(hit_point_x, hit_point_y) and \
                                                             player_missile[_i].state:
                     enemies[i].hitpoints -= 1
+
                     if enemies[i].hitpoints == 0:
                         score.value += 1
                         player_missile[_i].state = False
@@ -521,6 +530,10 @@ def main_loop(state):
                         explosion.sound.play()
                         explosion.splash(player_missile[_i].position[0], \
                                                     player_missile[_i].position[1])
+
+        # Health bar
+        for i, _ in enumerate(enemies):
+            enemies[i].draw_hp()
 
         # Check if enemy leave the screen
         for i, _ in enumerate(enemies):
@@ -609,7 +622,7 @@ def main_loop(state):
         if gun.is_reloading:
             gun.reload_time += gun.reload_step
 
-            if gun.reload_time >= 1000:
+            if gun.reload_time >= 2000:
                 gun.is_reloading = False
                 gun.reload_time = 0
 
