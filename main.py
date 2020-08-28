@@ -2,7 +2,7 @@
 Based on a great tutorial "Python game development course" by freeCodeCamp.org.
 Icons made by smalllikeart from www.flaticon.com
 Background made by vectorpouch from www.freepik.com
-Music thanks to www.freesound.com"""
+Music thanks to www.freesound.org"""
 
 import math
 import random
@@ -264,7 +264,7 @@ class Enemy(pygame.sprite.Sprite):
         """Draw hitpoints bar"""
         surface = pygame.Surface((pygame.Surface.get_width(self.icon), 4))
         pygame.draw.rect(surface, (255, 80, 80), (0, 0, pygame.Surface.get_width(self.icon), 4))
-        pygame.draw.rect(surface, (0, 255, 0), (0, 0, self.cell * self.hitpoints, 4))
+        pygame.draw.rect(surface, (0, 255, 0), (0, 0, int(self.cell * self.hitpoints), 4))
         screen.blit(surface, (self.position[0], self.position[1] - 5))
 
 class Text():
@@ -368,7 +368,7 @@ def intro(state):
         from_file = ["Can't load intro, press space to play anyway"]
     text = []
 
-    line_y_position = [10, 40, 70, 100, 130, 190, 220, 250, 300]
+    line_y_position = [10, 60, 90, 120, 150, 210, 240, 270, 320]
 
     for index in from_file:
         text.append(index.strip()) # Delete new line characters
