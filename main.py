@@ -153,12 +153,15 @@ class Missile(pygame.sprite.Sprite):
         self.position = [0, 0]
         self.velocity = velocity
         self.state = False
-        self.range = 50
+        self.range = 45
 
     def is_collision(self, position_x, position_y):
         """Check if missile hit the target"""
-        distance = math.sqrt(math.pow(position_x - self.position[0], 2) + \
+        hit_x = self.position[0] + (pygame.Surface.get_width(self.icon) / 2)
+
+        distance = math.sqrt(math.pow(position_x - hit_x, 2) + \
                             (math.pow(position_y - self.position[1], 2)))
+
         if distance < self.range and self.state:
             return True
         else:
@@ -200,8 +203,12 @@ class Enemy(pygame.sprite.Sprite):
         elif score_value > 40 and score_value <= 50:
             self.icon = enemy_skin[4]
             self.adv_move_flag = True
-        elif score_value > 50:
+        elif score_value > 50 and score_value <= 60:
             self.icon = enemy_skin[5]
+            self.adv_move_flag = True
+        elif score_value > 60:
+            self.icon = enemy_skin[random.randint(0, 5)]
+            self.adv_move_flag = True
 
     def move(self):
         """Enemy's move"""
@@ -312,12 +319,15 @@ class Explosion(pygame.sprite.Sprite):
         self.sound = load_sound('data/sound/explosion.wav')
         self.position = [0, 0]
         self.last = 0
+        self.state = False
 
     def splash(self, position_x, position_y):
         """Draw exlosion splash"""
         self.last = 10
+        self.state = True
         self.position[0] = position_x
         self.position[1] = position_y
+        self.sound.play()
         screen.blit(self.icon, (int(position_x), int(position_y)))
 
     def splash_last(self, position_x, position_y):
@@ -325,6 +335,8 @@ class Explosion(pygame.sprite.Sprite):
         if self.last > 0:
             screen.blit(self.icon, (int(position_x), int(position_y)))
             self.last -= 1
+        else:
+            self.state = False
 
 class Package(pygame.sprite.Sprite):
     """Package class"""
@@ -453,7 +465,6 @@ def main_loop(state):
     clock.tick(23)
 
     player = Player(load_image('data/icons/player_001.png'), 7, 3)
-    explosion = Explosion()
 
     score = Text(32, (255, 255, 255), 'data/fonts/space_age.ttf')
     score.text = "Score: "
@@ -466,10 +477,11 @@ def main_loop(state):
     enemies = []
     enemy_missile = []
     player_missile = []
+    explosion = []
     number_of_enemies = 0
     is_upgraded = False
 
-    while number_of_enemies < 5:
+    while number_of_enemies < 1:
         enemies.append(Enemy())
         number_of_enemies += 1
 
@@ -527,7 +539,8 @@ def main_loop(state):
                 player.hitpoints -= 1
 
                 if player.hitpoints >= 1:
-                    explosion.sound.play()
+                    explosion.append(Explosion())
+                    explosion[-1].splash(enemies[i].position[0, enemies[i].position[1]])
                     enemies[i] = Enemy()
                     enemies[i].level(score.value)
                     player.position[0] = 0
@@ -537,54 +550,6 @@ def main_loop(state):
                     hitpoints.value = player.hitpoints
                     state = False
                     game_over(score)
-
-            # Check player's missile hit
-            hit_point_x = enemies[i].position[0] + (pygame.Surface.get_width(enemies[i].icon) / 2)
-            hit_point_y = enemies[i].position[1] + (pygame.Surface.get_height(enemies[i].icon) / 2)
-
-            for _i, _ in enumerate(player_missile):
-                if player_missile[_i].is_collision(hit_point_x, hit_point_y) and \
-                                                            player_missile[_i].state:
-                    enemies[i].hitpoints -= 1
-
-                    if enemies[i].hitpoints == 0:
-                        score.value += 1
-                        player_missile[_i].state = False
-                        explosion.sound.play()
-                        explosion.splash(player_missile[_i].position[0], \
-                                                            player_missile[_i].position[1])
-
-                        if random.randint(0, 20) <= enemies[i].drop_rate:
-                            package.append(Package())
-                            package[-1].type = random.choice( \
-                                ['hitpoints', 'skin', 'velocity', 'gun_reload'])
-                            package[-1].update_skin()
-                            package[-1].position[0] = enemies[i].position[0]
-                            package[-1].position[1] = enemies[i].position[1]
-                            package[-1].state = True
-                            screen.blit(package[-1].icon, \
-                                (package[-1].position[0], package[-1].position[1]))
-
-                        enemies[i] = Enemy()
-
-                        if score.value > 55 and score.value < 60:
-                            enemies.append(Enemy())
-                            enemies[-1].level(random.randint(0, 50))
-                        elif score.value >= 60:
-                            enemies[i].level(random.randint(0, 50))
-                        else:
-                            enemies[i].level(score.value)
-
-                        if score.value > 65 and random.randint(0, 15) == 1:
-                            enemies[i].boss()
-                    else:
-                        explosion.sound.play()
-                        explosion.splash(player_missile[_i].position[0], \
-                                                    player_missile[_i].position[1])
-                        player_missile[_i].state = False
-
-                if not player_missile[_i].state:
-                        player_missile.pop(_i)
 
         # Loop through the enemy's missile list and do various tasks
         for i, _ in enumerate(enemy_missile):
@@ -596,19 +561,21 @@ def main_loop(state):
                 enemy_missile[i].state = False
 
             # Check the player's ship hit
-            if enemy_missile[i].state and \
-                            enemy_missile[i].is_collision(player.position[0], player.position[1]):
+            hit_x = player.position[0] + (pygame.Surface.get_width(player.icon) / 2)
+            hit_y = player.position[1] + (pygame.Surface.get_height(player.icon) / 2)
+
+            if enemy_missile[i].state and enemy_missile[i].is_collision(hit_x, hit_y):
                 player.hitpoints -= 1
                 hitpoints.value = player.hitpoints
 
                 if player.hitpoints > 0:
-                    explosion.splash(enemy_missile[i].position[0], enemy_missile[i].position[1])
-                    explosion.sound.play()
+                    explosion.append(Explosion())
+                    explosion[-1].splash(enemy_missile[i].position[0], enemy_missile[i].position[1])
                     enemy_missile[i].state = False
 
                 elif player.hitpoints == 0:
-                    explosion.splash(enemy_missile[i].position[0], enemy_missile[i].position[1])
-                    explosion.sound.play()
+                    explosion.append(Explosion())
+                    explosion[-1].splash(enemy_missile[i].position[0], enemy_missile[i].position[1])
                     state = False
                     game_over(score)
 
@@ -627,19 +594,56 @@ def main_loop(state):
 
             # Check collision with the enemy's missile
             if player_missile[i].state:
-                hit_point_x = player_missile[i].position[0] + \
+                hit_x = player_missile[i].position[0] + \
                                     (pygame.Surface.get_width(player_missile[i].icon) / 2)
-                hit_point_y = player_missile[i].position[1] + \
+                hit_y = player_missile[i].position[1] + \
                                     (pygame.Surface.get_height(player_missile[i].icon) / 2)
 
                 for _i, _ in enumerate(enemy_missile):
-                    if enemy_missile[_i].is_collision(hit_point_x, hit_point_y) and \
+                    if enemy_missile[_i].is_collision(hit_x, hit_y) and \
                                                             enemy_missile[_i].state:
                         enemy_missile[_i].state = False
-                        explosion.sound.play()
-                        explosion.splash(enemy_missile[_i].position[0], \
+                        explosion.append(Explosion())
+                        explosion[-1].splash(enemy_missile[_i].position[0], \
                                                         enemy_missile[_i].position[1])
                         enemy_missile.pop(_i)
+
+            # Check enemy's ship hit
+            if player_missile[i].state:
+                for _i, _ in enumerate(enemies):
+                    hit_x = enemies[_i].position[0] + \
+                                                (pygame.Surface.get_width(enemies[_i].icon) / 2)
+                    hit_y = enemies[_i].position[1] + \
+                                                (pygame.Surface.get_height(enemies[_i].icon) / 2)
+
+                    if player_missile[i].is_collision(hit_x, hit_y):
+                        enemies[_i].hitpoints -= 1
+
+                        if enemies[_i].hitpoints == 0:
+                            score.value += 1
+                            player_missile[i].state = False
+                            explosion.append(Explosion())
+                            explosion[-1].splash(player_missile[i].position[0], \
+                                                                player_missile[i].position[1])
+
+                            if random.randint(0, 20) <= enemies[_i].drop_rate:
+                                package.append(Package())
+                                package[-1].type = random.choice( \
+                                    ['hitpoints', 'skin', 'velocity', 'gun_reload'])
+                                package[-1].update_skin()
+                                package[-1].position[0] = enemies[i].position[0]
+                                package[-1].position[1] = enemies[i].position[1]
+                                package[-1].state = True
+                                screen.blit(package[-1].icon, \
+                                    (package[-1].position[0], package[-1].position[1]))
+
+                            enemies[_i] = Enemy()
+                            enemies[_i].level(score.value)
+                        else:
+                            explosion.append(Explosion())
+                            explosion[-1].splash(player_missile[i].position[0], \
+                                                        player_missile[i].position[1])
+                            player_missile[i].state = False
 
             # Remove unnecessary objects
             if not player_missile[i].state:
@@ -656,9 +660,20 @@ def main_loop(state):
                 package[i].state = False
                 hitpoints.value = player.hitpoints
 
+        # Spot boss
+        if random.randint(0, 3000) == 666:
+            enemies.append(Enemy())
+            enemies[-1].boss()
+
+        # Draw explosion splash
+        for i, _ in enumerate(explosion):
+            explosion[i].splash_last(explosion[i].position[0], explosion[i].position[1])
+
+            if not explosion[i].state:
+                explosion.pop(i)
+
         score.draw(10, 10)
         hitpoints.draw(10, 30)
-        explosion.splash_last(explosion.position[0], explosion.position[1])
         pygame.display.update()
 
 intro(True)
