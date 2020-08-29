@@ -47,7 +47,7 @@ def load_music(filename):
     return music
 
 pygame.init()
-screen_params = (1024, 592)
+screen_params = (827, 900)
 screen = pygame.display.set_mode((screen_params[0], screen_params[1]))
 pygame.display.set_caption("Space Invaders 2020")
 window_icon = load_image('data/icons/aircraft-icon.png')
@@ -55,8 +55,7 @@ pygame.display.set_icon(window_icon)
 clock = pygame.time.Clock()
 
 try:
-    background = [pygame.image.load('data/images/background_001.jpg'), \
-                            pygame.image.load('data/images/background_002.jpg')]
+    background = [pygame.image.load('data/images/background_001.jpg')]
 except pygame.error:
     background = pygame.Surface((screen_params[0], screen_params[1]))
     background.fill((0, 0, 0))
@@ -84,6 +83,9 @@ class Player(pygame.sprite.Sprite):
         self.position = [370, 480]
         self.velocity = velocity
         self.hitpoints = hitpoints
+        self.reload_step = 10
+        self.reload_time = 0
+        self.is_reloading = False
 
     def is_collision(self, position_x, position_y):
         """Check if player collide with enemy"""
@@ -111,18 +113,18 @@ class Player(pygame.sprite.Sprite):
 
         screen.blit(self.icon, (self.position[0], self.position[1]))
 
-    def shoot(self, player_missile, gun, is_upgraded):
+    def shoot(self, player_missile, is_upgraded):
         "Shoot"
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_SPACE] or keys[pygame.K_LSHIFT]:
-            if not gun.is_reloading:
+            if not self.is_reloading:
                 if is_upgraded:
                     player_missile.append(Missile(load_image('data/icons/missile_001.png'), \
-                                        load_sound('data/sound/shoot2.wav'), -8))
+                                        load_sound('data/sound/shoot2.wav'), -10))
                 else:
                     player_missile.append(Missile(load_image('data/icons/missile_002.png'), \
-                                        load_sound('data/sound/shoot.wav'), -8))
+                                        load_sound('data/sound/shoot.wav'), -10))
 
                 launch_x = (pygame.Surface.get_width(self.icon) / 2) - \
                                         (pygame.Surface.get_width(player_missile[-1].icon) / 2)
@@ -133,7 +135,14 @@ class Player(pygame.sprite.Sprite):
                 player_missile[-1].position[1] = self.position[1] - launch_y
                 player_missile[-1].sound.play()
                 player_missile[-1].state = True
-                gun.is_reloading = True
+                self.is_reloading = True
+
+    def reload(self, time):
+        """Reload"""
+        self.reload_time += self.reload_step
+        if self.reload_time >= time:
+            self.is_reloading = False
+            self.reload_time = 0 
 
 class Missile(pygame.sprite.Sprite):
     """Missile class"""
@@ -160,13 +169,6 @@ class Missile(pygame.sprite.Sprite):
             screen.blit(self.icon, (int(self.position[0]), int(self.position[1])))
             self.position[1] += self.velocity
 
-class Gun(pygame.sprite.Sprite):
-    """Gun class"""
-    def __init__(self):
-        self.reload_step = 40
-        self.reload_time = 0
-        self.is_reloading = False
-
 class Enemy(pygame.sprite.Sprite):
     """Enemy class"""
     def __init__(self):
@@ -176,14 +178,18 @@ class Enemy(pygame.sprite.Sprite):
         self.step = 0 # Fly y-axis counter used for changes in x-direction
         self.step_direction = False
         self.adv_move_flag = False
-        self.hitpoints = 2
+        self.hitpoints = 1
         self.drop_rate = 2
         self.cell = pygame.Surface.get_width(self.icon) / self.hitpoints
+        self.reload_step = 1
+        self.reload_time = 0
+        self.is_reloading = False
 
     def level(self, score_value):
         "Progress mechanism"
         if score_value > 10 and score_value <= 20:
             self.icon = enemy_skin[1]
+            self.adv_move_flag = True
         elif score_value > 20 and score_value <= 30:
             self.icon = enemy_skin[2]
             self.adv_move_flag = True
@@ -245,8 +251,9 @@ class Enemy(pygame.sprite.Sprite):
 
     def shoot(self, enemy_missile):
         """Shoot"""
-        if random.randint(0, 700) == 666:
-            enemy_missile.append(Missile(load_image('data/icons/missile_003.png'), 0, 2,))
+        if not self.is_reloading and random.randint(0, 75) == 5:
+            self.is_reloading = True
+            enemy_missile.append(Missile(load_image('data/icons/missile_003.png'), 0, 3))
 
             launch_x = (pygame.Surface.get_width(self.icon) / 2) - \
                                         (pygame.Surface.get_width(enemy_missile[-1].icon) / 2)
@@ -266,6 +273,14 @@ class Enemy(pygame.sprite.Sprite):
         pygame.draw.rect(surface, (255, 80, 80), (0, 0, pygame.Surface.get_width(self.icon), 4))
         pygame.draw.rect(surface, (0, 255, 0), (0, 0, int(self.cell * self.hitpoints), 4))
         screen.blit(surface, (self.position[0], self.position[1] - 5))
+
+    def reload(self, time):
+        """Reload"""
+        self.reload_time += self.reload_step
+
+        if self.reload_time >= time:
+            self.is_reloading = False
+            self.reload_time = 0
 
 class Text():
     """Text class"""
@@ -332,17 +347,17 @@ class Package(pygame.sprite.Sprite):
         elif self.type == 'gun_reload':
             self.icon = package_icon[2]
 
-    def open(self, ship, gun, is_upgraded):
+    def open(self, player, is_upgraded):
         """Modify values based on package type"""
         if self.type == 'hitpoints':
-            ship.hitpoints += 1
+            player.hitpoints += 1
         elif self.type == 'skin':
-            ship.icon = load_image('data/icons/player_002.png')
+            player.icon = load_image('data/icons/player_002.png')
             is_upgraded = True
         elif self.type == 'velocity':
-            ship.velocity += 1
+            player.velocity += 1
         elif self.type == 'gun_reload':
-            gun.reload_step += 5
+            player.reload_step += 1
         return is_upgraded
 
     def is_collision(self, position_x, position_y):
@@ -398,14 +413,11 @@ def game_over(score):
     play_again_txt = Text(32, (255, 255, 255), 'data/fonts/space_age.ttf')
     play_again_txt.text = "Press space to play again"
 
-    if score.value > 70:
-        screen.blit(background[0], (0, 0))
-    else:
-        screen.blit(background[1], (0, 0))
-
-    game_over_txt.draw_text(250, 200)
-    score.draw(400, 260)
-    play_again_txt.draw_text(230, 500)
+    screen.blit(background[0], (0, 0))
+  
+    game_over_txt.draw_text(140, 120)
+    score.draw(300, 180)
+    play_again_txt.draw_text(80, 720)
     pygame.display.update()
     game_over_status = True
 
@@ -422,7 +434,7 @@ def pause():
     """Pause"""
     pause_txt = Text(72, (255, 255, 255), 'data/fonts/space_age.ttf')
     pause_txt.text = "Pause"
-    pause_txt.draw_text(370, 200)
+    pause_txt.draw_text(250, 200)
     pygame.display.update()
     pause_status = True
 
@@ -438,8 +450,7 @@ def main_loop(state):
     """Main loop"""
     clock.tick(23)
 
-    player = Player(load_image('data/icons/player_001.png'), 6, 3)
-    gun = Gun()
+    player = Player(load_image('data/icons/player_001.png'), 7, 3)
     explosion = Explosion()
 
     score = Text(32, (255, 255, 255), 'data/fonts/space_age.ttf')
@@ -461,11 +472,7 @@ def main_loop(state):
         number_of_enemies += 1
 
     while state:
-
-        if score.value > 70:
-            screen.blit(background[0], (0, 0))
-        else:
-            screen.blit(background[1], (0, 0))
+        screen.blit(background[0], (0, 0))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -474,18 +481,27 @@ def main_loop(state):
                 if event.key == pygame.K_p:
                     pause()
 
-        # Player's move and shoot
+        # Player's move, shoot and reload
         player.move()
-        player.shoot(player_missile, gun, is_upgraded)
+        player.shoot(player_missile, is_upgraded)
 
-        # Enemy's move and health bar
+        if player.is_reloading:
+            player.reload(500)
+
+        # Enemy's move, health bar, shoot, reload
         for i, _ in enumerate(enemies):
+
             if enemies[i].adv_move_flag:
                 enemies[i].advanced_move(1, 70)
             else:
                 enemies[i].move()
 
             enemies[i].draw_hp()
+
+            enemies[i].shoot(enemy_missile)
+
+            if enemies[i].is_reloading:
+                enemies[i].reload(150)
 
         # Check if player's missile hit enemy
         for i, _ in enumerate(enemies):
@@ -536,8 +552,10 @@ def main_loop(state):
 
         # Check if player's missile hit enemy's missile
         for i, _ in enumerate(enemy_missile):
-            hit_point_x = enemy_missile[i].position[0] + (pygame.Surface.get_width(enemy_missile[i].icon) / 2)
-            hit_point_y = enemy_missile[i].position[1] + (pygame.Surface.get_height(enemy_missile[i].icon) / 2)
+            hit_point_x = enemy_missile[i].position[0] + \
+                                    (pygame.Surface.get_width(enemy_missile[i].icon) / 2)
+            hit_point_y = enemy_missile[i].position[1] + \
+                                    (pygame.Surface.get_height(enemy_missile[i].icon) / 2)
 
             for _i, _ in enumerate(player_missile):
                 if player_missile[_i].is_collision(hit_point_x, hit_point_y) and \
@@ -581,10 +599,6 @@ def main_loop(state):
                     state = False
                     game_over(score)
 
-        # Enemy's shoot
-        for i, _ in enumerate(enemies):
-            enemies[i].shoot(enemy_missile)
-
         # Fly enemy's missile
         for i, _ in enumerate(enemy_missile):
             enemy_missile[i].move()
@@ -597,7 +611,7 @@ def main_loop(state):
         for i, _ in enumerate(player_missile):
             player_missile[i].move()
 
-            if player_missile[i].position[1] < -100:
+            if player_missile[i].position[1] < -32:
                 player_missile[i].state = False
                 player_missile.pop(i)
 
@@ -607,7 +621,7 @@ def main_loop(state):
                 package[i].move()
 
             if package[i].is_collision(player.position[0], player.position[1]):
-                is_upgraded = package[i].open(player, gun, is_upgraded)
+                is_upgraded = package[i].open(player, is_upgraded)
                 package[i].sound.play()
                 package[i].state = False
                 hitpoints.value = player.hitpoints
@@ -628,14 +642,6 @@ def main_loop(state):
                     explosion.sound.play()
                     state = False
                     game_over(score)
-
-        # Reload
-        if gun.is_reloading:
-            gun.reload_time += gun.reload_step
-
-            if gun.reload_time >= 2000:
-                gun.is_reloading = False
-                gun.reload_time = 0
 
         score.draw(10, 10)
         hitpoints.draw(10, 30)
