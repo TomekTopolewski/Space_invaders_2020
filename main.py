@@ -46,6 +46,7 @@ def load_music(filename):
         music = False
     return music
 
+pygame.mixer.pre_init(0, 0, 16, 0)
 pygame.init()
 screen_params = (827, 900)
 screen = pygame.display.set_mode((screen_params[0], screen_params[1]))
@@ -78,8 +79,10 @@ package_icon = [load_image('data/icons/box_003.png'), \
 
 class Player(pygame.sprite.Sprite):
     """ Player class"""
-    def __init__(self, icon, velocity, hitpoints):
-        self.icon = icon
+    def __init__(self, velocity, hitpoints):
+        self.icon = [load_image('data/icons/player_001.png'), \
+                    load_image('data/icons/player_001-left.png'), \
+                    load_image('data/icons/player_001-right.png')]
         self.position = [370, 480]
         self.velocity = velocity
         self.hitpoints = hitpoints
@@ -102,16 +105,20 @@ class Player(pygame.sprite.Sprite):
 
         if keys[pygame.K_LEFT] and self.position[0] > self.velocity:
             self.position[0] -= self.velocity
+            screen.blit(self.icon[1], (self.position[0], self.position[1]))
         elif keys[pygame.K_RIGHT] and self.position[0] < screen_params[0] - \
-                                        pygame.Surface.get_width(self.icon) - self.velocity:
+                                        pygame.Surface.get_width(self.icon[0]) - self.velocity:
             self.position[0] += self.velocity
+            screen.blit(self.icon[2], (self.position[0], self.position[1]))
         elif keys[pygame.K_UP] and self.position[1] > self.velocity:
             self.position[1] -= self.velocity
+            screen.blit(self.icon[0], (self.position[0], self.position[1]))
         elif keys[pygame.K_DOWN] and self.position[1] < screen_params[1] - \
-                                        pygame.Surface.get_height(self.icon) - self.velocity:
+                                        pygame.Surface.get_height(self.icon[0]) - self.velocity:
             self.position[1] += self.velocity
-
-        screen.blit(self.icon, (self.position[0], self.position[1]))
+            screen.blit(self.icon[0], (self.position[0], self.position[1]))
+        else:
+            screen.blit(self.icon[0], (self.position[0], self.position[1]))
 
     def shoot(self, player_missile, is_upgraded):
         "Shoot"
@@ -126,9 +133,9 @@ class Player(pygame.sprite.Sprite):
                     player_missile.append(Missile(load_image('data/icons/missile_002.png'), \
                                         load_sound('data/sound/shoot.wav'), -10))
 
-                launch_x = (pygame.Surface.get_width(self.icon) / 2) - \
+                launch_x = (pygame.Surface.get_width(self.icon[0]) / 2) - \
                                         (pygame.Surface.get_width(player_missile[-1].icon) / 2)
-                launch_y = (pygame.Surface.get_height(self.icon) / 2) - \
+                launch_y = (pygame.Surface.get_height(self.icon[0]) / 2) - \
                                         (pygame.Surface.get_height(player_missile[-1].icon) / 2)
 
                 player_missile[-1].position[0] = self.position[0] + launch_x
@@ -366,7 +373,9 @@ class Package(pygame.sprite.Sprite):
         if self.type == 'hitpoints':
             player.hitpoints += 1
         elif self.type == 'skin':
-            player.icon = load_image('data/icons/player_002.png')
+            player.icon[0] = load_image('data/icons/player_002.png')
+            player.icon[1] = load_image('data/icons/player_002-left.png')
+            player.icon[2] = load_image('data/icons/player_002-right.png')
             is_upgraded = True
         elif self.type == 'velocity':
             player.velocity += 1
@@ -465,7 +474,7 @@ def main_loop(state):
     """Main loop"""
     clock.tick(23)
 
-    player = Player(load_image('data/icons/player_001.png'), 7, 3)
+    player = Player(7, 3)
 
     score = Text(32, (255, 255, 255), 'data/fonts/space_age.ttf')
     score.text = "Score: "
@@ -513,7 +522,7 @@ def main_loop(state):
 
             # Check screen leave
             if enemies[i].position[1] > (screen_params[1] - \
-                                    (pygame.Surface.get_height(player.icon) / 2)):
+                                    (pygame.Surface.get_height(player.icon[0]) / 2)):
                 player.hitpoints -= 1
 
                 if player.hitpoints >= 1:
@@ -545,7 +554,7 @@ def main_loop(state):
                     enemies[i] = Enemy()
                     enemies[i].level(score.value)
                     player.position[0] = 0
-                    player.position[1] = screen_params[1] - pygame.Surface.get_height(player.icon)
+                    player.position[1] = screen_params[1] - pygame.Surface.get_height(player.icon[0])
                     hitpoints.value = player.hitpoints
                 else:
                     hitpoints.value = player.hitpoints
@@ -562,8 +571,8 @@ def main_loop(state):
                 enemy_missile[i].state = False
 
             # Check the player's ship hit
-            hit_x = player.position[0] + (pygame.Surface.get_width(player.icon) / 2)
-            hit_y = player.position[1] + (pygame.Surface.get_height(player.icon) / 2)
+            hit_x = player.position[0] + (pygame.Surface.get_width(player.icon[0]) / 2)
+            hit_y = player.position[1] + (pygame.Surface.get_height(player.icon[0]) / 2)
 
             if enemy_missile[i].state and enemy_missile[i].is_collision(hit_x, hit_y):
                 player.hitpoints -= 1
