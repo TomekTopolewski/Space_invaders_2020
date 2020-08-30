@@ -183,7 +183,7 @@ class Enemy(pygame.sprite.Sprite):
         self.step_direction = False
         self.adv_move_flag = False
         self.hitpoints = 2
-        self.drop_rate = 2
+        self.drop_rate = 1
         self.cell = pygame.Surface.get_width(self.icon) / self.hitpoints
         self.reload_step = 1
         self.reload_time = 0
@@ -371,7 +371,8 @@ class Package(pygame.sprite.Sprite):
         elif self.type == 'velocity':
             player.velocity += 1
         elif self.type == 'gun_reload':
-            player.reload_step += 1
+            if player.reload_step < 20:
+                player.reload_step += 1
         return is_upgraded
 
     def is_collision(self, position_x, position_y):
@@ -481,7 +482,7 @@ def main_loop(state):
     number_of_enemies = 0
     is_upgraded = False
 
-    while number_of_enemies < 1:
+    while number_of_enemies < 5:
         enemies.append(Enemy())
         number_of_enemies += 1
 
@@ -626,13 +627,13 @@ def main_loop(state):
                             explosion[-1].splash(player_missile[i].position[0], \
                                                                 player_missile[i].position[1])
 
-                            if random.randint(0, 20) <= enemies[_i].drop_rate:
+                            if random.randint(0, 10) <= enemies[_i].drop_rate:
                                 package.append(Package())
                                 package[-1].type = random.choice( \
                                     ['hitpoints', 'skin', 'velocity', 'gun_reload'])
                                 package[-1].update_skin()
-                                package[-1].position[0] = enemies[i].position[0]
-                                package[-1].position[1] = enemies[i].position[1]
+                                package[-1].position[0] = enemies[_i].position[0]
+                                package[-1].position[1] = enemies[_i].position[1]
                                 package[-1].state = True
                                 screen.blit(package[-1].icon, \
                                     (package[-1].position[0], package[-1].position[1]))
