@@ -64,13 +64,28 @@ except pygame.error:
 if load_music('data/sound/background.wav') is not False:
     mixer.music.play(-1)
 
-enemy_skin = [load_image('data/icons/enemy_001.png'), \
-                load_image('data/icons/enemy_002.png'), \
-                load_image('data/icons/enemy_003.png'), \
-                load_image('data/icons/enemy_004.png'), \
-                load_image('data/icons/enemy_005.png'), \
-                load_image('data/icons/enemy_006.png'), \
-                load_image('data/icons/enemy_007.png')]
+e1 = [load_image('data/icons/enemy_001.png'), \
+    load_image('data/icons/enemy_001-left.png'), load_image('data/icons/enemy_001-right.png')]
+
+e2 = [load_image('data/icons/enemy_002.png'), \
+    load_image('data/icons/enemy_002-left.png'), load_image('data/icons/enemy_002-right.png')]
+
+e3 = [load_image('data/icons/enemy_003.png'), \
+    load_image('data/icons/enemy_003-left.png'), load_image('data/icons/enemy_003-right.png')]
+
+e4 = [load_image('data/icons/enemy_004.png'), \
+    load_image('data/icons/enemy_004-left.png'), load_image('data/icons/enemy_004-right.png')]
+
+e5 = [load_image('data/icons/enemy_005.png'), \
+    load_image('data/icons/enemy_005-left.png'), load_image('data/icons/enemy_005-right.png')]
+
+e6 = [load_image('data/icons/enemy_006.png'), \
+    load_image('data/icons/enemy_006-left.png'), load_image('data/icons/enemy_006-right.png')]
+
+e7 = [load_image('data/icons/enemy_007.png'), \
+    load_image('data/icons/enemy_007-left.png'), load_image('data/icons/enemy_007-right.png')]
+
+enemy_skin = [e1, e2, e3, e4, e5, e6, e7]
 
 package_icon = [load_image('data/icons/box_003.png'), \
                 load_image('data/icons/box_004.png'), \
@@ -204,12 +219,11 @@ class Enemy(pygame.sprite.Sprite):
         self.icon = enemy_skin[0]
         self.position = [random.randint(5, screen_params[0]- 100), random.randint(0, 10)]
         self.velocity = 2
-        self.step = 0 # Fly y-axis counter used for changes in x-direction
-        self.step_direction = False
-        self.adv_move_flag = False
+        self.step = 0
+        self.move_type = 0
         self.hitpoints = 2
         self.drop_rate = 1
-        self.cell = pygame.Surface.get_width(self.icon) / self.hitpoints
+        self.cell = pygame.Surface.get_width(self.icon[0]) / self.hitpoints
         self.reload_step = 1
         self.reload_time = 0
         self.is_reloading = False
@@ -218,70 +232,23 @@ class Enemy(pygame.sprite.Sprite):
         "Progress mechanism"
         if score_value > 10 and score_value <= 20:
             self.icon = enemy_skin[1]
-            self.adv_move_flag = True
         elif score_value > 20 and score_value <= 30:
             self.icon = enemy_skin[2]
-            self.adv_move_flag = True
         elif score_value > 30 and score_value <= 40:
             self.icon = enemy_skin[3]
-            self.adv_move_flag = True
         elif score_value > 40 and score_value <= 50:
             self.icon = enemy_skin[4]
-            self.adv_move_flag = True
         elif score_value > 50 and score_value <= 60:
             self.icon = enemy_skin[5]
-            self.adv_move_flag = True
         elif score_value > 60:
             self.icon = enemy_skin[random.randint(0, 5)]
-            self.adv_move_flag = True
-
-    def move(self):
-        """Enemy's move"""
-        self.position[0] += self.velocity
-
-        if self.position[0] <= 0:
-            self.velocity = -self.velocity
-            self.position[1] += self.velocity * 15
-        elif self.position[0] >= screen_params[0] - pygame.Surface.get_width(self.icon):
-            self.velocity = -self.velocity
-            self.position[1] += -self.velocity * 15
-
-        screen.blit(self.icon, (self.position[0], self.position[1]))
-
-    def advanced_move(self, velocity, step):
-        """Enemy's advanced move"""
-        self.velocity = velocity
-        agility = 50
-
-        if self.step == step and self.step_direction is False:
-            self.position[0] += self.velocity * agility
-            self.step = 0
-            self.step_direction = True
-        elif self.step == step and self.step_direction is True:
-            self.position[0] += -self.velocity * agility
-            self.step = 0
-            self.step_direction = False
-
-        if self.position[0] <= 0:
-            self.position[0] += self.velocity * agility
-            self.step = 0
-        elif self.position[0] >= screen_params[0] - pygame.Surface.get_width(self.icon):
-            self.position[0] -= self.velocity * agility
-            self.step = 0
-
-        if random.randint(0, 1) == 1: #Slow them a little
-            self.position[1] += self.velocity
-
-        self.step += 1
-        screen.blit(self.icon, (self.position[0], self.position[1]))
 
     def boss(self):
         """Boss"""
         self.drop_rate = 10
         self.icon = enemy_skin[6]
         self.hitpoints = 5
-        self.cell = pygame.Surface.get_width(self.icon) / self.hitpoints
-        self.adv_move_flag = True
+        self.cell = pygame.Surface.get_width(self.icon[0]) / self.hitpoints
 
     def shoot(self, enemy_missile):
         """Shoot"""
@@ -289,10 +256,10 @@ class Enemy(pygame.sprite.Sprite):
             self.is_reloading = True
             enemy_missile.append(Missile(load_image('data/icons/missile_003.png'), 0, 3))
 
-            launch_x = (pygame.Surface.get_width(self.icon) / 2) - \
+            launch_x = (pygame.Surface.get_width(self.icon[0]) / 2) - \
                                         (pygame.Surface.get_width(enemy_missile[-1].icon) / 2)
 
-            launch_y = (pygame.Surface.get_height(self.icon) / 2) - \
+            launch_y = (pygame.Surface.get_height(self.icon[0]) / 2) - \
                                         (pygame.Surface.get_height(enemy_missile[-1].icon) / 2)
 
             enemy_missile[-1].position[0] = self.position[0] + launch_x
@@ -303,8 +270,8 @@ class Enemy(pygame.sprite.Sprite):
 
     def draw_hp(self):
         """Draw hitpoints bar"""
-        surface = pygame.Surface((pygame.Surface.get_width(self.icon), 4))
-        pygame.draw.rect(surface, (255, 80, 80), (0, 0, pygame.Surface.get_width(self.icon), 4))
+        surface = pygame.Surface((pygame.Surface.get_width(self.icon[0]), 4))
+        pygame.draw.rect(surface, (255, 80, 80), (0, 0, pygame.Surface.get_width(self.icon[0]), 4))
         pygame.draw.rect(surface, (0, 255, 0), (0, 0, int(self.cell * self.hitpoints), 4))
         screen.blit(surface, (self.position[0], self.position[1] - 5))
 
@@ -315,6 +282,109 @@ class Enemy(pygame.sprite.Sprite):
         if self.reload_time >= time:
             self.is_reloading = False
             self.reload_time = 0
+
+    def _forward(self):
+        """Fly forward"""
+        if self.step % 2 == 0:
+            self.position[1] += self.velocity
+        screen.blit(self.icon[0], (self.position[0], self.position[1]))
+        self.step += 1
+
+    def _diagonal_right_down(self):
+        r"""Fly like this \ down"""
+        self._check_right()
+        if self.step % 2 == 0:
+            self.position[0] += self.velocity
+            self.position[1] += self.velocity
+        screen.blit(self.icon[2], (self.position[0], self.position[1]))
+        self.step += 1
+
+    def _diagonal_rigt_up(self):
+        r"""Fly like this \ up"""
+        self._check_up()
+        self._check_left()
+        if self.step % 2 == 0:
+            self.position[0] -= self.velocity
+            self.position[1] -= self.velocity
+        screen.blit(self.icon[2], (self.position[0], self.position[1]))
+        self.step += 1
+
+    def _diagonal_left_down(self):
+        r"""Fly like this / down"""
+        self._check_left()
+        if self.step % 2 == 0:
+            self.position[0] -= self.velocity
+            self.position[1] += self.velocity
+        screen.blit(self.icon[1], (self.position[0], self.position[1]))
+        self.step += 1
+
+    def _diagonal_left_up(self):
+        r"""Fly like this / up"""
+        self._check_up()
+        self._check_right()
+        if self.step % 2 == 0:
+            self.position[0] += self.velocity
+            self.position[1] -= self.velocity
+        screen.blit(self.icon[1], (self.position[0], self.position[1]))
+        self.step += 1
+
+    def _right(self):
+        """Fly right"""
+        self._check_right()
+        if self.step % 2 == 0:
+            self.position[0] += self.velocity
+        screen.blit(self.icon[2], (self.position[0], self.position[1]))
+        self.step += 1
+
+    def _left(self):
+        """Fly left"""
+        self._check_left()
+        if self.step % 2 == 0:
+            self.position[0] -= self.velocity
+        screen.blit(self.icon[1], (self.position[0], self.position[1]))
+        self.step += 1
+
+    def _check_right(self):
+        """Check right"""
+        if self.position[0] >= screen_params[0] - pygame.Surface.get_width(self.icon[0]):
+            self.position[0] -= self.velocity
+            self.step = 0
+            self.move_type = random.randint(0, 4)
+
+    def _check_left(self):
+        """Check left"""
+        if self.position[0] <= 0:
+            self.position[0] += self.velocity
+            self.step = 0
+            self.move_type = random.randint(0, 4)
+
+    def _check_up(self):
+        """Check up"""
+        if self.position[1] <= 0:
+            self.position[1] += self.velocity
+            self.step = 0
+            self.move_type = random.randint(0, 4)
+
+    def move(self):
+        """Advanced move"""
+        if self.step == 100:
+            self.step = 0
+            self.move_type = random.randint(0, 6)
+
+        if self.move_type == 0:
+            self._forward()
+        elif self.move_type == 1:
+            self._diagonal_right_down()
+        elif self.move_type == 2:
+            self._diagonal_rigt_up()
+        elif self.move_type == 3:
+            self._diagonal_left_down()
+        elif self.move_type == 4:
+            self._diagonal_left_up()
+        elif self.move_type == 5:
+            self._right()
+        elif self.move_type == 6:
+            self._left()
 
 class Text():
     """Text class"""
@@ -533,10 +603,7 @@ def main_loop(state):
         # Loop through the enemy list and do various tasks
         for i, _ in enumerate(enemies):
             # Move
-            if enemies[i].adv_move_flag:
-                enemies[i].advanced_move(1, 70)
-            else:
-                enemies[i].move()
+            enemies[i].move()
 
             # Check screen leave
             if enemies[i].position[1] > (screen_params[1] - \
@@ -641,9 +708,9 @@ def main_loop(state):
             if player_missile[i].state:
                 for _i, _ in enumerate(enemies):
                     hit_x = enemies[_i].position[0] + \
-                                                (pygame.Surface.get_width(enemies[_i].icon) / 2)
+                                                (pygame.Surface.get_width(enemies[_i].icon[0]) / 2)
                     hit_y = enemies[_i].position[1] + \
-                                                (pygame.Surface.get_height(enemies[_i].icon) / 2)
+                                                (pygame.Surface.get_height(enemies[_i].icon[0]) / 2)
 
                     if player_missile[i].is_collision(hit_x, hit_y):
                         enemies[_i].hitpoints -= 1
