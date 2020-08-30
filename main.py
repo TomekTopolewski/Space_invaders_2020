@@ -541,7 +541,7 @@ def main_loop(state):
 
                 if player.hitpoints >= 1:
                     explosion.append(Explosion())
-                    explosion[-1].splash(enemies[i].position[0, enemies[i].position[1]])
+                    explosion[-1].splash(enemies[i].position[0], enemies[i].position[1])
                     enemies[i] = Enemy()
                     enemies[i].level(score.value)
                     player.position[0] = 0
