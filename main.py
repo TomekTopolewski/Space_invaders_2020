@@ -102,17 +102,35 @@ class Player(pygame.sprite.Sprite):
     def move(self):
         """Move"""
         keys = pygame.key.get_pressed()
-
+        # I'm not proud of it, but it works.
+        # I hope that I will find another way to control the player's move.
         if keys[pygame.K_LEFT] and self.position[0] > self.velocity:
             self.position[0] -= self.velocity
             screen.blit(self.icon[1], (self.position[0], self.position[1]))
+
+            if keys[pygame.K_UP] and self.position[1] > self.velocity:
+                self.position[1] -= self.velocity
+
+            if keys[pygame.K_DOWN] and self.position[1] < screen_params[1] - \
+                                        pygame.Surface.get_height(self.icon[0]) - self.velocity:
+                self.position[1] += self.velocity
+
         elif keys[pygame.K_RIGHT] and self.position[0] < screen_params[0] - \
                                         pygame.Surface.get_width(self.icon[0]) - self.velocity:
             self.position[0] += self.velocity
             screen.blit(self.icon[2], (self.position[0], self.position[1]))
+
+            if keys[pygame.K_UP] and self.position[1] > self.velocity:
+                self.position[1] -= self.velocity
+
+            if keys[pygame.K_DOWN] and self.position[1] < screen_params[1] - \
+                                        pygame.Surface.get_height(self.icon[0]) - self.velocity:
+                self.position[1] += self.velocity
+
         elif keys[pygame.K_UP] and self.position[1] > self.velocity:
             self.position[1] -= self.velocity
             screen.blit(self.icon[0], (self.position[0], self.position[1]))
+
         elif keys[pygame.K_DOWN] and self.position[1] < screen_params[1] - \
                                         pygame.Surface.get_height(self.icon[0]) - self.velocity:
             self.position[1] += self.velocity
@@ -554,7 +572,8 @@ def main_loop(state):
                     enemies[i] = Enemy()
                     enemies[i].level(score.value)
                     player.position[0] = 0
-                    player.position[1] = screen_params[1] - pygame.Surface.get_height(player.icon[0])
+                    player.position[1] = screen_params[1] - \
+                                        pygame.Surface.get_height(player.icon[0])
                     hitpoints.value = player.hitpoints
                 else:
                     hitpoints.value = player.hitpoints
