@@ -439,22 +439,12 @@ class Package(pygame.sprite.Sprite):
         self.position = [0, 0]
         self.velocity = 1
         self.state = False
-        self.icon = 0
         self.sound = load_sound('data/sound/package-sound.wav')
         self.range = 50
         self.type = 0
         self.velocity = 1
-
-    def update_skin(self):
-        """Choose skin"""
-        if self.type == 'hitpoints':
-            self.icon = package_icon[0]
-        elif self.type == 'skin':
-            self.icon = package_icon[1]
-        elif self.type == 'velocity':
-            self.icon = package_icon[3]
-        elif self.type == 'gun_reload':
-            self.icon = package_icon[2]
+        self.icon = {'hitpoints': package_icon[0], 'skin': package_icon[1], \
+                    'velocity': package_icon[3], 'gun_reload': package_icon[2]}
 
     def open(self, player, is_upgraded):
         """Modify values based on package type"""
@@ -484,27 +474,22 @@ class Package(pygame.sprite.Sprite):
     def move(self):
         """Move and draw package"""
         self.position[1] += self.velocity
-        screen.blit(self.icon, (self.position[0], self.position[1]))
+        screen.blit(self.icon[self.type], (self.position[0], self.position[1]))
 
 def intro(state):
     """Intro"""
     try:
-        txt_file = open('ReadMe.txt', 'r')
-        from_file = txt_file.readlines()
+        lines = open('ReadMe.txt', 'r').readlines()
     except FileNotFoundError:
-        from_file = ["Can't load intro, press space to play anyway"]
-    text = []
+        lines = ["Can't load intro, press space to play anyway"]
 
-    line_y_position = [10, 60, 90, 120, 150, 210, 240, 270, 320]
+    position = [20, 0]
+    intro_font = Text(22, (255, 255, 255), "data/fonts/BebasNeue-Regular.ttf")
 
-    for index in from_file:
-        text.append(index.strip()) # Delete new line characters
-
-    intro_txt = Text(22, (255, 255, 255), "data/fonts/BebasNeue-Regular.ttf")
-
-    for index, _ in enumerate(text):
-        render_line = intro_txt.font.render(text[index], True, intro_txt.color)
-        screen.blit(render_line, (20, line_y_position[index]))
+    for i in lines:
+        render_line = intro_font.font.render(i.strip(), True, intro_font.color)
+        screen.blit(render_line, (position[0], position[1]))
+        position[1] += 30
 
     pygame.display.update()
     while state:
@@ -726,11 +711,11 @@ def main_loop(state):
                                 package.append(Package())
                                 package[-1].type = random.choice( \
                                     ['hitpoints', 'skin', 'velocity', 'gun_reload'])
-                                package[-1].update_skin()
+                                package[-1].icon.get(package[-1].type)
                                 package[-1].position[0] = enemies[_i].position[0]
                                 package[-1].position[1] = enemies[_i].position[1]
                                 package[-1].state = True
-                                screen.blit(package[-1].icon, \
+                                screen.blit(package[-1].icon.get(package[-1].type), \
                                     (package[-1].position[0], package[-1].position[1]))
 
                             enemies[_i] = Enemy()
