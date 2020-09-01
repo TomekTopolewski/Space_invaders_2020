@@ -4,11 +4,15 @@ Icons made by smalllikeart from www.flaticon.com
 Background made by vectorpouch from www.freepik.com
 Music thanks to www.freesound.org"""
 
-import math
 import random
 import pygame
 
 from pygame import mixer
+from package import Package
+from explosion import Explosion
+from text import Text
+from enemy import Enemy
+from player import Player
 
 if not pygame.mixer:
     print("Pygame mixer module not available")
@@ -92,389 +96,22 @@ package_icon = [load_image('data/icons/box_003.png'), \
                 load_image('data/icons/box_001.png'), \
                 load_image('data/icons/box_002.png')]
 
-class Player(pygame.sprite.Sprite):
-    """ Player class"""
-    def __init__(self, velocity, hitpoints):
-        self.icon = [load_image('data/icons/player_001.png'), \
-                    load_image('data/icons/player_001-left.png'), \
-                    load_image('data/icons/player_001-right.png')]
-        self.position = [370, 480]
-        self.velocity = velocity
-        self.hitpoints = hitpoints
-        self.reload_step = 10
-        self.reload_time = 0
-        self.is_reloading = False
+package_sound = load_sound('data/sound/package.wav')
 
-    def is_collision(self, position_x, position_y):
-        """Check if player collide with enemy"""
-        distance = math.sqrt(math.pow(position_x - self.position[0], 2) + \
-                            (math.pow(position_y - self.position[1], 2)))
-        if distance < 35:
-            return True
-        else:
-            return False
+p1 = [load_image('data/icons/player_001.png'), load_image('data/icons/player_001-left.png'), \
+                                                load_image('data/icons/player_001-right.png')]
+p2 = [load_image('data/icons/player_002.png'), load_image('data/icons/player_002-left.png'), \
+                                                load_image('data/icons/player_002-right.png')]
 
-    def move(self):
-        """Move"""
-        keys = pygame.key.get_pressed()
-        # I'm not proud of it, but it works.
-        # I hope that I will find another way to control the player's move.
-        if keys[pygame.K_LEFT] and self.position[0] > self.velocity:
-            self.position[0] -= self.velocity
-            screen.blit(self.icon[1], (self.position[0], self.position[1]))
+player_skin = [p1, p2]
 
-            if keys[pygame.K_UP] and self.position[1] > self.velocity:
-                self.position[1] -= self.velocity
+missile_skin = [load_image('data/icons/missile_001.png'),\
+                load_image('data/icons/missile_002.png'),\
+                load_image('data/icons/missile_003.png')]
+missile_sound = [load_sound('data/sound/shoot.wav'), load_sound('data/sound/shoot2.wav')]
 
-            if keys[pygame.K_DOWN] and self.position[1] < screen_params[1] - \
-                                        pygame.Surface.get_height(self.icon[0]) - self.velocity:
-                self.position[1] += self.velocity
-
-        elif keys[pygame.K_RIGHT] and self.position[0] < screen_params[0] - \
-                                        pygame.Surface.get_width(self.icon[0]) - self.velocity:
-            self.position[0] += self.velocity
-            screen.blit(self.icon[2], (self.position[0], self.position[1]))
-
-            if keys[pygame.K_UP] and self.position[1] > self.velocity:
-                self.position[1] -= self.velocity
-
-            if keys[pygame.K_DOWN] and self.position[1] < screen_params[1] - \
-                                        pygame.Surface.get_height(self.icon[0]) - self.velocity:
-                self.position[1] += self.velocity
-
-        elif keys[pygame.K_UP] and self.position[1] > self.velocity:
-            self.position[1] -= self.velocity
-            screen.blit(self.icon[0], (self.position[0], self.position[1]))
-
-        elif keys[pygame.K_DOWN] and self.position[1] < screen_params[1] - \
-                                        pygame.Surface.get_height(self.icon[0]) - self.velocity:
-            self.position[1] += self.velocity
-            screen.blit(self.icon[0], (self.position[0], self.position[1]))
-        else:
-            screen.blit(self.icon[0], (self.position[0], self.position[1]))
-
-    def shoot(self, player_missile, is_upgraded):
-        "Shoot"
-        keys = pygame.key.get_pressed()
-
-        if keys[pygame.K_SPACE] or keys[pygame.K_LSHIFT]:
-            if not self.is_reloading:
-                if is_upgraded:
-                    player_missile.append(Missile(load_image('data/icons/missile_001.png'), \
-                                        load_sound('data/sound/shoot2.wav'), -10))
-                else:
-                    player_missile.append(Missile(load_image('data/icons/missile_002.png'), \
-                                        load_sound('data/sound/shoot.wav'), -10))
-
-                launch_x = (pygame.Surface.get_width(self.icon[0]) / 2) - \
-                                        (pygame.Surface.get_width(player_missile[-1].icon) / 2)
-                launch_y = (pygame.Surface.get_height(self.icon[0]) / 2) - \
-                                        (pygame.Surface.get_height(player_missile[-1].icon) / 2)
-
-                player_missile[-1].position[0] = self.position[0] + launch_x
-                player_missile[-1].position[1] = self.position[1] - launch_y
-                player_missile[-1].sound.play()
-                player_missile[-1].state = True
-                self.is_reloading = True
-
-    def reload(self, time):
-        """Reload"""
-        self.reload_time += self.reload_step
-
-        if self.reload_time >= time:
-            self.is_reloading = False
-            self.reload_time = 0
-
-class Missile(pygame.sprite.Sprite):
-    """Missile class"""
-    def __init__(self, icon, sound, velocity):
-        self.icon = icon
-        self.sound = sound
-        self.position = [0, 0]
-        self.velocity = velocity
-        self.state = False
-        self.range = 45
-
-    def is_collision(self, position_x, position_y):
-        """Check if missile hit the target"""
-        hit_x = self.position[0] + (pygame.Surface.get_width(self.icon) / 2)
-
-        distance = math.sqrt(math.pow(position_x - hit_x, 2) + \
-                            (math.pow(position_y - self.position[1], 2)))
-
-        if distance < self.range and self.state:
-            return True
-        else:
-            return False
-
-    def move(self):
-        """Move"""
-        if self.state:
-            screen.blit(self.icon, (int(self.position[0]), int(self.position[1])))
-            self.position[1] += self.velocity
-
-class Enemy(pygame.sprite.Sprite):
-    """Enemy class"""
-    def __init__(self):
-        self.icon = enemy_skin[0]
-        self.position = [random.randint(5, screen_params[0]- 100), random.randint(0, 10)]
-        self.velocity = 2
-        self.step = 0
-        self.move_type = 0
-        self.hitpoints = 2
-        self.drop_rate = 1
-        self.cell = pygame.Surface.get_width(self.icon[0]) / self.hitpoints
-        self.reload_step = 1
-        self.reload_time = 0
-        self.is_reloading = False
-
-    def level(self, score_value):
-        "Progress mechanism"
-        if score_value > 10 and score_value <= 20:
-            self.icon = enemy_skin[1]
-        elif score_value > 20 and score_value <= 30:
-            self.icon = enemy_skin[2]
-        elif score_value > 30 and score_value <= 40:
-            self.icon = enemy_skin[3]
-        elif score_value > 40 and score_value <= 50:
-            self.icon = enemy_skin[4]
-        elif score_value > 50 and score_value <= 60:
-            self.icon = enemy_skin[5]
-        elif score_value > 60:
-            self.icon = enemy_skin[random.randint(0, 5)]
-
-    def boss(self):
-        """Boss"""
-        self.drop_rate = 10
-        self.icon = enemy_skin[6]
-        self.hitpoints = 5
-        self.cell = pygame.Surface.get_width(self.icon[0]) / self.hitpoints
-
-    def shoot(self, enemy_missile):
-        """Shoot"""
-        if not self.is_reloading and random.randint(0, 150) == 5:
-            self.is_reloading = True
-            enemy_missile.append(Missile(load_image('data/icons/missile_003.png'), 0, 3))
-
-            launch_x = (pygame.Surface.get_width(self.icon[0]) / 2) - \
-                                        (pygame.Surface.get_width(enemy_missile[-1].icon) / 2)
-
-            launch_y = (pygame.Surface.get_height(self.icon[0]) / 2) - \
-                                        (pygame.Surface.get_height(enemy_missile[-1].icon) / 2)
-
-            enemy_missile[-1].position[0] = self.position[0] + launch_x
-            enemy_missile[-1].position[1] = self.position[1] + launch_y
-            enemy_missile[-1].state = True
-            screen.blit(enemy_missile[-1].icon,\
-                    (int(enemy_missile[-1].position[0]), int(enemy_missile[-1].position[1])))
-
-    def draw_hp(self):
-        """Draw hitpoints bar"""
-        surface = pygame.Surface((pygame.Surface.get_width(self.icon[0]), 4))
-        pygame.draw.rect(surface, (255, 80, 80), (0, 0, pygame.Surface.get_width(self.icon[0]), 4))
-        pygame.draw.rect(surface, (0, 255, 0), (0, 0, int(self.cell * self.hitpoints), 4))
-        screen.blit(surface, (self.position[0], self.position[1] - 5))
-
-    def reload(self, time):
-        """Reload"""
-        self.reload_time += self.reload_step
-
-        if self.reload_time >= time:
-            self.is_reloading = False
-            self.reload_time = 0
-
-    def _forward(self):
-        """Fly forward"""
-        if self.step % 2 == 0:
-            self.position[1] += self.velocity
-        screen.blit(self.icon[0], (self.position[0], self.position[1]))
-        self.step += 1
-
-    def _diagonal_right_down(self):
-        r"""Fly like this \ down"""
-        self._check_right()
-        if self.step % 2 == 0:
-            self.position[0] += self.velocity
-            self.position[1] += self.velocity
-        screen.blit(self.icon[2], (self.position[0], self.position[1]))
-        self.step += 1
-
-    def _diagonal_rigt_up(self):
-        r"""Fly like this \ up"""
-        self._check_up()
-        self._check_left()
-        if self.step % 2 == 0:
-            self.position[0] -= self.velocity
-            self.position[1] -= self.velocity
-        screen.blit(self.icon[2], (self.position[0], self.position[1]))
-        self.step += 1
-
-    def _diagonal_left_down(self):
-        r"""Fly like this / down"""
-        self._check_left()
-        if self.step % 2 == 0:
-            self.position[0] -= self.velocity
-            self.position[1] += self.velocity
-        screen.blit(self.icon[1], (self.position[0], self.position[1]))
-        self.step += 1
-
-    def _diagonal_left_up(self):
-        r"""Fly like this / up"""
-        self._check_up()
-        self._check_right()
-        if self.step % 2 == 0:
-            self.position[0] += self.velocity
-            self.position[1] -= self.velocity
-        screen.blit(self.icon[1], (self.position[0], self.position[1]))
-        self.step += 1
-
-    def _right(self):
-        """Fly right"""
-        self._check_right()
-        if self.step % 2 == 0:
-            self.position[0] += self.velocity
-        screen.blit(self.icon[2], (self.position[0], self.position[1]))
-        self.step += 1
-
-    def _left(self):
-        """Fly left"""
-        self._check_left()
-        if self.step % 2 == 0:
-            self.position[0] -= self.velocity
-        screen.blit(self.icon[1], (self.position[0], self.position[1]))
-        self.step += 1
-
-    def _check_right(self):
-        """Check right"""
-        if self.position[0] >= screen_params[0] - pygame.Surface.get_width(self.icon[0]):
-            self.position[0] -= self.velocity
-            self.step = 0
-            self.move_type = random.randint(0, 4)
-
-    def _check_left(self):
-        """Check left"""
-        if self.position[0] <= 0:
-            self.position[0] += self.velocity
-            self.step = 0
-            self.move_type = random.randint(0, 4)
-
-    def _check_up(self):
-        """Check up"""
-        if self.position[1] <= 0:
-            self.position[1] += self.velocity
-            self.step = 0
-            self.move_type = random.randint(0, 4)
-
-    def move(self):
-        """Advanced move"""
-        if self.step == 100:
-            self.step = 0
-            self.move_type = random.randint(0, 6)
-
-        if self.move_type == 0:
-            self._forward()
-        elif self.move_type == 1:
-            self._diagonal_right_down()
-        elif self.move_type == 2:
-            self._diagonal_rigt_up()
-        elif self.move_type == 3:
-            self._diagonal_left_down()
-        elif self.move_type == 4:
-            self._diagonal_left_up()
-        elif self.move_type == 5:
-            self._right()
-        elif self.move_type == 6:
-            self._left()
-
-class Text():
-    """Text class"""
-    def __init__(self, size, color, font_path):
-        self.value = 0
-        self.text = ""
-        try:
-            self.font = pygame.font.Font(font_path, size)
-        except FileNotFoundError:
-            self.font = pygame.font.Font(None, size)
-        self.color = color
-
-    def draw(self, position_x, position_y):
-        """Draw text and numbers"""
-        score_render = self.font.render(str(self.text) + str(self.value), True, self.color)
-        screen.blit(score_render, (position_x, position_y))
-
-    def draw_text(self, position_x, position_y):
-        """Draw text"""
-        score_render = self.font.render(str(self.text), True, self.color)
-        screen.blit(score_render, (position_x, position_y))
-
-class Explosion(pygame.sprite.Sprite):
-    """Class for handling explosions"""
-    def __init__(self):
-        self.icon = load_image('data/icons/explosion.png')
-        self.sound = load_sound('data/sound/explosion.wav')
-        self.position = [0, 0]
-        self.last = 0
-        self.state = False
-
-    def splash(self, position_x, position_y):
-        """Draw exlosion splash"""
-        self.last = 10
-        self.state = True
-        self.position[0] = position_x
-        self.position[1] = position_y
-        self.sound.play()
-        screen.blit(self.icon, (int(position_x), int(position_y)))
-
-    def splash_last(self, position_x, position_y):
-        """Maintain explosion spalsh"""
-        if self.last > 0:
-            screen.blit(self.icon, (int(position_x), int(position_y)))
-            self.last -= 1
-        else:
-            self.state = False
-
-class Package(pygame.sprite.Sprite):
-    """Package class"""
-    def __init__(self):
-        self.position = [0, 0]
-        self.velocity = 1
-        self.state = False
-        self.sound = load_sound('data/sound/package-sound.wav')
-        self.range = 50
-        self.type = 0
-        self.velocity = 1
-        self.icon = {'hitpoints': package_icon[0], 'skin': package_icon[1], \
-                    'velocity': package_icon[3], 'gun_reload': package_icon[2]}
-
-    def open(self, player, is_upgraded):
-        """Modify values based on package type"""
-        if self.type == 'hitpoints':
-            player.hitpoints += 1
-        elif self.type == 'skin':
-            player.icon[0] = load_image('data/icons/player_002.png')
-            player.icon[1] = load_image('data/icons/player_002-left.png')
-            player.icon[2] = load_image('data/icons/player_002-right.png')
-            is_upgraded = True
-        elif self.type == 'velocity':
-            player.velocity += 1
-        elif self.type == 'gun_reload':
-            if player.reload_step < 20:
-                player.reload_step += 1
-        return is_upgraded
-
-    def is_collision(self, position_x, position_y):
-        """Check if player pick up a package"""
-        distance = math.sqrt(math.pow(position_x - self.position[0], 2) + \
-                            (math.pow(position_y - self.position[1], 2)))
-        if distance < self.range and self.state:
-            return True
-        else:
-            return False
-
-    def move(self):
-        """Move and draw package"""
-        self.position[1] += self.velocity
-        screen.blit(self.icon[self.type], (self.position[0], self.position[1]))
+explosion_icon = load_image('data/icons/explosion.png')
+explosion_sound = load_sound('data/sound/explosion.wav')
 
 def intro(state):
     """Intro"""
@@ -512,9 +149,9 @@ def game_over(score):
 
     screen.blit(background[0], (0, 0))
 
-    game_over_txt.draw_text(140, 120)
-    score.draw(300, 180)
-    play_again_txt.draw_text(80, 720)
+    game_over_txt.draw_text(screen, 140, 120)
+    score.draw(screen, 300, 180)
+    play_again_txt.draw_text(screen, 80, 720)
     pygame.display.update()
     game_over_status = True
 
@@ -531,7 +168,7 @@ def pause():
     """Pause"""
     pause_txt = Text(72, (255, 255, 255), 'data/fonts/space_age.ttf')
     pause_txt.text = "Pause"
-    pause_txt.draw_text(250, 200)
+    pause_txt.draw_text(screen, 250, 200)
     pygame.display.update()
     pause_status = True
 
@@ -547,7 +184,7 @@ def main_loop(state):
     """Main loop"""
     clock.tick(23)
 
-    player = Player(7, 3)
+    player = Player(7, 3, player_skin[0])
 
     score = Text(32, (255, 255, 255), 'data/fonts/space_age.ttf')
     score.text = "Score: "
@@ -565,7 +202,7 @@ def main_loop(state):
     is_upgraded = False
 
     while number_of_enemies < 5:
-        enemies.append(Enemy())
+        enemies.append(Enemy(screen_params, enemy_skin[0]))
         number_of_enemies += 1
 
     while state:
@@ -579,8 +216,8 @@ def main_loop(state):
                     pause()
 
         # Player's move, shoot and reload
-        player.move()
-        player.shoot(player_missile, is_upgraded)
+        player.move(screen, screen_params)
+        player.shoot(player_missile, is_upgraded, missile_skin, missile_sound, -10, 45)
 
         if player.is_reloading:
             player.reload(500)
@@ -588,7 +225,7 @@ def main_loop(state):
         # Loop through the enemy list and do various tasks
         for i, _ in enumerate(enemies):
             # Move
-            enemies[i].move()
+            enemies[i].move(screen, screen_params)
 
             # Check screen leave
             if enemies[i].position[1] > (screen_params[1] - \
@@ -596,8 +233,8 @@ def main_loop(state):
                 player.hitpoints -= 1
 
                 if player.hitpoints >= 1:
-                    enemies[i] = Enemy()
-                    enemies[i].level(score.value)
+                    enemies[i] = Enemy(screen_params, enemy_skin[0])
+                    enemies[i].level(score.value, enemy_skin)
                     hitpoints.value = player.hitpoints
                 else:
                     hitpoints.value = player.hitpoints
@@ -605,10 +242,10 @@ def main_loop(state):
                     game_over(score)
 
             # Draw hitpoints bar
-            enemies[i].draw_hp()
+            enemies[i].draw_hp(screen)
 
             # Shoot
-            enemies[i].shoot(enemy_missile)
+            enemies[i].shoot(enemy_missile, screen, missile_skin[2], 3, 45)
 
             # Reload the gun
             if enemies[i].is_reloading:
@@ -619,10 +256,10 @@ def main_loop(state):
                 player.hitpoints -= 1
 
                 if player.hitpoints >= 1:
-                    explosion.append(Explosion())
-                    explosion[-1].splash(enemies[i].position[0], enemies[i].position[1])
-                    enemies[i] = Enemy()
-                    enemies[i].level(score.value)
+                    explosion.append(Explosion(explosion_icon, explosion_sound))
+                    explosion[-1].splash(screen, enemies[i].position[0], enemies[i].position[1])
+                    enemies[i] = Enemy(screen_params, enemy_skin[0])
+                    enemies[i].level(score.value, enemy_skin)
                     player.position[0] = 0
                     player.position[1] = screen_params[1] - \
                                         pygame.Surface.get_height(player.icon[0])
@@ -635,7 +272,7 @@ def main_loop(state):
         # Loop through the enemy's missile list and do various tasks
         for i, _ in enumerate(enemy_missile):
             # Fly
-            enemy_missile[i].move()
+            enemy_missile[i].move(screen)
 
             # Check screen leave
             if enemy_missile[i].position[1] > screen_params[1]:
@@ -650,13 +287,15 @@ def main_loop(state):
                 hitpoints.value = player.hitpoints
 
                 if player.hitpoints > 0:
-                    explosion.append(Explosion())
-                    explosion[-1].splash(enemy_missile[i].position[0], enemy_missile[i].position[1])
+                    explosion.append(Explosion(explosion_icon, explosion_sound))
+                    explosion[-1].splash(screen, \
+                        enemy_missile[i].position[0], enemy_missile[i].position[1])
                     enemy_missile[i].state = False
 
                 elif player.hitpoints == 0:
-                    explosion.append(Explosion())
-                    explosion[-1].splash(enemy_missile[i].position[0], enemy_missile[i].position[1])
+                    explosion.append(Explosion(explosion_icon, explosion_sound))
+                    explosion[-1].splash(screen, \
+                        enemy_missile[i].position[0], enemy_missile[i].position[1])
                     state = False
                     game_over(score)
 
@@ -667,7 +306,7 @@ def main_loop(state):
         # Loop through the player's missile list and do various tasks
         for i, _ in enumerate(player_missile):
             # Move
-            player_missile[i].move()
+            player_missile[i].move(screen)
 
             # Check leave
             if player_missile[i].position[1] < -32:
@@ -684,8 +323,8 @@ def main_loop(state):
                     if enemy_missile[_i].is_collision(hit_x, hit_y) and \
                                                             enemy_missile[_i].state:
                         enemy_missile[_i].state = False
-                        explosion.append(Explosion())
-                        explosion[-1].splash(enemy_missile[_i].position[0], \
+                        explosion.append(Explosion(explosion_icon, explosion_sound))
+                        explosion[-1].splash(screen, enemy_missile[_i].position[0], \
                                                         enemy_missile[_i].position[1])
                         enemy_missile.pop(_i)
 
@@ -703,14 +342,15 @@ def main_loop(state):
                         if enemies[_i].hitpoints == 0:
                             score.value += 1
                             player_missile[i].state = False
-                            explosion.append(Explosion())
-                            explosion[-1].splash(player_missile[i].position[0], \
+                            explosion.append(Explosion(explosion_icon, explosion_sound))
+                            explosion[-1].splash(screen, player_missile[i].position[0], \
                                                                 player_missile[i].position[1])
 
                             if random.randint(0, 10) <= enemies[_i].drop_rate:
-                                package.append(Package())
+                                package.append(Package(package_sound, package_icon))
                                 package[-1].type = random.choice( \
-                                    ['hitpoints', 'skin', 'velocity', 'gun_reload'])
+                                    #['hitpoints', 'skin', 'velocity', 'gun_reload'])
+                                    ['skin'])
                                 package[-1].icon.get(package[-1].type)
                                 package[-1].position[0] = enemies[_i].position[0]
                                 package[-1].position[1] = enemies[_i].position[1]
@@ -718,11 +358,11 @@ def main_loop(state):
                                 screen.blit(package[-1].icon.get(package[-1].type), \
                                     (package[-1].position[0], package[-1].position[1]))
 
-                            enemies[_i] = Enemy()
-                            enemies[_i].level(score.value)
+                            enemies[_i] = Enemy(screen_params, enemy_skin[0])
+                            enemies[_i].level(score.value, enemy_skin)
                         else:
-                            explosion.append(Explosion())
-                            explosion[-1].splash(player_missile[i].position[0], \
+                            explosion.append(Explosion(explosion_icon, explosion_sound))
+                            explosion[-1].splash(screen, player_missile[i].position[0], \
                                                         player_missile[i].position[1])
                             player_missile[i].state = False
 
@@ -733,28 +373,28 @@ def main_loop(state):
         # Fly and open the package
         for i, _ in enumerate(package):
             if package[i].state:
-                package[i].move()
+                package[i].move(screen)
 
             if package[i].is_collision(player.position[0], player.position[1]):
-                is_upgraded = package[i].open(player, is_upgraded)
+                is_upgraded = package[i].open(player, is_upgraded, player_skin[1])
                 package[i].sound.play()
                 package[i].state = False
                 hitpoints.value = player.hitpoints
 
         # Spot boss
         if random.randint(0, 3000) == 666:
-            enemies.append(Enemy())
+            enemies.append(Enemy(screen_params, enemy_skin[6]))
             enemies[-1].boss()
 
         # Draw explosion splash
         for i, _ in enumerate(explosion):
-            explosion[i].splash_last(explosion[i].position[0], explosion[i].position[1])
+            explosion[i].splash_last(screen, explosion[i].position[0], explosion[i].position[1])
 
             if not explosion[i].state:
                 explosion.pop(i)
 
-        score.draw(10, 10)
-        hitpoints.draw(10, 30)
+        score.draw(screen, 10, 10)
+        hitpoints.draw(screen, 10, 30)
         pygame.display.update()
 
 intro(True)
