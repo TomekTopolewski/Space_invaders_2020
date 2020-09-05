@@ -14,7 +14,7 @@ class Enemy(pygame.sprite.Sprite):
         self.step = 0
         self.move_type = 0
         self.hitpoints = 2
-        self.drop_rate = 2
+        self.drop_rate = 1
         self.cell = pygame.Surface.get_width(self.icon[0]) / self.hitpoints
         self.reload_step = 1
         self.reload_time = 0

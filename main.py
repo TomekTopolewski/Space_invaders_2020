@@ -1,187 +1,35 @@
-"""Space Invaders 2020
-Based on a great tutorial "Python game development course" by freeCodeCamp.org.
-Icons made by smalllikeart from www.flaticon.com
-Background made by vectorpouch from www.freepik.com
-Music thanks to www.freesound.org"""
+"""Main"""
 
 import random
 import pygame
 
-from pygame import mixer
-from package import Package
-from explosion import Explosion
-from text import Text
-from enemy import Enemy
 from player import Player
+from enemy import Enemy
+from text import Text
+from explosion import Explosion
+from package import Package
 
-if not pygame.mixer:
-    print("Pygame mixer module not available")
+from pause import pause
+from game_over import game_over
 
-class NoneSound:
-    """Empty sound"""
-    def play(self):
-        """Play"""
-
-def load_image(filename):
-    "Loading images"
-    try:
-        image = pygame.image.load(filename)
-    except pygame.error:
-        default = pygame.Surface((64, 64))
-        pygame.draw.rect(default, \
-                (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), \
-                (0, 0, 64, 64))
-        image = default
-    return image
-
-def load_sound(filename):
-    """Loading sounds"""
-    try:
-        sound = mixer.Sound(filename)
-    except FileNotFoundError:
-        sound = NoneSound()
-    return sound
-
-def load_music(filename):
-    """Load background music"""
-    try:
-        music = mixer.music.load(filename)
-    except pygame.error:
-        music = False
-    return music
-
-pygame.mixer.pre_init(0, 0, 16, 0)
-pygame.init()
-screen_params = (827, 900)
-screen = pygame.display.set_mode((screen_params[0], screen_params[1]))
-pygame.display.set_caption("Space Invaders 2020")
-window_icon = load_image('data/icons/aircraft-icon.png')
-pygame.display.set_icon(window_icon)
-clock = pygame.time.Clock()
-
-try:
-    background = [pygame.image.load('data/images/background_001.jpg')]
-except pygame.error:
-    background = pygame.Surface((screen_params[0], screen_params[1]))
-    background.fill((0, 0, 0))
-
-if load_music('data/sound/background.wav') is not False:
-    mixer.music.play(-1)
-
-e1 = [load_image('data/icons/enemy_001.png'), \
-    load_image('data/icons/enemy_001-left.png'), load_image('data/icons/enemy_001-right.png')]
-
-e2 = [load_image('data/icons/enemy_002.png'), \
-    load_image('data/icons/enemy_002-left.png'), load_image('data/icons/enemy_002-right.png')]
-
-e3 = [load_image('data/icons/enemy_003.png'), \
-    load_image('data/icons/enemy_003-left.png'), load_image('data/icons/enemy_003-right.png')]
-
-e4 = [load_image('data/icons/enemy_004.png'), \
-    load_image('data/icons/enemy_004-left.png'), load_image('data/icons/enemy_004-right.png')]
-
-e5 = [load_image('data/icons/enemy_005.png'), \
-    load_image('data/icons/enemy_005-left.png'), load_image('data/icons/enemy_005-right.png')]
-
-e6 = [load_image('data/icons/enemy_006.png'), \
-    load_image('data/icons/enemy_006-left.png'), load_image('data/icons/enemy_006-right.png')]
-
-e7 = [load_image('data/icons/enemy_007.png'), \
-    load_image('data/icons/enemy_007-left.png'), load_image('data/icons/enemy_007-right.png')]
-
-enemy_skin = [e1, e2, e3, e4, e5, e6, e7]
-
-package_icon = [load_image('data/icons/box_003.png'), \
-                load_image('data/icons/box_004.png'), \
-                load_image('data/icons/box_001.png'), \
-                load_image('data/icons/box_002.png')]
-
-package_sound = load_sound('data/sound/package.wav')
-
-p1 = [load_image('data/icons/player_001.png'), load_image('data/icons/player_001-left.png'), \
-                                                load_image('data/icons/player_001-right.png')]
-p2 = [load_image('data/icons/player_002.png'), load_image('data/icons/player_002-left.png'), \
-                                                load_image('data/icons/player_002-right.png')]
-
-player_skin = [p1, p2]
-
-missile_skin = [load_image('data/icons/missile_001.png'),\
-                load_image('data/icons/missile_002.png'),\
-                load_image('data/icons/missile_003.png')]
-missile_sound = [load_sound('data/sound/shoot.wav'), load_sound('data/sound/shoot2.wav')]
-
-explosion_icon = load_image('data/icons/explosion.png')
-explosion_sound = load_sound('data/sound/explosion.wav')
-
-def intro(state):
-    """Intro"""
-    try:
-        lines = open('ReadMe.txt', 'r').readlines()
-    except FileNotFoundError:
-        lines = ["Can't load intro, press space to play anyway"]
-
-    position = [20, 0]
-    intro_font = Text(22, (255, 255, 255), "data/fonts/BebasNeue-Regular.ttf")
-
-    for i in lines:
-        render_line = intro_font.font.render(i.strip(), True, intro_font.color)
-        screen.blit(render_line, (position[0], position[1]))
-        position[1] += 30
-
-    pygame.display.update()
-    while state:
-
-        for i in pygame.event.get():
-            if i.type == pygame.QUIT:
-                state = False
-                pygame.quit()
-            if i.type == pygame.KEYDOWN:
-                if i.key == pygame.K_SPACE:
-                    state = False
-
-def game_over(score):
-    """Game over"""
-    game_over_txt = Text(72, (255, 255, 255), 'data/fonts/space_age.ttf')
-    game_over_txt.text = "Game Over!"
-
-    play_again_txt = Text(32, (255, 255, 255), 'data/fonts/space_age.ttf')
-    play_again_txt.text = "Press space to play again"
-
-    screen.blit(background[0], (0, 0))
-
-    game_over_txt.draw_text(screen, 140, 120)
-    score.draw(screen, 300, 180)
-    play_again_txt.draw_text(screen, 80, 720)
-    pygame.display.update()
-    game_over_status = True
-
-    while game_over_status:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    game_over_status = False
-                    main_loop(True)
-
-def pause():
-    """Pause"""
-    pause_txt = Text(72, (255, 255, 255), 'data/fonts/space_age.ttf')
-    pause_txt.text = "Pause"
-    pause_txt.draw_text(screen, 250, 200)
-    pygame.display.update()
-    pause_status = True
-
-    while pause_status:
-        for _event in pygame.event.get():
-            if _event.type == pygame.QUIT:
-                pygame.quit()
-            if _event.type == pygame.KEYDOWN:
-                if _event.key == pygame.K_p:
-                    pause_status = False
-
-def main_loop(state):
+def main(state, display, object_icons, object_sounds):
     """Main loop"""
+
+    screen = display[1]
+    screen_params = display[0]
+    background = display[2]
+
+    player_skin = object_icons[7:9]
+    enemy_skin = object_icons[:7]
+    missile_skin = object_icons[9]
+    explosion_icon = object_icons[10]
+    package_icon = object_icons[11]
+
+    missile_sound = object_sounds[0]
+    explosion_sound = object_sounds[1]
+    package_sound = object_sounds[2]
+
+    clock = pygame.time.Clock()
     clock.tick(23)
 
     player = Player(7, 3, player_skin[0])
@@ -206,14 +54,14 @@ def main_loop(state):
         number_of_enemies += 1
 
     while state:
-        screen.blit(background[0], (0, 0))
+        screen.blit(background, (0, 0))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 state = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p:
-                    pause()
+                    pause(screen, score, hitpoints)
 
         # Player's move, shoot and reload
         player.move(screen, screen_params)
@@ -239,7 +87,8 @@ def main_loop(state):
                 else:
                     hitpoints.value = player.hitpoints
                     state = False
-                    game_over(score)
+                    if game_over(score, screen, screen_params):
+                        return True
 
             # Draw hitpoints bar
             enemies[i].draw_hp(screen)
@@ -267,7 +116,8 @@ def main_loop(state):
                 else:
                     hitpoints.value = player.hitpoints
                     state = False
-                    game_over(score)
+                    if game_over(score, screen, screen_params):
+                        return True
 
         # Loop through the enemy's missile list and do various tasks
         for i, _ in enumerate(enemy_missile):
@@ -297,7 +147,8 @@ def main_loop(state):
                     explosion[-1].splash(screen, \
                         enemy_missile[i].position[0], enemy_missile[i].position[1])
                     state = False
-                    game_over(score)
+                    if game_over(score, screen, screen_params):
+                        return True
 
             # Remove unnecessary objects
             if not enemy_missile[i].state:
@@ -396,6 +247,3 @@ def main_loop(state):
         score.draw(screen, 10, 10)
         hitpoints.draw(screen, 10, 30)
         pygame.display.update()
-
-intro(True)
-main_loop(True)
