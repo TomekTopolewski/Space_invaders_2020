@@ -30,7 +30,6 @@ def main(state, display, object_icons, object_sounds):
     package_sound = object_sounds[2]
 
     clock = pygame.time.Clock()
-    clock.tick(23)
 
     player = Player(7, 3, player_skin[0])
 
@@ -54,6 +53,7 @@ def main(state, display, object_icons, object_sounds):
         number_of_enemies += 1
 
     while state:
+        clock.tick(60)
         screen.blit(background, (0, 0))
 
         for event in pygame.event.get():
