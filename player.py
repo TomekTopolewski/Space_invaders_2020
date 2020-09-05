@@ -72,10 +72,10 @@ class Player(pygame.sprite.Sprite):
             if not self.is_reloading:
                 if is_upgraded:
                     player_missile.append(Missile(\
-                                    missile_icon[0], missile_sound[0], missile_velocity, missile_range))
+                            missile_icon[0], missile_sound[1], missile_velocity, missile_range))
                 else:
                     player_missile.append(Missile(\
-                                    missile_icon[1], missile_sound[1], missile_velocity, missile_range))
+                            missile_icon[1], missile_sound[0], missile_velocity, missile_range))
 
                 launch_x = (pygame.Surface.get_width(self.icon[0]) / 2) - \
                                         (pygame.Surface.get_width(player_missile[-1].icon) / 2)

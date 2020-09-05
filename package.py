@@ -21,9 +21,7 @@ class Package(pygame.sprite.Sprite):
         if self.type == 'hitpoints':
             player.hitpoints += 1
         elif self.type == 'skin':
-            player.icon[0] = player_skin[0]
-            player.icon[1] = player_skin[1]
-            player.icon[2] = player_skin[2]
+            player.icon = player_skin
             is_upgraded = True
         elif self.type == 'velocity':
             player.velocity += 1

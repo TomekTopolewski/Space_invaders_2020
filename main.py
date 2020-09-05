@@ -229,7 +229,7 @@ def main_loop(state):
 
             # Check screen leave
             if enemies[i].position[1] > (screen_params[1] - \
-                                    (pygame.Surface.get_height(player.icon[0]) / 2)):
+                                    (pygame.Surface.get_height(enemies[i].icon[0]) / 2)):
                 player.hitpoints -= 1
 
                 if player.hitpoints >= 1:
@@ -349,8 +349,7 @@ def main_loop(state):
                             if random.randint(0, 10) <= enemies[_i].drop_rate:
                                 package.append(Package(package_sound, package_icon))
                                 package[-1].type = random.choice( \
-                                    #['hitpoints', 'skin', 'velocity', 'gun_reload'])
-                                    ['skin'])
+                                    ['hitpoints', 'skin', 'velocity', 'gun_reload'])
                                 package[-1].icon.get(package[-1].type)
                                 package[-1].position[0] = enemies[_i].position[0]
                                 package[-1].position[1] = enemies[_i].position[1]
@@ -380,6 +379,7 @@ def main_loop(state):
                 package[i].sound.play()
                 package[i].state = False
                 hitpoints.value = player.hitpoints
+                package.pop(i)
 
         # Spot boss
         if random.randint(0, 3000) == 666:
