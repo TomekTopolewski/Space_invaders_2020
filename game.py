@@ -9,7 +9,7 @@ import pygame
 from pygame import mixer
 from main import main
 from intro import intro
-from toolbox import load_image, load_sound, load_music
+from toolbox import load_image, load_sound, load_music, load_background
 
 if not pygame.mixer:
     print("Pygame mixer module not available")
@@ -23,12 +23,7 @@ pygame.display.set_icon(window_icon)
 
 screen = [(827, 900)]
 screen.append(pygame.display.set_mode((screen[0][0], screen[0][1])))
-
-try:
-    screen.append(pygame.image.load('data/images/background_001.jpg'))
-except pygame.error:
-    screen.append(pygame.Surface((screen[0][0], screen[0][1])))
-    screen[2].fill((0, 0, 0))
+screen.append(load_background('data/images/background_001.jpg', screen[0][0], screen[0][1]))
 
 if load_music('data/sound/background.wav') is not False:
     mixer.music.play(-1)

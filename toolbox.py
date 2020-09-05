@@ -24,6 +24,15 @@ def load_image(filename):
         image = default
     return image
 
+def load_background(filename, width, height):
+    """Loading background"""
+    try:
+        image = pygame.image.load(filename)
+    except pygame.error:
+        image = pygame.Surface((width, height))
+        image.fill((0, 0, 0))
+    return image
+
 def load_sound(filename):
     """Loading sounds"""
     try:
