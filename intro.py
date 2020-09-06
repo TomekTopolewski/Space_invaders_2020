@@ -1,10 +1,12 @@
-"""Intro"""
+"""File for intro function"""
 
 import pygame
 from text import Text
 
 def intro(state, display):
-    """Intro"""
+    """Intro window
+    1. Screen - the surface where we will draw a text"""
+
     screen = display[1]
 
     try:

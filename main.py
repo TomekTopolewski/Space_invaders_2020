@@ -106,7 +106,7 @@ def main(state, display, object_icons, object_sounds):
 
                 if player.hitpoints >= 1:
                     explosion.append(Explosion(explosion_icon, explosion_sound))
-                    explosion[-1].splash(screen, enemies[i].position[0], enemies[i].position[1])
+                    explosion[-1].burst(screen, enemies[i].position[0], enemies[i].position[1])
                     enemies[i] = Enemy(screen_params, enemy_skin[0])
                     enemies[i].level(score.value, enemy_skin)
                     player.position[0] = 0
@@ -138,13 +138,13 @@ def main(state, display, object_icons, object_sounds):
 
                 if player.hitpoints > 0:
                     explosion.append(Explosion(explosion_icon, explosion_sound))
-                    explosion[-1].splash(screen, \
+                    explosion[-1].burst(screen, \
                         enemy_missile[i].position[0], enemy_missile[i].position[1])
                     enemy_missile[i].state = False
 
                 elif player.hitpoints == 0:
                     explosion.append(Explosion(explosion_icon, explosion_sound))
-                    explosion[-1].splash(screen, \
+                    explosion[-1].burst(screen, \
                         enemy_missile[i].position[0], enemy_missile[i].position[1])
                     state = False
                     if game_over(score, screen, screen_params):
@@ -175,7 +175,7 @@ def main(state, display, object_icons, object_sounds):
                                                             enemy_missile[_i].state:
                         enemy_missile[_i].state = False
                         explosion.append(Explosion(explosion_icon, explosion_sound))
-                        explosion[-1].splash(screen, enemy_missile[_i].position[0], \
+                        explosion[-1].burst(screen, enemy_missile[_i].position[0], \
                                                         enemy_missile[_i].position[1])
                         enemy_missile.pop(_i)
 
@@ -194,7 +194,7 @@ def main(state, display, object_icons, object_sounds):
                             score.value += 1
                             player_missile[i].state = False
                             explosion.append(Explosion(explosion_icon, explosion_sound))
-                            explosion[-1].splash(screen, player_missile[i].position[0], \
+                            explosion[-1].burst(screen, player_missile[i].position[0], \
                                                                 player_missile[i].position[1])
 
                             if random.randint(0, 10) <= enemies[_i].drop_rate:
@@ -212,7 +212,7 @@ def main(state, display, object_icons, object_sounds):
                             enemies[_i].level(score.value, enemy_skin)
                         else:
                             explosion.append(Explosion(explosion_icon, explosion_sound))
-                            explosion[-1].splash(screen, player_missile[i].position[0], \
+                            explosion[-1].burst(screen, player_missile[i].position[0], \
                                                         player_missile[i].position[1])
                             player_missile[i].state = False
 
@@ -237,9 +237,9 @@ def main(state, display, object_icons, object_sounds):
             enemies.append(Enemy(screen_params, enemy_skin[6]))
             enemies[-1].boss()
 
-        # Draw explosion splash
+        # Draw explosion
         for i, _ in enumerate(explosion):
-            explosion[i].splash_last(screen, explosion[i].position[0], explosion[i].position[1])
+            explosion[i].burst_last(screen, explosion[i].position[0], explosion[i].position[1])
 
             if not explosion[i].state:
                 explosion.pop(i)

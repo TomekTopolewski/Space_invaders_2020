@@ -6,9 +6,12 @@ import pygame
 from missile import Missile
 
 class Enemy(pygame.sprite.Sprite):
-    """Enemy class"""
-    def __init__(self, screen_params, enemy_skin):
-        self.icon = enemy_skin
+    """Enemy class
+    1. Screen_params - width and height used for creating enemies on the screen
+    2. Enemy_icon    - list of three icons - center, left, right"""
+
+    def __init__(self, screen_params, enemy_icon):
+        self.icon = enemy_icon
         self.position = [random.randint(5, screen_params[0]- 100), random.randint(0, 10)]
         self.velocity = 2
         self.step = 0
@@ -20,29 +23,39 @@ class Enemy(pygame.sprite.Sprite):
         self.reload_time = 0
         self.is_reloading = False
 
-    def level(self, score_value, enemy_skin):
-        "Progress mechanism"
-        if score_value > 10 and score_value <= 20:
-            self.icon = enemy_skin[1]
-        elif score_value > 20 and score_value <= 30:
-            self.icon = enemy_skin[2]
-        elif score_value > 30 and score_value <= 40:
-            self.icon = enemy_skin[3]
-        elif score_value > 40 and score_value <= 50:
-            self.icon = enemy_skin[4]
-        elif score_value > 50 and score_value <= 60:
-            self.icon = enemy_skin[5]
-        elif score_value > 60:
-            self.icon = enemy_skin[random.randint(0, 5)]
+    def level(self, score_value, enemy_icon):
+        """Progress mechanism
+        1. Score_value - number of points that player earned
+        2. Enemy_skin  - list with a lists of three icons - center, left, right"""
 
-    def boss(self,):
+        if score_value > 10 and score_value <= 20:
+            self.icon = enemy_icon[1]
+        elif score_value > 20 and score_value <= 30:
+            self.icon = enemy_icon[2]
+        elif score_value > 30 and score_value <= 40:
+            self.icon = enemy_icon[3]
+        elif score_value > 40 and score_value <= 50:
+            self.icon = enemy_icon[4]
+        elif score_value > 50 and score_value <= 60:
+            self.icon = enemy_icon[5]
+        elif score_value > 60:
+            self.icon = enemy_icon[random.randint(0, 5)]
+
+    def boss(self):
         """Boss"""
         self.drop_rate = 10
         self.hitpoints = 5
         self.cell = pygame.Surface.get_width(self.icon[0]) / self.hitpoints
 
     def shoot(self, enemy_missile, screen, missile_icon, missile_velocity, missile_range):
-        """Shoot"""
+        """Shoot
+        1. Enemy_missile    - list of enemy's missile
+        2. Screen           - surface where we will draw a missile
+        3. Missile_icon     - list with missiles of icons
+        4. Missile_velocity - number of pixels on the y-axis a missile will fly in every loop step
+        5. Missile_range    - number used for deciding if a missile hit the target
+                              (a missile and an object are close to each other)"""
+
         if not self.is_reloading and random.randint(0, 150) == 5:
             self.is_reloading = True
             enemy_missile.append(Missile(missile_icon, 0, missile_velocity, missile_range))
@@ -60,14 +73,18 @@ class Enemy(pygame.sprite.Sprite):
                     (int(enemy_missile[-1].position[0]), int(enemy_missile[-1].position[1])))
 
     def draw_hp(self, screen):
-        """Draw hitpoints bar"""
+        """Draw hitpoints bar
+        1. Screen - surface where we will draw a health bar"""
+
         surface = pygame.Surface((pygame.Surface.get_width(self.icon[0]), 4))
         pygame.draw.rect(surface, (255, 80, 80), (0, 0, pygame.Surface.get_width(self.icon[0]), 4))
         pygame.draw.rect(surface, (0, 255, 0), (0, 0, int(self.cell * self.hitpoints), 4))
         screen.blit(surface, (self.position[0], self.position[1] - 5))
 
     def reload(self, time):
-        """Reload"""
+        """Reload
+        1. Time - number used for calculating reload between shots"""
+
         self.reload_time += self.reload_step
 
         if self.reload_time >= time:
@@ -75,14 +92,19 @@ class Enemy(pygame.sprite.Sprite):
             self.reload_time = 0
 
     def _forward(self, screen):
-        """Fly forward"""
+        """Fly forward
+        1. Screen - surface where we will draw a ship"""
+
         if self.step % 2 == 0:
             self.position[1] += self.velocity
         screen.blit(self.icon[0], (self.position[0], self.position[1]))
         self.step += 1
 
     def _diagonal_right_down(self, screen, screen_params):
-        r"""Fly like this \ down"""
+        r"""Fly like this \ down
+        1. Screen        - surface where we will draw a ship
+        2. Screen_params - width and height used for checking if the enemy won't leave the screen"""
+
         self._check_right(screen_params)
         if self.step % 2 == 0:
             self.position[0] += self.velocity
@@ -91,7 +113,9 @@ class Enemy(pygame.sprite.Sprite):
         self.step += 1
 
     def _diagonal_rigt_up(self, screen):
-        r"""Fly like this \ up"""
+        r"""Fly like this \ up
+        1. Screen - surface where we will draw a ship"""
+
         self._check_up()
         self._check_left()
         if self.step % 2 == 0:
@@ -101,7 +125,9 @@ class Enemy(pygame.sprite.Sprite):
         self.step += 1
 
     def _diagonal_left_down(self, screen):
-        r"""Fly like this / down"""
+        r"""Fly like this / down
+        1. Screen - surface where we will draw a ship"""
+
         self._check_left()
         if self.step % 2 == 0:
             self.position[0] -= self.velocity
@@ -110,7 +136,10 @@ class Enemy(pygame.sprite.Sprite):
         self.step += 1
 
     def _diagonal_left_up(self, screen, screen_params):
-        r"""Fly like this / up"""
+        r"""Fly like this / up
+        1. Screen        - surface where we will draw a ship
+        2. Screen_params - width and height used for checking if the enemy won't leave the screen"""
+
         self._check_up()
         self._check_right(screen_params)
         if self.step % 2 == 0:
@@ -120,7 +149,10 @@ class Enemy(pygame.sprite.Sprite):
         self.step += 1
 
     def _right(self, screen, screen_params):
-        """Fly right"""
+        """Fly right
+        1. Screen        - surface where we will draw a ship
+        2. Screen_params - width and height used for checking if the enemy won't leave the screen"""
+
         self._check_right(screen_params)
         if self.step % 2 == 0:
             self.position[0] += self.velocity
@@ -128,7 +160,9 @@ class Enemy(pygame.sprite.Sprite):
         self.step += 1
 
     def _left(self, screen):
-        """Fly left"""
+        """Fly left
+        1. Screen - surface where we will draw a ship"""
+
         self._check_left()
         if self.step % 2 == 0:
             self.position[0] -= self.velocity
@@ -136,7 +170,10 @@ class Enemy(pygame.sprite.Sprite):
         self.step += 1
 
     def _check_right(self, screen_params):
-        """Check right"""
+        """Check right
+        1. Screen        - surface where we will draw a ship
+        2. Screen_params - width and height used for checking if the enemy won't leave the screen"""
+
         if self.position[0] >= screen_params[0] - pygame.Surface.get_width(self.icon[0]):
             self.position[0] -= self.velocity
             self.step = 0
@@ -157,7 +194,10 @@ class Enemy(pygame.sprite.Sprite):
             self.move_type = random.randint(0, 4)
 
     def move(self, screen, screen_params):
-        """Advanced move"""
+        """Advanced move
+        1. Screen        - surface where we will draw a ship
+        2. Screen_params - width and height used for checking if the enemy won't leave the screen"""
+
         if self.step == 100:
             self.step = 0
             self.move_type = random.randint(0, 6)

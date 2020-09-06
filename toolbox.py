@@ -1,4 +1,4 @@
-"""Toolbox"""
+"""File for functions which load resources"""
 
 import random
 import pygame
@@ -13,7 +13,9 @@ class NoneSound:
         """Play"""
 
 def load_image(filename):
-    "Loading images"
+    """Loading images
+    1. Filename - path to a file"""
+
     try:
         image = pygame.image.load(filename)
     except pygame.error:
@@ -25,7 +27,11 @@ def load_image(filename):
     return image
 
 def load_background(filename, width, height):
-    """Loading background"""
+    """Loading background
+    1. Filename - path to a file
+    2. Width    - file width (used when we can't load a file)
+    3. Height   - file height (used when we can't load a file)"""
+
     try:
         image = pygame.image.load(filename)
     except pygame.error:
@@ -34,7 +40,9 @@ def load_background(filename, width, height):
     return image
 
 def load_sound(filename):
-    """Loading sounds"""
+    """Loading sounds
+    1. Filename - path to a file"""
+
     try:
         sound = mixer.Sound(filename)
     except FileNotFoundError:
@@ -42,7 +50,9 @@ def load_sound(filename):
     return sound
 
 def load_music(filename):
-    """Load background music"""
+    """Load background music
+    1. Filename - path to a file"""
+
     try:
         music = mixer.music.load(filename)
     except pygame.error:

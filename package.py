@@ -4,7 +4,10 @@ import math
 import pygame
 
 class Package(pygame.sprite.Sprite):
-    """Package class"""
+    """Package class
+    1. Sound        - sound when the player picks up the box
+    2. Package_icon - a list with four different box icons"""
+
     def __init__(self, sound, package_icon):
         self.position = [0, 0]
         self.velocity = 1
@@ -16,12 +19,16 @@ class Package(pygame.sprite.Sprite):
         self.icon = {'hitpoints': package_icon[0], 'skin': package_icon[1], \
                     'velocity': package_icon[3], 'gun_reload': package_icon[2]}
 
-    def open(self, player, is_upgraded, player_skin):
-        """Modify values based on package type"""
+    def open(self, player, is_upgraded, player_icon):
+        """Modify values based on package type
+        1. Player      - object of a player class
+        2. Is_upgraded - flag used for determining which missile icon to use
+        3. Player_icon - a list with new three icons - center, left, right"""
+
         if self.type == 'hitpoints':
             player.hitpoints += 1
         elif self.type == 'skin':
-            player.icon = player_skin
+            player.icon = player_icon
             is_upgraded = True
         elif self.type == 'velocity':
             player.velocity += 1
@@ -31,7 +38,10 @@ class Package(pygame.sprite.Sprite):
         return is_upgraded
 
     def is_collision(self, position_x, position_y):
-        """Check if player pick up a package"""
+        """Check if the player picks up a package
+        1. PositionX - position on the x-axis where the package collides with an object
+        2. PositionY - position on the y-axis where the package collides with an object"""
+
         distance = math.sqrt(math.pow(position_x - self.position[0], 2) + \
                             (math.pow(position_y - self.position[1], 2)))
         if distance < self.range and self.state:
@@ -40,6 +50,8 @@ class Package(pygame.sprite.Sprite):
             return False
 
     def move(self, screen):
-        """Move and draw package"""
+        """Move and draw package
+        1. Screen    - the surface where we will draw a package"""
+
         self.position[1] += self.velocity
         screen.blit(self.icon[self.type], (self.position[0], self.position[1]))

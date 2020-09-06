@@ -1,10 +1,14 @@
-"""Game over"""
+"""File for game over function"""
 
 import pygame
 from text import Text
 
 def game_over(score, screen, screen_params):
-    """Game over"""
+    """Game over window
+    1. Score         - number of points the player earned
+    2. Screen        - the surface where we will draw a text
+    3. Screen params - a list of two values, window's width and height"""
+
     try:
         background = [pygame.image.load('data/images/background_001.jpg')]
     except pygame.error:
