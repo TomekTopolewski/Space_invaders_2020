@@ -8,6 +8,7 @@ from enemy import Enemy
 from text import Text
 from explosion import Explosion
 from package import Package
+from object import Object
 
 from pause import pause
 from game_over import game_over
@@ -25,6 +26,7 @@ def main(state, display, object_icons, object_sounds):
     missile_skin = object_icons[9]
     explosion_icon = object_icons[10]
     package_icon = object_icons[11]
+    asteroid_icon = object_icons[12]
 
     missile_sound = object_sounds[0]
     explosion_sound = object_sounds[1]
@@ -46,6 +48,7 @@ def main(state, display, object_icons, object_sounds):
     enemy_missile = []
     player_missile = []
     explosion = []
+    asteroid = []
     number_of_enemies = 0
     is_upgraded = False
 
@@ -124,6 +127,19 @@ def main(state, display, object_icons, object_sounds):
                     if game_over(score, screen, screen_params):
                         return True
 
+            # Check collision with asteroids
+            for _i, _ in enumerate(asteroid):
+                if asteroid[_i].is_collision(enemies[i].position[0], enemies[i].position[1]):
+                    enemies[i].hitpoints -= 1
+
+                    if enemies[i].hitpoints == 0:
+                        explosion.append(Explosion(explosion_icon, explosion_sound))
+                        explosion[-1].burst2(screen, enemies[i].position[0], enemies[i].position[1])
+                        enemies[i] = Enemy(screen_params, enemy_skin[0])
+                        enemies[i].level(score.value, enemy_skin)
+
+                    asteroid[_i].state = False
+
         # Loop through the enemy's missile list and do various tasks
         for i, _ in enumerate(enemy_missile):
             # Fly
@@ -155,6 +171,18 @@ def main(state, display, object_icons, object_sounds):
                     if game_over(score, screen, screen_params):
                         return True
 
+            # Check collision with asteroids
+            if enemy_missile[i].state:
+                for _i, _ in enumerate(asteroid):
+                    if asteroid[_i].is_collision(enemy_missile[i].position[0], \
+                            enemy_missile[i].position[1]) and enemy_missile[i].state:
+                        asteroid[_i].state = False
+                        enemy_missile[i].state = False
+                        explosion.append(Explosion(explosion_icon, explosion_sound))
+                        explosion[-1].burst2(screen, asteroid[_i].position[0], \
+                                                        asteroid[_i].position[1])
+                        asteroid[_i].state = False
+
             # Remove unnecessary objects
             if not enemy_missile[i].state:
                 enemy_missile.pop(i)
@@ -183,6 +211,18 @@ def main(state, display, object_icons, object_sounds):
                         explosion[-1].burst(screen, enemy_missile[_i].position[0], \
                                                         enemy_missile[_i].position[1])
                         enemy_missile.pop(_i)
+
+            # Check collision with asteroids
+            if player_missile[i].state:
+                for _i, _ in enumerate(asteroid):
+                    if asteroid[_i].is_collision(player_missile[i].position[0], \
+                            player_missile[i].position[1]) and player_missile[i].state:
+                        asteroid[_i].state = False
+                        player_missile[i].state = False
+                        explosion.append(Explosion(explosion_icon, explosion_sound))
+                        explosion[-1].burst(screen, asteroid[_i].position[0], \
+                                                        asteroid[_i].position[1])
+                        asteroid[_i].state = False
 
             # Check enemy's ship hit
             if player_missile[i].state:
@@ -248,6 +288,44 @@ def main(state, display, object_icons, object_sounds):
 
             if not explosion[i].state:
                 explosion.pop(i)
+
+        # Create asteroids
+        if random.randint(0, 200) == 101:
+            asteroid.append(Object(asteroid_icon, screen_params))
+
+        # Loop through asteroid list and do various tasks
+        for i, _ in enumerate(asteroid):
+            # Move
+            asteroid[i].move(screen)
+
+            # Check player's ship hit
+            if asteroid[i].state and \
+                    asteroid[i].is_collision(player.position[0], player.position[1]):
+                player.hitpoints -= 1
+                hitpoints.value = player.hitpoints
+
+                if player.hitpoints > 0:
+                    explosion.append(Explosion(explosion_icon, explosion_sound))
+                    explosion[-1].burst(screen, \
+                        asteroid[i].position[0], asteroid[i].position[1])
+                    asteroid[i].state = False
+
+                elif player.hitpoints == 0:
+                    explosion.append(Explosion(explosion_icon, explosion_sound))
+                    explosion[-1].burst(screen, \
+                        asteroid[i].position[0], asteroid[i].position[1])
+                    state = False
+                    if game_over(score, screen, screen_params):
+                        return True
+
+            # Check screen leave
+            if asteroid[i].position[1] > screen_params[1]:
+                asteroid[i].state = False
+
+            # Remove unnecessary objects
+            if not asteroid[i].state:
+                asteroid.pop(i)
+
 
         score.draw(screen, 10, 10)
         hitpoints.draw(screen, 10, 30)

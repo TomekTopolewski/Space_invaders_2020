@@ -10,7 +10,6 @@ class Package(pygame.sprite.Sprite):
 
     def __init__(self, sound, package_icon):
         self.position = [0, 0]
-        self.velocity = 1
         self.state = False
         self.sound = sound
         self.range = 50
