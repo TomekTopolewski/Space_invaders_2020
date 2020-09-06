@@ -1,9 +1,4 @@
-"""Space Invaders 2020
-Based on a great tutorial "Python game development course" by freeCodeCamp.org.
-Icons made by smalllikeart from www.flaticon.com
-Background made by vectorpouch from www.freepik.com
-Music thanks to www.freesound.org"""
-
+"""Main game file"""
 
 import pygame
 from pygame import mixer
@@ -23,7 +18,7 @@ pygame.display.set_icon(window_icon)
 
 screen = [(827, 900)]
 screen.append(pygame.display.set_mode((screen[0][0], screen[0][1])))
-screen.append(load_background('data/images/background_001.jpg', screen[0][0], screen[0][1]))
+screen.append(load_background('data/images/background_004.jpg', screen[0][0], screen[0][1]))
 
 if load_music('data/sound/background.wav') is not False:
     mixer.music.play(-1)
@@ -76,5 +71,5 @@ object_sounds = [m1_sound, ex1_sound, bx1_sound]
 
 intro(True, screen)
 
-if main(True, screen, object_icons, object_sounds):
+while main(True, screen, object_icons, object_sounds):
     main(True, screen, object_icons, object_sounds)

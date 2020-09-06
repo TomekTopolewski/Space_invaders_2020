@@ -27,13 +27,15 @@ def game_over(score, screen, screen_params):
     score.draw(screen, 300, 180)
     play_again_txt.draw_text(screen, 80, 720)
     pygame.display.update()
-    game_over_status = True
+    state = True
 
-    while game_over_status:
+    while state:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                state = False
                 pygame.quit()
+                quit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    game_over_status = False
+                    state = False
                     return True

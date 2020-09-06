@@ -11,6 +11,7 @@ from package import Package
 
 from pause import pause
 from game_over import game_over
+from toolbox import moving_background
 
 def main(state, display, object_icons, object_sounds):
     """Main loop"""
@@ -48,13 +49,17 @@ def main(state, display, object_icons, object_sounds):
     number_of_enemies = 0
     is_upgraded = False
 
+    bg1_y = 0
+    bg2_y = background.get_height()
+
     while number_of_enemies < 5:
         enemies.append(Enemy(screen_params, enemy_skin[0]))
         number_of_enemies += 1
 
     while state:
         clock.tick(60)
-        screen.blit(background, (0, 0))
+
+        bg1_y, bg2_y = moving_background(background, screen, bg1_y, bg2_y)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

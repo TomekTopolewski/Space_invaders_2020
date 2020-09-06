@@ -14,14 +14,16 @@ def pause(screen, score, hitpoints):
 
     score.draw(screen, 10, 10)
     hitpoints.draw(screen, 10, 30)
-    pause_txt.draw_text(screen, 250, 200)
+    pause_txt.draw_text(screen, 270, 200)
     pygame.display.update()
-    pause_status = True
+    state = True
 
-    while pause_status:
+    while state:
         for _event in pygame.event.get():
             if _event.type == pygame.QUIT:
+                state = False
                 pygame.quit()
+                quit()
             if _event.type == pygame.KEYDOWN:
                 if _event.key == pygame.K_p:
-                    pause_status = False
+                    state = False

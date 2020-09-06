@@ -8,13 +8,14 @@ def intro(state, display):
     1. Screen - the surface where we will draw a text"""
 
     screen = display[1]
+    screen.blit(display[2], (0, 0))
 
     try:
         lines = open('ReadMe.txt', 'r').readlines()
     except FileNotFoundError:
         lines = ["Can't load intro, press space to play anyway"]
 
-    position = [20, 0]
+    position = [5, 5]
     intro_font = Text(22, (255, 255, 255), "data/fonts/BebasNeue-Regular.ttf")
 
     for i in lines:
@@ -29,6 +30,7 @@ def intro(state, display):
             if i.type == pygame.QUIT:
                 state = False
                 pygame.quit()
+                quit()
             if i.type == pygame.KEYDOWN:
                 if i.key == pygame.K_SPACE:
                     state = False
