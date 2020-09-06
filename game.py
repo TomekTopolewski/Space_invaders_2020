@@ -62,6 +62,8 @@ as1_icon = [load_image('data/icons/asteroid_001.png'), load_image('data/icons/as
     load_image('data/icons/asteroid_003.png'), load_image('data/icons/asteroid_004.png'), \
     load_image('data/icons/asteroid_005.png')]
 
+de1_icon = [load_image('data/icons/debris_001.png')]
+
 m1_sound = [load_sound('data/sound/shoot.wav'), load_sound('data/sound/shoot2.wav')]
 
 ex1_sound = load_sound('data/sound/explosion.wav')
@@ -69,7 +71,7 @@ ex1_sound = load_sound('data/sound/explosion.wav')
 bx1_sound = load_sound('data/sound/package.wav')
 
 object_icons = [e1_icon, e2_icon, e3_icon, e4_icon, e5_icon, e6_icon, e7_icon, \
-    p1_icon, p2_icon, m1_icon, ex1_icon, bx1_icon, as1_icon]
+    p1_icon, p2_icon, m1_icon, ex1_icon, bx1_icon, as1_icon, de1_icon]
 
 object_sounds = [m1_sound, ex1_sound, bx1_sound]
 

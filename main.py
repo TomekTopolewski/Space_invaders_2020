@@ -27,6 +27,7 @@ def main(state, display, object_icons, object_sounds):
     explosion_icon = object_icons[10]
     package_icon = object_icons[11]
     asteroid_icon = object_icons[12]
+    debris_icon = object_icons[13]
 
     missile_sound = object_sounds[0]
     explosion_sound = object_sounds[1]
@@ -49,6 +50,7 @@ def main(state, display, object_icons, object_sounds):
     player_missile = []
     explosion = []
     asteroid = []
+    debris = []
     number_of_enemies = 0
     is_upgraded = False
 
@@ -115,11 +117,18 @@ def main(state, display, object_icons, object_sounds):
                 if player.hitpoints >= 1:
                     explosion.append(Explosion(explosion_icon, explosion_sound))
                     explosion[-1].burst(screen, enemies[i].position[0], enemies[i].position[1])
+
+                    debris.append(Object(debris_icon, screen_params))
+                    debris[-1].position[0] = enemies[i].position[0]
+                    debris[-1].position[1] = enemies[i].position[1]
+
                     enemies[i] = Enemy(screen_params, enemy_skin[0])
                     enemies[i].level(score.value, enemy_skin)
+
                     player.position[0] = 0
                     player.position[1] = screen_params[1] - \
                                         pygame.Surface.get_height(player.icon[0])
+
                     hitpoints.value = player.hitpoints
                 else:
                     hitpoints.value = player.hitpoints
@@ -135,6 +144,11 @@ def main(state, display, object_icons, object_sounds):
                     if enemies[i].hitpoints == 0:
                         explosion.append(Explosion(explosion_icon, explosion_sound))
                         explosion[-1].burst2(screen, enemies[i].position[0], enemies[i].position[1])
+
+                        debris.append(Object(debris_icon, screen_params))
+                        debris[-1].position[0] = enemies[i].position[0]
+                        debris[-1].position[1] = enemies[i].position[1]
+
                         enemies[i] = Enemy(screen_params, enemy_skin[0])
                         enemies[i].level(score.value, enemy_skin)
 
@@ -242,13 +256,19 @@ def main(state, display, object_icons, object_sounds):
                             explosion[-1].burst(screen, player_missile[i].position[0], \
                                                                 player_missile[i].position[1])
 
+                            debris.append(Object(debris_icon, screen_params))
+                            debris[-1].position[0] = enemies[_i].position[0]
+                            debris[-1].position[1] = enemies[_i].position[1]
+
                             if random.randint(0, 10) <= enemies[_i].drop_rate:
                                 package.append(Package(package_sound, package_icon))
                                 package[-1].type = random.choice( \
                                     ['hitpoints', 'skin', 'velocity', 'gun_reload'])
                                 package[-1].icon.get(package[-1].type)
-                                package[-1].position[0] = enemies[_i].position[0]
-                                package[-1].position[1] = enemies[_i].position[1]
+                                package[-1].position[0] = enemies[_i].position[0] + \
+                                    pygame.Surface.get_width(enemies[_i].icon[0]) / 4
+                                package[-1].position[1] = enemies[_i].position[1] + \
+                                    pygame.Surface.get_height(enemies[_i].icon[0]) / 4
                                 package[-1].state = True
                                 screen.blit(package[-1].icon.get(package[-1].type), \
                                     (package[-1].position[0], package[-1].position[1]))
@@ -264,6 +284,19 @@ def main(state, display, object_icons, object_sounds):
             # Remove unnecessary objects
             if not player_missile[i].state:
                 player_missile.pop(i)
+
+        # Loop through debris list an do various tasks
+        for i, _ in enumerate(debris):
+            # Move
+            debris[i].move(screen)
+
+            # Check screen leave
+            if debris[i].position[1] > screen_params[1]:
+                debris[i].state = False
+
+            # Remove unnecessary objects
+            if not debris[i].state:
+                debris.pop(i)
 
         # Fly and open the package
         for i, _ in enumerate(package):
@@ -325,7 +358,6 @@ def main(state, display, object_icons, object_sounds):
             # Remove unnecessary objects
             if not asteroid[i].state:
                 asteroid.pop(i)
-
 
         score.draw(screen, 10, 10)
         hitpoints.draw(screen, 10, 30)
