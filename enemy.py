@@ -56,7 +56,7 @@ class Enemy(pygame.sprite.Sprite):
         5. Missile_range    - number used for deciding if a missile hit the target
                               (a missile and an object are close to each other)"""
 
-        if not self.is_reloading and random.randint(0, 150) == 5:
+        if not self.is_reloading and random.randint(0, 200) == 5:
             self.is_reloading = True
             enemy_missile.append(Missile(missile_icon, 0, missile_velocity, missile_range))
 

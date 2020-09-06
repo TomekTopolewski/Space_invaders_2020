@@ -7,7 +7,7 @@ import pygame
 class Object(pygame.sprite.Sprite):
     """Class for minor objects in game, like rocks or debris.
     1. Icon          - image of an object
-    2. Screen_params - width and height used for creating enemies on the screen"""
+    2. Screen_params - width and height used for creating objects on the screen"""
 
     def __init__(self, icon, screen_params):
         self.position = [random.randint(5, screen_params[0] - 50), -30]

@@ -16,7 +16,7 @@ pygame.display.set_caption("Space Invaders 2020")
 window_icon = load_image('data/icons/aircraft-icon.png')
 pygame.display.set_icon(window_icon)
 
-screen = [(827, 900)]
+screen = [(827, 880)]
 screen.append(pygame.display.set_mode((screen[0][0], screen[0][1])))
 screen.append(load_background('data/images/background_004.jpg', screen[0][0], screen[0][1]))
 
