@@ -79,3 +79,24 @@ def moving_background(background, screen, bg1_y, bg2_y):
     screen.blit(background, (0, bg2_y))
 
     return bg1_y, bg2_y
+
+def moving_background2(background, screen, bg1_y, bg2_y):
+    """Move the background
+    1. Background - image we want to move
+    2. Screen     - surface where we will draw an image
+    1. Bg1_y      - position on the y-axis of the first image
+    2. Bg2_y      - position on the y-axis of the second image"""
+
+    bg1_y += 0.5
+    bg2_y += 0.5
+
+    if bg1_y > background.get_height():
+        bg1_y = background.get_height() * -1
+
+    if bg2_y > background.get_height():
+        bg2_y = background.get_height() * -1
+
+    screen.blit(background, (0, bg1_y))
+    screen.blit(background, (0, bg2_y))
+
+    return bg1_y, bg2_y

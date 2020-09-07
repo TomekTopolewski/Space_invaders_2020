@@ -9,10 +9,11 @@ from text import Text
 from explosion import Explosion
 from package import Package
 from object import Object
+from debris import Debris
 
 from pause import pause
 from game_over import game_over
-from toolbox import moving_background
+from toolbox import moving_background2
 
 def main(state, display, object_icons, object_sounds):
     """Main loop"""
@@ -55,7 +56,7 @@ def main(state, display, object_icons, object_sounds):
     is_upgraded = False
 
     bg1_y = 0
-    bg2_y = background.get_height()
+    bg2_y = background.get_height() * -1
 
     while number_of_enemies < 5:
         enemies.append(Enemy(screen_params, enemy_skin[0]))
@@ -64,7 +65,7 @@ def main(state, display, object_icons, object_sounds):
     while state:
         clock.tick(60)
 
-        bg1_y, bg2_y = moving_background(background, screen, bg1_y, bg2_y)
+        bg1_y, bg2_y = moving_background2(background, screen, bg1_y, bg2_y)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -118,7 +119,7 @@ def main(state, display, object_icons, object_sounds):
                     explosion.append(Explosion(explosion_icon, explosion_sound))
                     explosion[-1].burst(screen, enemies[i].position[0], enemies[i].position[1])
 
-                    debris.append(Object(debris_icon, screen_params))
+                    debris.append(Debris(debris_icon[0], screen_params))
                     debris[-1].position[0] = enemies[i].position[0]
                     debris[-1].position[1] = enemies[i].position[1]
 
@@ -145,7 +146,7 @@ def main(state, display, object_icons, object_sounds):
                         explosion.append(Explosion(explosion_icon, explosion_sound))
                         explosion[-1].burst2(screen, enemies[i].position[0], enemies[i].position[1])
 
-                        debris.append(Object(debris_icon, screen_params))
+                        debris.append(Debris(debris_icon[0], screen_params))
                         debris[-1].position[0] = enemies[i].position[0]
                         debris[-1].position[1] = enemies[i].position[1]
 
@@ -234,9 +235,29 @@ def main(state, display, object_icons, object_sounds):
                         asteroid[_i].state = False
                         player_missile[i].state = False
                         explosion.append(Explosion(explosion_icon, explosion_sound))
-                        explosion[-1].burst(screen, asteroid[_i].position[0], \
-                                                        asteroid[_i].position[1])
+
+                        hit_x = pygame.Surface.get_width(asteroid[_i].icon) / 2
+                        hit_y = pygame.Surface.get_height(asteroid[_i].icon) / 2
+
+                        explosion[-1].burst(screen, asteroid[_i].position[0] + hit_x, \
+                                                        asteroid[_i].position[1] + hit_y)
                         asteroid[_i].state = False
+
+            # Check collision with debris
+            if player_missile[i].state:
+                for _i, _ in enumerate(debris):
+                    if debris[_i].is_collision(player_missile[i].position[0], \
+                            player_missile[i].position[1]) and player_missile[i].state:
+                        debris[_i].state = False
+                        player_missile[i].state = False
+                        explosion.append(Explosion(explosion_icon, explosion_sound))
+
+                        hit_x = pygame.Surface.get_width(debris[_i].icon) / 2
+                        hit_y = pygame.Surface.get_height(debris[_i].icon) / 2
+
+                        explosion[-1].burst(screen, debris[_i].position[0] + hit_x, \
+                                                        debris[_i].position[1] + hit_y)
+                        debris[_i].state = False
 
             # Check enemy's ship hit
             if player_missile[i].state:
@@ -256,7 +277,7 @@ def main(state, display, object_icons, object_sounds):
                             explosion[-1].burst(screen, player_missile[i].position[0], \
                                                                 player_missile[i].position[1])
 
-                            debris.append(Object(debris_icon, screen_params))
+                            debris.append(Debris(debris_icon[0], screen_params))
                             debris[-1].position[0] = enemies[_i].position[0]
                             debris[-1].position[1] = enemies[_i].position[1]
 
@@ -294,6 +315,29 @@ def main(state, display, object_icons, object_sounds):
             if debris[i].position[1] > screen_params[1]:
                 debris[i].state = False
 
+            # Slowly disappear
+            debris[i].keep(debris_icon)
+
+            # Check player's ship hit
+            if debris[i].state and \
+                    debris[i].is_collision(player.position[0], player.position[1]):
+                player.hitpoints -= 1
+                hitpoints.value = player.hitpoints
+
+                if player.hitpoints > 0:
+                    explosion.append(Explosion(explosion_icon, explosion_sound))
+                    explosion[-1].burst(screen, \
+                        debris[i].position[0], debris[i].position[1])
+                    debris[i].state = False
+
+                elif player.hitpoints == 0:
+                    explosion.append(Explosion(explosion_icon, explosion_sound))
+                    explosion[-1].burst(screen, \
+                        debris[i].position[0], debris[i].position[1])
+                    state = False
+                    if game_over(score, screen, screen_params):
+                        return True
+
             # Remove unnecessary objects
             if not debris[i].state:
                 debris.pop(i)
@@ -323,7 +367,7 @@ def main(state, display, object_icons, object_sounds):
                 explosion.pop(i)
 
         # Create asteroids
-        if random.randint(0, 200) == 101:
+        if random.randint(0, 70) == 42:
             asteroid.append(Object(asteroid_icon, screen_params))
 
         # Loop through asteroid list and do various tasks

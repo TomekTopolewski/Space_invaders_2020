@@ -62,7 +62,8 @@ as1_icon = [load_image('data/icons/asteroid_001.png'), load_image('data/icons/as
     load_image('data/icons/asteroid_003.png'), load_image('data/icons/asteroid_004.png'), \
     load_image('data/icons/asteroid_005.png')]
 
-de1_icon = [load_image('data/icons/debris_001.png')]
+de1_icon = [load_image('data/icons/debris_001.png'), load_image('data/icons/debris_002.png'), \
+    load_image('data/icons/debris_003.png')]
 
 m1_sound = [load_sound('data/sound/shoot.wav'), load_sound('data/sound/shoot2.wav')]
 

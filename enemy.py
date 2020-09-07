@@ -12,8 +12,8 @@ class Enemy(pygame.sprite.Sprite):
 
     def __init__(self, screen_params, enemy_icon):
         self.icon = enemy_icon
-        self.position = [random.randint(5, screen_params[0]- 100), random.randint(0, 10)]
-        self.velocity = 2
+        self.position = [random.randint(5, screen_params[0]- 100), -10]
+        self.velocity = 2.5
         self.step = 0
         self.move_type = 0
         self.hitpoints = 2

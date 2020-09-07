@@ -14,7 +14,7 @@ class Package(pygame.sprite.Sprite):
         self.sound = sound
         self.range = 50
         self.type = 0
-        self.velocity = 1
+        self.velocity = 0.5
         self.icon = {'hitpoints': package_icon[0], 'skin': package_icon[1], \
                     'velocity': package_icon[3], 'gun_reload': package_icon[2]}
 

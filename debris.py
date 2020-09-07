@@ -1,11 +1,11 @@
-"""File for object class"""
+"""File for debris class"""
 
 import math
 import random
 import pygame
 
-class Object(pygame.sprite.Sprite):
-    """Class for minor objects in game, like rocks or debris.
+class Debris(pygame.sprite.Sprite):
+    """Class for minor objects in game, like debris.
     1. Icon          - image of an object
     2. Screen_params - width and height used for creating objects on the screen"""
 
@@ -15,7 +15,28 @@ class Object(pygame.sprite.Sprite):
         self.state = True
         self.range = 50
         self.last = 0
-        self.icon = random.choice(icon)
+        self.icon = icon
+
+    def move(self, screen):
+        """Move and draw an object
+        1. Screen    - the surface where we will draw a package"""
+
+        self.position[1] += self.velocity
+        screen.blit(self.icon, (self.position[0], self.position[1]))
+
+    def keep(self, icon):
+        """Keep debris for four seconds
+        1. Icon - a list with three icons, fading slowly"""
+        if self.last < 120:
+            self.last += 1
+        elif self.last >= 120 and self.last < 180:
+            self.last += 1
+            self.icon = icon[1]
+        elif self.last >= 180 and self.last < 240:
+            self.last += 1
+            self.icon = icon[2]
+        elif self.last >= 240:
+            self.state = False
 
     def is_collision(self, position_x, position_y):
         """Check if an object collides with this object
@@ -28,10 +49,3 @@ class Object(pygame.sprite.Sprite):
             return True
         else:
             return False
-
-    def move(self, screen):
-        """Move and draw an object
-        1. Screen    - the surface where we will draw a package"""
-
-        self.position[1] += self.velocity
-        screen.blit(self.icon, (self.position[0], self.position[1]))
