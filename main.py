@@ -308,15 +308,9 @@ def main(state, display, object_icons, object_sounds):
 
         # Loop through debris list an do various tasks
         for i, _ in enumerate(debris):
-            # Move
-            debris[i].move(screen)
-
-            # Check screen leave
-            if debris[i].position[1] > screen_params[1]:
-                debris[i].state = False
 
             # Slowly disappear
-            debris[i].keep(debris_icon)
+            debris[i].keep(debris_icon, screen)
 
             # Check player's ship hit
             if debris[i].state and \
@@ -337,6 +331,10 @@ def main(state, display, object_icons, object_sounds):
                     state = False
                     if game_over(score, screen, screen_params):
                         return True
+
+            # Check screen leave
+            if debris[i].position[1] > screen_params[1]:
+                debris[i].state = False
 
             # Remove unnecessary objects
             if not debris[i].state:
