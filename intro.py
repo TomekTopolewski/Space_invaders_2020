@@ -12,11 +12,12 @@ def intro(state, display):
     1. Screen - the surface where we will draw a text"""
 
     clock = pygame.time.Clock()
-    screen = display
-
     comet = []
     comet_icon = load_image('data/icons/comet_001.png')
     comet.append(Comet(comet_icon, [827, random.randint(0, 850)]))
+
+    change_background = 0
+    background = display[2][0]
 
     try:
         lines = open('ReadMe.txt', 'r').readlines()
@@ -24,7 +25,7 @@ def intro(state, display):
         lines = ["Can't load intro, press space to play anyway"]
 
     position = [5, 5]
-    intro_font = Text(22, (255, 255, 255), "data/fonts/BebasNeue-Regular.ttf")
+    intro_font = Text(22, (218, 218, 218), "data/fonts/BebasNeue-Regular.ttf")
 
     pygame.display.update()
 
@@ -41,12 +42,18 @@ def intro(state, display):
                 if i.key == pygame.K_SPACE:
                     state = False
 
-        screen[1].blit(display[2], (0, 0))
+        display[1].blit(background, (0, 0))
+        change_background += 1
+
+        # Animate background
+        if change_background == 30:
+            background = random.choice(display[2])
+            change_background = 0
 
         # Write text
         for i, j in enumerate(lines):
             render_line = intro_font.font.render(j.strip(), True, intro_font.color)
-            screen[1].blit(render_line, (position[0], position[1]))
+            display[1].blit(render_line, (position[0], position[1]))
             position[1] += 30
 
             if i == len(lines) - 1:
@@ -59,10 +66,10 @@ def intro(state, display):
         # Loop through comets
         for i, _ in enumerate(comet):
             # Move
-            comet[i].move(screen[1])
+            comet[i].move(display[1])
 
             # Check screen leave
-            if comet[i].position[1] > screen[0][1]:
+            if comet[i].position[1] > display[0][1]:
                 comet.pop(i)
 
         pygame.display.update()

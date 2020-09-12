@@ -20,7 +20,7 @@ def main(state, display, object_icons, object_sounds):
 
     screen = display[1]
     screen_params = display[0]
-    background = display[2]
+    background = display[2][0]
 
     player_skin = object_icons[7:9]
     enemy_skin = object_icons[:7]
