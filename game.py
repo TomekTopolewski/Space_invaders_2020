@@ -22,6 +22,9 @@ screen = [(827, 880)]
 screen.append(pygame.display.set_mode((screen[0][0], screen[0][1])))
 screen.append(bg1_icon)
 
+# Hide default cursor
+pygame.mouse.set_visible(0)
+
 e1_icon = [load_image('data/icons/enemy_001.png'), load_image('data/icons/enemy_001-left.png'), \
     load_image('data/icons/enemy_001-right.png')]
 

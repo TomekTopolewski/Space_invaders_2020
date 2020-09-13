@@ -31,11 +31,14 @@ def intro(state, display):
     position = [5, 70]
     normal_font = Text(22, (200, 200, 200), "data/fonts/BebasNeue-Regular.ttf")
 
+    title = Text(38, (125, 125, 125), 'data/fonts/space_age.ttf')
+    title.text = "Space Invaders 2020"
+
     button_sound = load_sound('data/sound/button.wav')
     playing_sound = False
-    play_button = Button([690, 720], "Play", 36, (100, 100, 100), button_sound)
-    about_button = Button([650, 770], "About", 36, (100, 100, 100), button_sound)
-    quit_button = Button([700, 820], "Quit", 36, (100, 100, 100), button_sound)
+    play_button = Button([690, 720], "Play", 36, (125, 125, 125), button_sound)
+    about_button = Button([650, 770], "About", 36, (125, 125, 125), button_sound)
+    quit_button = Button([700, 820], "Quit", 36, (125, 125, 125), button_sound)
 
     pygame.display.update()
 
@@ -115,6 +118,8 @@ def intro(state, display):
 
                 if i == len(lines) - 1:
                     position[1] = 70
+        else:
+            title.draw_center(display[1], 5)
 
         # Quit button
         quit_button.draw(display[1])
@@ -124,5 +129,9 @@ def intro(state, display):
             state = False
             pygame.quit()
             quit()
+
+        # Draw custom cursor
+        cursor = load_image('data/icons/cursor.png')
+        display[1].blit(cursor, mouse)
 
         pygame.display.update()

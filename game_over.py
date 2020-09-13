@@ -3,13 +3,14 @@
 import pygame
 from text import Text
 from button import Button
-from toolbox import load_sound
+from toolbox import load_sound, load_image
 
 def game_over(score, screen, screen_params):
     """Game over window
     1. Score         - number of points the player earned
     2. Screen        - the surface where we will draw a text
     3. Screen params - a list of two values, window's width and height"""
+
     clock = pygame.time.Clock()
 
     try:
@@ -47,5 +48,9 @@ def game_over(score, screen, screen_params):
         if again_button.status:
             state = False
             return True
+
+        # Draw custom cursor
+        cursor = load_image('data/icons/cursor.png')
+        screen.blit(cursor, mouse)
 
         pygame.display.update()

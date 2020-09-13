@@ -39,4 +39,4 @@ class Button():
                 self.status = True
 
         else:
-            self.color = (100, 100, 100)
+            self.color = (125, 125, 125)
