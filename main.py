@@ -73,6 +73,9 @@ def main(state, display, object_icons, object_sounds):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 state = False
+                pygame.quit()
+                quit()
+
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p:
                     pause(screen, score, hitpoints)

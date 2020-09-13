@@ -14,9 +14,11 @@ def intro(state, display):
     1. Screen - the surface where we will draw a text"""
 
     clock = pygame.time.Clock()
-    comet = []
+    cometx = []
+    comety = []
     comet_icon = load_image('data/icons/comet_001.png')
-    comet.append(Comet(comet_icon, [827, random.randint(0, 850)]))
+    cometx.append(Comet(comet_icon, [827, random.randint(0, 850)]))
+    comety.append(Comet(comet_icon, [random.randint(0, 800), 0]))
 
     change_background = 0
     background = display[2][0]
@@ -63,18 +65,31 @@ def intro(state, display):
             background = random.choice(display[2])
             change_background = 0
 
-        # Drop comets
-        if random.randint(0, 180) == 42:
-            comet.append(Comet(comet_icon, [827, random.randint(0, 850)]))
+        # Drop comets x
+        if random.randint(0, 250) == 42:
+            cometx.append(Comet(comet_icon, [827, random.randint(0, 850)]))
 
-        # Loop through comets
-        for i, _ in enumerate(comet):
+        # Drop comets y
+        if random.randint(0, 250) == 42:
+            comety.append(Comet(comet_icon, [random.randint(0, 800), 0]))
+
+        # Loop through comets x
+        for i, _ in enumerate(cometx):
             # Move
-            comet[i].move(display[1])
+            cometx[i].move(display[1])
 
             # Check screen leave
-            if comet[i].position[1] > display[0][1]:
-                comet.pop(i)
+            if cometx[i].position[1] > display[0][1]:
+                cometx.pop(i)
+
+        # Loop through comets y
+        for i, _ in enumerate(comety):
+            # Move
+            comety[i].move(display[1])
+
+            # Check screen leave
+            if comety[i].position[1] > display[0][1]:
+                comety.pop(i)
 
         # Play button
         play_button.draw(display[1])

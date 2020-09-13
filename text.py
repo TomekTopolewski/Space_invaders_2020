@@ -34,3 +34,11 @@ class Text():
 
         score_render = self.font.render(str(self.text), True, self.color)
         screen.blit(score_render, (position_x, position_y))
+
+    def draw_center(self, screen, position_y):
+        """Draw text center on the x-axis
+        1. Screen    - the surface where we will draw a text"""
+
+        score_render = self.font.render(str(self.text), True, self.color)
+        centerx = (screen.get_width() / 2) - (score_render.get_width() / 2)
+        screen.blit(score_render, (centerx, position_y))
