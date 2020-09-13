@@ -18,6 +18,8 @@ class Package(pygame.sprite.Sprite):
         self.icon = {'hitpoints': package_icon[0], 'skin': package_icon[1], \
                     'velocity': package_icon[3], 'gun_reload': package_icon[2]}
 
+        self.sound.set_volume(0.20)
+
     def open(self, player, is_upgraded, player_icon):
         """Modify values based on package type
         1. Player      - object of a player class

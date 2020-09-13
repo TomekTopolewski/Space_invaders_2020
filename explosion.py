@@ -14,6 +14,8 @@ class Explosion(pygame.sprite.Sprite):
         self.last = 0
         self.state = False
 
+        self.sound.set_volume(0.20)
+
     def burst(self, screen, position_x, position_y):
         """Draw explosion (sound)
         1. Screen    - the surface where we will draw an explosion

@@ -3,6 +3,7 @@
 import random
 import pygame
 
+from pygame import mixer
 from player import Player
 from enemy import Enemy
 from text import Text
@@ -13,7 +14,10 @@ from debris import Debris
 
 from pause import pause
 from game_over import game_over
-from toolbox import moving_background2
+from toolbox import moving_background2, load_music
+
+if not pygame.mixer:
+    print("Pygame mixer module not available")
 
 def main(state, display, object_icons, object_sounds):
     """Main loop"""
@@ -61,6 +65,11 @@ def main(state, display, object_icons, object_sounds):
     while number_of_enemies < 5:
         enemies.append(Enemy(screen_params, enemy_skin[0]))
         number_of_enemies += 1
+
+    pygame.mixer.pre_init(0, 0, 16, 0)
+    if load_music('data/sound/background.wav') is not False:
+        mixer.music.set_volume(0.50)
+        mixer.music.play(-1)
 
     while state:
         clock.tick(60)

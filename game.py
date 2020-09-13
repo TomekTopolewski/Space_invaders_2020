@@ -1,15 +1,10 @@
 """Main game file"""
 
 import pygame
-from pygame import mixer
 from main import main
 from intro import intro
-from toolbox import load_image, load_sound, load_music
+from toolbox import load_image, load_sound
 
-if not pygame.mixer:
-    print("Pygame mixer module not available")
-
-pygame.mixer.pre_init(0, 0, 16, 0)
 pygame.init()
 
 pygame.display.set_caption("Space Invaders 2020")
@@ -24,9 +19,6 @@ bg1_icon = [load_image('data/images/background_004.jpg'), \
 screen = [(827, 880)]
 screen.append(pygame.display.set_mode((screen[0][0], screen[0][1])))
 screen.append(bg1_icon)
-
-if load_music('data/sound/background.wav') is not False:
-    mixer.music.play(-1)
 
 e1_icon = [load_image('data/icons/enemy_001.png'), load_image('data/icons/enemy_001-left.png'), \
     load_image('data/icons/enemy_001-right.png')]
