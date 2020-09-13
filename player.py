@@ -104,7 +104,7 @@ class Player(pygame.sprite.Sprite):
 
                 player_missile[-1].position[0] = self.position[0] + launch_x
                 player_missile[-1].position[1] = self.position[1] - launch_y
-                player_missile[-1].sound.set_volume(0.20)
+                player_missile[-1].sound.set_volume(0.25)
                 player_missile[-1].sound.play()
                 player_missile[-1].state = True
                 self.is_reloading = True

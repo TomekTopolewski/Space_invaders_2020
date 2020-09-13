@@ -14,7 +14,9 @@ pygame.display.set_icon(window_icon)
 bg1_icon = [load_image('data/images/background_004.jpg'), \
     load_image('data/images/background_004a.jpg'), \
     load_image('data/images/background_004b.jpg'), \
-    load_image('data/images/background_004c.jpg')]
+    load_image('data/images/background_004c.jpg'), \
+    load_image('data/images/background_004d.jpg'), \
+    load_image('data/images/background_004e.jpg')]
 
 screen = [(827, 880)]
 screen.append(pygame.display.set_mode((screen[0][0], screen[0][1])))

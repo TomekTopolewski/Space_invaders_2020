@@ -18,6 +18,7 @@ class Button():
         self.status = False
         self.font = pygame.font.Font("data/fonts/space_age.ttf", self.size)
         self.sound = sound
+        self.sound.set_volume(0.70)
 
     def draw(self, screen):
         """Draw
@@ -35,7 +36,6 @@ class Button():
             self.color = (255, 255, 255)
 
             if click[0] == 1:
-                self.sound.play()
                 self.status = True
 
         else:
