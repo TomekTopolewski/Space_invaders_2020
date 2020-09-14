@@ -12,6 +12,9 @@ class NoneSound:
     def play(self):
         """Play"""
 
+    def set_volume(self, value):
+        """Set volume"""
+
 def load_image(filename):
     """Loading images
     1. Filename - path to a file"""

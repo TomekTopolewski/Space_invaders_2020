@@ -16,9 +16,13 @@ class Button():
         self.size = size
         self.render = 0
         self.status = False
-        self.font = pygame.font.Font("data/fonts/space_age.ttf", self.size)
         self.sound = sound
         self.sound.set_volume(0.70)
+
+        try:
+            self.font = pygame.font.Font("data/fonts/space_age.ttf", self.size)
+        except FileNotFoundError:
+            self.font = pygame.font.Font(None, size)
 
     def draw(self, screen):
         """Draw

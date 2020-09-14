@@ -129,7 +129,7 @@ def main(state, display, object_icons, object_sounds):
                     explosion.append(Explosion(explosion_icon, explosion_sound))
                     explosion[-1].burst(screen, enemies[i].position[0], enemies[i].position[1])
 
-                    debris.append(Debris(debris_icon[0]))
+                    debris.append(Debris(debris_icon))
                     debris[-1].position[0] = enemies[i].position[0]
                     debris[-1].position[1] = enemies[i].position[1]
 
@@ -155,7 +155,7 @@ def main(state, display, object_icons, object_sounds):
                         explosion.append(Explosion(explosion_icon, explosion_sound))
                         explosion[-1].burst2(screen, enemies[i].position[0], enemies[i].position[1])
 
-                        debris.append(Debris(debris_icon[0]))
+                        debris.append(Debris(debris_icon))
                         debris[-1].position[0] = enemies[i].position[0]
                         debris[-1].position[1] = enemies[i].position[1]
 
@@ -260,8 +260,8 @@ def main(state, display, object_icons, object_sounds):
                         player_missile[i].state = False
                         explosion.append(Explosion(explosion_icon, explosion_sound))
 
-                        hit_x = debris[_i].icon.get_width() / 2
-                        hit_y = debris[_i].icon.get_height() / 2
+                        hit_x = debris[_i].icon[0].get_width() / 2
+                        hit_y = debris[_i].icon[0].get_height() / 2
 
                         explosion[-1].burst2(screen, debris[_i].position[0] + hit_x, \
                                                         debris[_i].position[1] + hit_y)
@@ -283,7 +283,7 @@ def main(state, display, object_icons, object_sounds):
                             explosion[-1].burst(screen, player_missile[i].position[0], \
                                                                 player_missile[i].position[1])
 
-                            debris.append(Debris(debris_icon[0]))
+                            debris.append(Debris(debris_icon))
                             debris[-1].position[0] = enemies[_i].position[0]
                             debris[-1].position[1] = enemies[_i].position[1]
 
@@ -312,7 +312,7 @@ def main(state, display, object_icons, object_sounds):
         for i, _ in enumerate(debris):
 
             # Slowly disappear
-            debris[i].keep(debris_icon, screen)
+            debris[i].keep(screen)
 
             # Check player's ship hit
             if debris[i].state and debris[i].is_collision(player.position[0], player.position[1]):

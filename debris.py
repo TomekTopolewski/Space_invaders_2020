@@ -15,22 +15,20 @@ class Debris(pygame.sprite.Sprite):
         self.last = 0
         self.icon = icon
 
-    def keep(self, icon, screen):
+    def keep(self, screen):
         """Keep debris for four seconds
-        1. Icon   - a list with three icons, fading slowly
-        2. Screen - the surface where we will draw a package"""
+        1. Screen - the surface where we will draw a package"""
 
         self.position[1] += self.velocity
-        screen.blit(self.icon, (self.position[0], self.position[1]))
-
         if self.last < 60:
             self.last += 1
+            screen.blit(self.icon[0], (self.position[0], self.position[1]))
         elif self.last >= 60 and self.last < 120:
             self.last += 1
-            self.icon = icon[1]
+            screen.blit(self.icon[1], (self.position[0], self.position[1]))
         elif self.last >= 120 and self.last < 180:
             self.last += 1
-            self.icon = icon[2]
+            screen.blit(self.icon[2], (self.position[0], self.position[1]))
         elif self.last >= 180:
             self.state = False
 
