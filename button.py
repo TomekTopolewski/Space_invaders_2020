@@ -14,7 +14,7 @@ class Button():
         self.position = position
         self.color = color
         self.size = size
-        self.render = 0
+        self.renderb = 0
         self.status = False
         self.sound = sound
         self.sound.set_volume(0.70)
@@ -24,19 +24,23 @@ class Button():
         except FileNotFoundError:
             self.font = pygame.font.Font(None, size)
 
+    def render(self):
+        """Render"""
+
+        self.renderb = self.font.render(self.message, True, self.color)
+
     def draw(self, screen):
         """Draw
         1. Screen - surface where to draw a button"""
 
-        self.render = self.font.render(self.message, True, self.color)
-        screen.blit(self.render, (self.position[0], self.position[1]))
+        screen.blit(self.renderb, (self.position[0], self.position[1]))
 
     def action(self, mouse, click):
         """Action
         1. Screen - surface where to draw a button"""
 
-        if self.position[0] + self.render.get_width() > mouse[0] > self.position[0] and \
-            self.position[1] + self.render.get_height() > mouse[1] > self.position[1]:
+        if self.position[0] + self.renderb.get_width() > mouse[0] > self.position[0] and \
+            self.position[1] + self.renderb.get_height() > mouse[1] > self.position[1]:
             self.color = (255, 255, 255)
 
             if click[0] == 1:

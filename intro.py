@@ -36,9 +36,11 @@ def intro(state, display):
 
     button_sound = load_sound('data/sound/button.wav')
     playing_sound = False
-    play_button = Button([690, 720], "Play", 36, (125, 125, 125), button_sound)
-    about_button = Button([650, 770], "About", 36, (125, 125, 125), button_sound)
-    quit_button = Button([700, 820], "Quit", 36, (125, 125, 125), button_sound)
+    play_button = Button([0, 0], "Play", 36, (125, 125, 125), button_sound)
+    about_button = Button([0, 0], "About", 36, (125, 125, 125), button_sound)
+    quit_button = Button([0, 0], "Quit", 36, (125, 125, 125), button_sound)
+
+    button = [play_button, about_button, quit_button]
 
     pygame.display.update()
 
@@ -94,18 +96,23 @@ def intro(state, display):
             if comety[i].position[1] > display[0][1]:
                 comety.pop(i)
 
-        # Play button
-        play_button.draw(display[1])
-        play_button.action(mouse, click)
+        # Loop through buttons and display them
+        position_y = display[0][1] - 170
 
+        for i, _ in enumerate(button):
+            button[i].render()
+            button[i].position[0] = display[0][0] - button[i].renderb.get_width() - 15
+            button[i].position[1] = position_y
+            button[i].draw(display[1])
+            button[i].action(mouse, click)
+            position_y += 50
+
+        # Play button
         if play_button.status:
             play_button.sound.play()
             state = False
 
         # About button
-        about_button.draw(display[1])
-        about_button.action(mouse, click)
-
         if about_button.status:
             if not playing_sound:
                 playing_sound = True
@@ -122,9 +129,6 @@ def intro(state, display):
             title.draw_center(display[1], 5)
 
         # Quit button
-        quit_button.draw(display[1])
-        quit_button.action(mouse, click)
-
         if quit_button.status:
             state = False
             pygame.quit()
