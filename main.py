@@ -82,7 +82,7 @@ def main(state, display, object_icons, object_sounds):
 
         # Player's move, shoot and reload
         player.move(screen, screen_params)
-        player.shoot(player_missile, is_upgraded, missile_skin, missile_sound, -10, 45)
+        player.shoot(player_missile, is_upgraded, missile_skin, missile_sound, -10)
 
         if player.is_reloading:
             player.reload(500)
@@ -94,7 +94,7 @@ def main(state, display, object_icons, object_sounds):
 
             # Check screen leave
             if enemies[i].position[1] > (screen_params[1] - \
-                                    (pygame.Surface.get_height(enemies[i].icon[0]) / 2)):
+                                    (enemies[i].icon[0].get_height() / 2)):
                 player.hitpoints -= 1
 
                 if player.hitpoints >= 1:
@@ -111,7 +111,7 @@ def main(state, display, object_icons, object_sounds):
             enemies[i].draw_hp(screen)
 
             # Shoot
-            enemies[i].shoot(enemy_missile, screen, missile_skin[2], 3, 45)
+            enemies[i].shoot(enemy_missile, missile_skin, 3)
 
             # Reload the gun
             if enemies[i].is_reloading:
@@ -133,8 +133,7 @@ def main(state, display, object_icons, object_sounds):
                     enemies[i].level(score.value, enemy_skin)
 
                     player.position[0] = 0
-                    player.position[1] = screen_params[1] - \
-                                        pygame.Surface.get_height(player.icon[0])
+                    player.position[1] = screen_params[1] - player.icon[0].get_height()
 
                     hitpoints.value = player.hitpoints
                 else:
@@ -171,8 +170,8 @@ def main(state, display, object_icons, object_sounds):
                 enemy_missile[i].state = False
 
             # Check the player's ship hit
-            hit_x = player.position[0] + (pygame.Surface.get_width(player.icon[0]) / 2)
-            hit_y = player.position[1] + (pygame.Surface.get_height(player.icon[0]) / 2)
+            hit_x = player.position[0] + (player.icon[0].get_width() / 2)
+            hit_y = player.position[1] + (player.icon[0].get_height() / 2)
 
             if enemy_missile[i].state and enemy_missile[i].is_collision(hit_x, hit_y):
                 player.hitpoints -= 1
@@ -220,9 +219,9 @@ def main(state, display, object_icons, object_sounds):
             # Check collision with the enemy's missile
             if player_missile[i].state:
                 hit_x = player_missile[i].position[0] + \
-                                    (pygame.Surface.get_width(player_missile[i].icon) / 2)
+                    (player_missile[i].icon[player_missile[-1].type].get_width() / 2)
                 hit_y = player_missile[i].position[1] + \
-                                    (pygame.Surface.get_height(player_missile[i].icon) / 2)
+                    (player_missile[i].icon[player_missile[-1].type].get_height() / 2)
 
                 for _i, _ in enumerate(enemy_missile):
                     if enemy_missile[_i].is_collision(hit_x, hit_y) and \
@@ -242,8 +241,8 @@ def main(state, display, object_icons, object_sounds):
                         player_missile[i].state = False
                         explosion.append(Explosion(explosion_icon, explosion_sound))
 
-                        hit_x = pygame.Surface.get_width(asteroid[_i].icon) / 2
-                        hit_y = pygame.Surface.get_height(asteroid[_i].icon) / 2
+                        hit_x = asteroid[_i].icon.get_width() / 2
+                        hit_y = asteroid[_i].icon.get_height() / 2
 
                         explosion[-1].burst(screen, asteroid[_i].position[0] + hit_x, \
                                                         asteroid[_i].position[1] + hit_y)
@@ -258,8 +257,8 @@ def main(state, display, object_icons, object_sounds):
                         player_missile[i].state = False
                         explosion.append(Explosion(explosion_icon, explosion_sound))
 
-                        hit_x = pygame.Surface.get_width(debris[_i].icon) / 2
-                        hit_y = pygame.Surface.get_height(debris[_i].icon) / 2
+                        hit_x = debris[_i].icon.get_width() / 2
+                        hit_y = debris[_i].icon.get_height() / 2
 
                         explosion[-1].burst2(screen, debris[_i].position[0] + hit_x, \
                                                         debris[_i].position[1] + hit_y)
@@ -268,10 +267,8 @@ def main(state, display, object_icons, object_sounds):
             # Check enemy's ship hit
             if player_missile[i].state:
                 for _i, _ in enumerate(enemies):
-                    hit_x = enemies[_i].position[0] + \
-                                                (pygame.Surface.get_width(enemies[_i].icon[0]) / 2)
-                    hit_y = enemies[_i].position[1] + \
-                                                (pygame.Surface.get_height(enemies[_i].icon[0]) / 2)
+                    hit_x = enemies[_i].position[0] + (enemies[_i].icon[0].get_width() / 2)
+                    hit_y = enemies[_i].position[1] + (enemies[_i].icon[0].get_height() / 2)
 
                     if player_missile[i].is_collision(hit_x, hit_y):
                         enemies[_i].hitpoints -= 1
@@ -289,16 +286,12 @@ def main(state, display, object_icons, object_sounds):
 
                             if random.randint(0, 10) <= enemies[_i].drop_rate:
                                 package.append(Package(package_sound, package_icon))
-                                package[-1].type = random.choice( \
-                                    ['hitpoints', 'skin', 'velocity', 'gun_reload'])
-                                package[-1].icon.get(package[-1].type)
+
                                 package[-1].position[0] = enemies[_i].position[0] + \
-                                    pygame.Surface.get_width(enemies[_i].icon[0]) / 4
+                                    enemies[_i].icon[0].get_width() / 4
                                 package[-1].position[1] = enemies[_i].position[1] + \
-                                    pygame.Surface.get_height(enemies[_i].icon[0]) / 4
+                                    enemies[_i].icon[0].get_height() / 4
                                 package[-1].state = True
-                                screen.blit(package[-1].icon.get(package[-1].type), \
-                                    (package[-1].position[0], package[-1].position[1]))
 
                             enemies[_i] = Enemy(screen_params, enemy_skin[0])
                             enemies[_i].level(score.value, enemy_skin)

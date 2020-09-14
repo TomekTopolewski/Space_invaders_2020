@@ -18,7 +18,7 @@ class Enemy(pygame.sprite.Sprite):
         self.move_type = 0
         self.hitpoints = 2
         self.drop_rate = 1
-        self.cell = pygame.Surface.get_width(self.icon[0]) / self.hitpoints
+        self.cell = self.icon[0].get_width() / self.hitpoints
         self.reload_step = 1
         self.reload_time = 0
         self.is_reloading = False
@@ -45,39 +45,35 @@ class Enemy(pygame.sprite.Sprite):
         """Boss"""
         self.drop_rate = 10
         self.hitpoints = 5
-        self.cell = pygame.Surface.get_width(self.icon[0]) / self.hitpoints
+        self.cell = self.icon[0].get_width() / self.hitpoints
 
-    def shoot(self, enemy_missile, screen, missile_icon, missile_velocity, missile_range):
+    def shoot(self, enemy_missile, missile_icon, missile_velocity):
         """Shoot
         1. Enemy_missile    - list of enemy's missile
         2. Screen           - surface where we will draw a missile
         3. Missile_icon     - list with missiles of icons
-        4. Missile_velocity - number of pixels on the y-axis a missile will fly in every loop step
-        5. Missile_range    - number used for deciding if a missile hit the target
-                              (a missile and an object are close to each other)"""
+        4. Missile_velocity - number of pixels on the y-axis a missile will fly in every loop step"""
 
         if not self.is_reloading and random.randint(0, 200) == 5:
             self.is_reloading = True
-            enemy_missile.append(Missile(missile_icon, 0, missile_velocity, missile_range))
+            enemy_missile.append(Missile(missile_icon, 0, missile_velocity, 2))
 
-            launch_x = (pygame.Surface.get_width(self.icon[0]) / 2) - \
-                                        (pygame.Surface.get_width(enemy_missile[-1].icon) / 2)
+            launch_x = (self.icon[0].get_width() / 2) - \
+                                        (enemy_missile[-1].icon[enemy_missile[-1].type].get_width() / 2)
 
-            launch_y = (pygame.Surface.get_height(self.icon[0]) / 2) - \
-                                        (pygame.Surface.get_height(enemy_missile[-1].icon) / 2)
+            launch_y = (self.icon[0].get_height() / 2) - \
+                                        (enemy_missile[-1].icon[enemy_missile[-1].type].get_height() / 2)
 
             enemy_missile[-1].position[0] = self.position[0] + launch_x
             enemy_missile[-1].position[1] = self.position[1] + launch_y
             enemy_missile[-1].state = True
-            screen.blit(enemy_missile[-1].icon,\
-                    (int(enemy_missile[-1].position[0]), int(enemy_missile[-1].position[1])))
 
     def draw_hp(self, screen):
         """Draw hitpoints bar
         1. Screen - surface where we will draw a health bar"""
 
-        surface = pygame.Surface((pygame.Surface.get_width(self.icon[0]), 4))
-        pygame.draw.rect(surface, (255, 80, 80), (0, 0, pygame.Surface.get_width(self.icon[0]), 4))
+        surface = pygame.Surface((self.icon[0].get_width(), 4))
+        pygame.draw.rect(surface, (255, 80, 80), (0, 0, self.icon[0].get_width(), 4))
         pygame.draw.rect(surface, (0, 255, 0), (0, 0, int(self.cell * self.hitpoints), 4))
         screen.blit(surface, (self.position[0], self.position[1] - 5))
 
@@ -174,7 +170,7 @@ class Enemy(pygame.sprite.Sprite):
         1. Screen        - surface where we will draw a ship
         2. Screen_params - width and height used for checking if the enemy won't leave the screen"""
 
-        if self.position[0] >= screen_params[0] - pygame.Surface.get_width(self.icon[0]):
+        if self.position[0] >= screen_params[0] - self.icon[0].get_width():
             self.position[0] -= self.velocity
             self.step = 0
             self.move_type = random.randint(0, 4)

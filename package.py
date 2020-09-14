@@ -1,6 +1,7 @@
 """File for package class"""
 
 import math
+import random
 import pygame
 
 class Package(pygame.sprite.Sprite):
@@ -8,17 +9,17 @@ class Package(pygame.sprite.Sprite):
     1. Sound        - sound when the player picks up the box
     2. Package_icon - a list with four different box icons"""
 
-    def __init__(self, sound, package_icon):
+    def __init__(self, sound, icon):
         self.position = [0, 0]
         self.state = False
         self.sound = sound
         self.range = 50
-        self.type = 0
         self.velocity = 0.5
-        self.icon = {'hitpoints': package_icon[0], 'skin': package_icon[1], \
-                    'velocity': package_icon[3], 'gun_reload': package_icon[2]}
+        self.icon = {'hitpoints': icon[0], 'skin': icon[1], \
+                    'velocity': icon[3], 'gun_reload': icon[2]}
 
         self.sound.set_volume(0.20)
+        self.type = random.choice(['hitpoints', 'skin', 'velocity', 'gun_reload'])
 
     def open(self, player, is_upgraded, player_icon):
         """Modify values based on package type
