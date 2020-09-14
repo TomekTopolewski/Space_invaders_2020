@@ -13,7 +13,6 @@ class Explosion(pygame.sprite.Sprite):
         self.position = [0, 0]
         self.last = 0
         self.state = False
-
         self.sound.set_volume(0.25)
 
     def burst(self, screen, position_x, position_y):

@@ -78,7 +78,7 @@ def main(state, display, object_icons, object_sounds):
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p:
-                    pause(screen, score, hitpoints)
+                    pause(screen, background, score, hitpoints)
 
         # Player's move, shoot and reload
         player.move(screen, screen_params)

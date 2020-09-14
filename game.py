@@ -18,6 +18,7 @@ bg1_icon = [load_image('data/images/background_004.jpg'), \
     load_image('data/images/background_004d.jpg'), \
     load_image('data/images/background_004e.jpg')]
 
+# Build screen
 screen = [(827, 880)]
 screen.append(pygame.display.set_mode((screen[0][0], screen[0][1])))
 screen.append(bg1_icon)
@@ -25,6 +26,7 @@ screen.append(bg1_icon)
 # Hide default cursor
 pygame.mouse.set_visible(0)
 
+# Load icons
 e1_icon = [load_image('data/icons/enemy_001.png'), load_image('data/icons/enemy_001-left.png'), \
     load_image('data/icons/enemy_001-right.png')]
 
@@ -67,17 +69,21 @@ as1_icon = [load_image('data/icons/asteroid_001.png'), load_image('data/icons/as
 de1_icon = [load_image('data/icons/debris_001.png'), load_image('data/icons/debris_002.png'), \
     load_image('data/icons/debris_003.png')]
 
+# Load sounds
 m1_sound = [load_sound('data/sound/shoot.wav'), load_sound('data/sound/shoot2.wav')]
 
 ex1_sound = load_sound('data/sound/explosion.wav')
 
 bx1_sound = load_sound('data/sound/package.wav')
 
+# Build a list with icons
 object_icons = [e1_icon, e2_icon, e3_icon, e4_icon, e5_icon, e6_icon, e7_icon, \
     p1_icon, p2_icon, m1_icon, ex1_icon, bx1_icon, as1_icon, de1_icon]
 
+# Build a list with sounds
 object_sounds = [m1_sound, ex1_sound, bx1_sound]
 
+#Game sequence
 intro(True, screen)
 
 while main(True, screen, object_icons, object_sounds):
