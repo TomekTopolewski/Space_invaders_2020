@@ -40,7 +40,7 @@ def game_over(score, screen, screen_params):
 
         screen.blit(background[0], (0, 0))
         game_over_txt.draw_center(screen, 120)
-        score.draw_center(screen, 180)
+        score.draw(screen, 320, 180)
 
         again_button.draw(screen)
         again_button.action(mouse, click)

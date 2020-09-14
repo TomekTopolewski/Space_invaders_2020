@@ -24,7 +24,7 @@ def intro(state, display):
     background = display[2][0]
 
     try:
-        lines = open('ReadMe.txt', 'r').readlines()
+        lines = open('data/text/about.txt', 'r').readlines()
     except FileNotFoundError:
         lines = ["Can't load about, press Play to play"]
 
