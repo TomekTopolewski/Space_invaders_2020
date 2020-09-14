@@ -3,7 +3,7 @@
 import pygame
 
 class Text():
-    """Text class
+    """
     1. Size      - size of a text
     2. Color     - color of a text
     3. Font_path - path to the font file"""

@@ -5,7 +5,7 @@ import random
 import pygame
 
 class Object(pygame.sprite.Sprite):
-    """Class for minor objects in game, like rocks or debris.
+    """
     1. Icon          - image of an object
     2. Screen_params - width and height used for creating objects on the screen"""
 

@@ -3,9 +3,9 @@
 import pygame
 
 class Comet(pygame.sprite.Sprite):
-    """Class for comet animation in game menu
-    1. Icon          - image of an object
-    2. Position      - list with x and y position"""
+    """
+    1. Icon     - image of an object
+    2. Position - list with x and y position"""
 
     def __init__(self, icon, position):
         self.position = position

@@ -6,7 +6,7 @@ import pygame
 from missile import Missile
 
 class Enemy(pygame.sprite.Sprite):
-    """Enemy class
+    """
     1. Screen_params - width and height used for creating enemies on the screen
     2. Enemy_icon    - list of three icons - center, left, right"""
 
@@ -26,7 +26,7 @@ class Enemy(pygame.sprite.Sprite):
     def level(self, score_value, enemy_icon):
         """Progress mechanism
         1. Score_value - number of points that player earned
-        2. Enemy_skin  - list with a lists of three icons - center, left, right"""
+        2. Enemy icon  - list with a lists of three icons - center, left, right"""
 
         if score_value > 10 and score_value <= 20:
             self.icon = enemy_icon[1]
@@ -47,22 +47,18 @@ class Enemy(pygame.sprite.Sprite):
         self.hitpoints = 5
         self.cell = self.icon[0].get_width() / self.hitpoints
 
-    def shoot(self, enemy_missile, missile_icon, missile_velocity):
+    def shoot(self, enemy_missile, missile_icon):
         """Shoot
         1. Enemy_missile    - list of enemy's missile
-        2. Screen           - surface where we will draw a missile
-        3. Missile_icon     - list with missiles of icons
-        4. Missile_velocity - number of pixels on the y-axis a missile will fly in every loop step"""
+        2. Missile_icon     - list with missiles of icons"""
 
         if not self.is_reloading and random.randint(0, 200) == 5:
             self.is_reloading = True
-            enemy_missile.append(Missile(missile_icon, 0, missile_velocity, 2))
+            enemy_missile.append(Missile(missile_icon, 4))
 
-            launch_x = (self.icon[0].get_width() / 2) - \
-                                        (enemy_missile[-1].icon[enemy_missile[-1].type].get_width() / 2)
+            launch_x = (self.icon[0].get_width() / 2) - (enemy_missile[-1].icon.get_width() / 2)
 
-            launch_y = (self.icon[0].get_height() / 2) - \
-                                        (enemy_missile[-1].icon[enemy_missile[-1].type].get_height() / 2)
+            launch_y = (self.icon[0].get_height() / 2) - (enemy_missile[-1].icon.get_height() / 2)
 
             enemy_missile[-1].position[0] = self.position[0] + launch_x
             enemy_missile[-1].position[1] = self.position[1] + launch_y

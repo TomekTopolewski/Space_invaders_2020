@@ -5,7 +5,7 @@ import random
 import pygame
 
 class Package(pygame.sprite.Sprite):
-    """Package class
+    """
     1. Sound        - sound when the player picks up the box
     2. Package_icon - a list with four different box icons"""
 
@@ -21,7 +21,7 @@ class Package(pygame.sprite.Sprite):
         self.sound.set_volume(0.20)
         self.type = random.choice(['hitpoints', 'skin', 'velocity', 'gun_reload'])
 
-    def open(self, player, is_upgraded, player_icon):
+    def open(self, player, is_upgraded, player_icon, player_sound):
         """Modify values based on package type
         1. Player      - object of a player class
         2. Is_upgraded - flag used for determining which missile icon to use
@@ -31,6 +31,7 @@ class Package(pygame.sprite.Sprite):
             player.hitpoints += 1
         elif self.type == 'skin':
             player.icon = player_icon
+            player.sound = player_sound
             is_upgraded = True
         elif self.type == 'velocity':
             player.velocity += 1

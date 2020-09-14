@@ -6,12 +6,13 @@ import pygame
 from missile import Missile
 
 class Player(pygame.sprite.Sprite):
-    """ Player class
+    """
     1. Velocity  - number of pixels on both axis that a player will move in every loop step
     2. Hitpoints - number of player's hitpoints
-    3. Icon      - a list of three icons - center, left, right"""
+    3. Icon      - a list of three icons - center, left, right
+    4. Gun sound - sound when player shoots"""
 
-    def __init__(self, velocity, hitpoints, icon):
+    def __init__(self, velocity, hitpoints, icon, sound):
         self.icon = icon
         self.position = [370, 480]
         self.velocity = velocity
@@ -19,11 +20,12 @@ class Player(pygame.sprite.Sprite):
         self.reload_step = 10
         self.reload_time = 0
         self.is_reloading = False
+        self.sound = sound
 
     def is_collision(self, position_x, position_y):
         """Check if player collide with enemy
-        1. PositionX - position on the x-axis where the player collides with an enemy
-        2. PositionY - position on the y-axis where the player collides with an enemy"""
+        1. PositionX - position on the x-axis where the player collides with an object
+        2. PositionY - position on the y-axis where the player collides with an object"""
 
         distance = math.sqrt(math.pow(position_x - self.position[0], 2) + \
                             (math.pow(position_y - self.position[1], 2)))
@@ -75,37 +77,27 @@ class Player(pygame.sprite.Sprite):
         else:
             screen.blit(self.icon[0], (self.position[0], self.position[1]))
 
-    def shoot(self, player_missile, is_upgraded, missile_icon, \
-        missile_sound, missile_velocity):
+    def shoot(self, player_missile, missile_icon):
         """Shoot
         1. Player_missile   - list with player's missiles
-        2. Is_upgraded      - flag used for determining which missile icon to use
-        3. Missile_icon     - list with missiles of icons
-        4. Missile_sound    - sound when a missile starts
-        5. Missile_velocity - number of pixels on the y-axis a missile will fly in every loop step"""
+        2. Missile_icon     - list with missiles of icons"""
 
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_SPACE] or keys[pygame.K_LSHIFT]:
             if not self.is_reloading:
-                if is_upgraded:
-                    player_missile.append(Missile(\
-                            missile_icon, missile_sound[1], missile_velocity, 0))
-                else:
-                    player_missile.append(Missile(\
-                            missile_icon, missile_sound[0], missile_velocity, 1))
+                player_missile.append(Missile(missile_icon, -10))
 
                 launch_x = (self.icon[0].get_width() / 2) - \
-                                        (player_missile[-1].icon[player_missile[-1].type].get_width() / 2)
+                    (player_missile[-1].icon.get_width() / 2)
 
                 launch_y = (self.icon[0].get_height() / 2) - \
-                                        (player_missile[-1].icon[player_missile[-1].type].get_width() / 2)
-
+                    (player_missile[-1].icon.get_width() / 2)
 
                 player_missile[-1].position[0] = self.position[0] + launch_x
                 player_missile[-1].position[1] = self.position[1] - launch_y
-                player_missile[-1].sound.set_volume(0.25)
-                player_missile[-1].sound.play()
+                self.sound.set_volume(0.25)
+                self.sound.play()
                 player_missile[-1].state = True
                 self.is_reloading = True
 

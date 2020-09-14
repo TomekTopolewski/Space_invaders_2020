@@ -1,16 +1,14 @@
 """File for debris class"""
 
 import math
-import random
 import pygame
 
 class Debris(pygame.sprite.Sprite):
-    """Class for minor objects in game, like debris.
-    1. Icon          - image of an object
-    2. Screen_params - width and height used for creating objects on the screen"""
+    """
+    1. Icon - image of an object"""
 
-    def __init__(self, icon, screen_params):
-        self.position = [random.randint(5, screen_params[0] - 50), -30]
+    def __init__(self, icon):
+        self.position = [0, 0]
         self.velocity = 0.5
         self.state = True
         self.range = 50

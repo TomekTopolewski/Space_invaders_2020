@@ -3,7 +3,7 @@
 import pygame
 
 class Button():
-    """Button class
+    """
     1. Position - position of a button
     2. Message  - displayed text
     3. Size     - size of a text
