@@ -39,13 +39,14 @@ def menu(state, display):
     title = Text(38, (125, 125, 125), 'data/fonts/space_age.ttf')
     title.text = "Space Invaders 2020"
 
-    button_sound = load_sound('data/sound/button.wav')
-    #playing_sound = False
-    #playing_sound2 = False
-    play_button = Button([0, 0], "Play", 36, (125, 125, 125), button_sound)
-    about_button = Button([0, 0], "About", 36, (125, 125, 125), button_sound)
-    quit_button = Button([0, 0], "Quit", 36, (125, 125, 125), button_sound)
-    options_button = Button([0, 0], "Options", 36, (125, 125, 125), button_sound)
+    play_button = Button([0, 0], "Play", 36, (125, 125, 125), \
+        load_sound('data/sound/button.wav'))
+    about_button = Button([0, 0], "About", 36, (125, 125, 125), \
+        load_sound('data/sound/button.wav'))
+    quit_button = Button([0, 0], "Quit", 36, (125, 125, 125), \
+        load_sound('data/sound/button.wav'))
+    options_button = Button([0, 0], "Options", 36, (125, 125, 125), \
+        load_sound('data/sound/button.wav'))
 
     button = [play_button, options_button, about_button, quit_button]
 
@@ -119,10 +120,15 @@ def menu(state, display):
             position_y += 50
 
         if choose[0]:
-            play_button.sound.play()
+            if play_button.sound.get_num_channels() == 0:
+                play_button.sound.play()
+
             state = False
 
         elif choose[1]:
+            if options_button.sound.get_num_channels() == 0:
+                options_button.sound.play()
+
             for i, j in enumerate(options_txt):
                 render_line = normal_font.font.render(j.strip(), True, normal_font.color)
                 display[1].blit(render_line, (position[0], position[1]))
@@ -132,6 +138,9 @@ def menu(state, display):
                     position[1] = 70
 
         elif choose[2]:
+            if about_button.sound.get_num_channels() == 0:
+                about_button.sound.play()
+
             for i, j in enumerate(about_txt):
                 render_line = normal_font.font.render(j.strip(), True, normal_font.color)
                 display[1].blit(render_line, (position[0], position[1]))
