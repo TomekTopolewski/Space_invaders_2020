@@ -35,9 +35,30 @@ class Button():
 
         screen.blit(self.renderb, (self.position[0], self.position[1]))
 
+    def action_menu(self, mouse, click, choose, position):
+        """Action for menu
+        1. Mouse    - mouse position
+        2. Click    - click event
+        3. Choose   - menu list
+        4. Position - position in the menu list"""
+
+        if self.position[0] + self.renderb.get_width() > mouse[0] > self.position[0] and \
+            self.position[1] + self.renderb.get_height() > mouse[1] > self.position[1]:
+            self.color = (255, 255, 255)
+
+            if click[0] == 1:
+                choose = [False for i in choose]
+                choose[position] = True
+
+        else:
+            self.color = (125, 125, 125)
+
+        return choose
+
     def action(self, mouse, click):
         """Action
-        1. Screen - surface where to draw a button"""
+        1. Mouse - mouse position
+        2. Click - click event"""
 
         if self.position[0] + self.renderb.get_width() > mouse[0] > self.position[0] and \
             self.position[1] + self.renderb.get_height() > mouse[1] > self.position[1]:

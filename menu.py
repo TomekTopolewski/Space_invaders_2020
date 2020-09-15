@@ -9,7 +9,7 @@ from comet import Comet
 from toolbox import load_image, load_sound, load_music
 from button import Button
 
-def intro(state, display):
+def menu(state, display):
     """Intro window
     1. Screen - the surface where we will draw a text"""
 
@@ -24,9 +24,14 @@ def intro(state, display):
     background = display[2][0]
 
     try:
-        lines = open('data/text/about.txt', 'r').readlines()
+        about_txt = open('data/text/about.txt', 'r').readlines()
     except FileNotFoundError:
-        lines = ["Can't load about, press Play to play"]
+        about_txt = ["Can't load text"]
+
+    try:
+        options_txt = open('data/text/options.txt', 'r').readlines()
+    except FileNotFoundError:
+        options_txt = ["Can't load text"]
 
     position = [5, 70]
     normal_font = Text(22, (200, 200, 200), "data/fonts/BebasNeue-Regular.ttf")
@@ -35,12 +40,14 @@ def intro(state, display):
     title.text = "Space Invaders 2020"
 
     button_sound = load_sound('data/sound/button.wav')
-    playing_sound = False
+    #playing_sound = False
+    #playing_sound2 = False
     play_button = Button([0, 0], "Play", 36, (125, 125, 125), button_sound)
     about_button = Button([0, 0], "About", 36, (125, 125, 125), button_sound)
     quit_button = Button([0, 0], "Quit", 36, (125, 125, 125), button_sound)
+    options_button = Button([0, 0], "Options", 36, (125, 125, 125), button_sound)
 
-    button = [play_button, about_button, quit_button]
+    button = [play_button, options_button, about_button, quit_button]
 
     pygame.display.update()
 
@@ -48,6 +55,8 @@ def intro(state, display):
     if load_music('data/sound/background.wav') is not False:
         mixer.music.set_volume(0.50)
         mixer.music.play(-1)
+
+    choose = [False] * 4
 
     while state:
         clock.tick(60)
@@ -96,40 +105,42 @@ def intro(state, display):
             if comety[i].position[1] > display[0][1]:
                 comety.pop(i)
 
+        title.draw_center(display[1], 5)
+
         # Loop through buttons and display them
-        position_y = display[0][1] - 170
+        position_y = display[0][1] - 200
 
         for i, _ in enumerate(button):
             button[i].render()
             button[i].position[0] = display[0][0] - button[i].renderb.get_width() - 15
             button[i].position[1] = position_y
             button[i].draw(display[1])
-            button[i].action(mouse, click)
+            choose = button[i].action_menu(mouse, click, choose, i)
             position_y += 50
 
-        # Play button
-        if play_button.status:
+        if choose[0]:
             play_button.sound.play()
             state = False
 
-        # About button
-        if about_button.status:
-            if not playing_sound:
-                playing_sound = True
-                about_button.sound.play()
-
-            for i, j in enumerate(lines):
+        elif choose[1]:
+            for i, j in enumerate(options_txt):
                 render_line = normal_font.font.render(j.strip(), True, normal_font.color)
                 display[1].blit(render_line, (position[0], position[1]))
                 position[1] += 30
 
-                if i == len(lines) - 1:
+                if i == len(options_txt) - 1:
                     position[1] = 70
-        else:
-            title.draw_center(display[1], 5)
 
-        # Quit button
-        if quit_button.status:
+        elif choose[2]:
+            for i, j in enumerate(about_txt):
+                render_line = normal_font.font.render(j.strip(), True, normal_font.color)
+                display[1].blit(render_line, (position[0], position[1]))
+                position[1] += 30
+
+                if i == len(about_txt) - 1:
+                    position[1] = 70
+
+        elif choose[3]:
             state = False
             pygame.quit()
             quit()

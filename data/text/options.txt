@@ -1,0 +1,3 @@
+Move:  arrows
+Shoot: space, left shift
+Pause: P

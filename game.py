@@ -2,7 +2,7 @@
 
 import pygame
 from main import main
-from intro import intro
+from menu import menu
 from toolbox import load_image, load_sound
 
 pygame.init()
@@ -84,7 +84,7 @@ object_icons = [e1_icon, e2_icon, e3_icon, e4_icon, e5_icon, e6_icon, e7_icon, \
 object_sounds = [m1_sound, ex1_sound, bx1_sound]
 
 #Game sequence
-intro(True, screen)
+menu(True, screen)
 
 while main(True, screen, object_icons, object_sounds):
     main(True, screen, object_icons, object_sounds)
