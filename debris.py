@@ -1,6 +1,5 @@
 """File for debris class"""
 
-import math
 import pygame
 
 class Debris(pygame.sprite.Sprite):
@@ -11,7 +10,6 @@ class Debris(pygame.sprite.Sprite):
         self.position = [0, 0]
         self.velocity = 0.5
         self.state = True
-        self.range = 50
         self.last = 0
         self.icon = icon
 
@@ -31,15 +29,3 @@ class Debris(pygame.sprite.Sprite):
             screen.blit(self.icon[2], (self.position[0], self.position[1]))
         elif self.last >= 180:
             self.state = False
-
-    def is_collision(self, position_x, position_y):
-        """Check if an object collides with this object
-        1. PositionX - position on the x-axis where this object collides with an object
-        2. PositionY - position on the y-axis where this object collides with an object"""
-
-        distance = math.sqrt(math.pow(position_x - self.position[0], 2) + \
-                            (math.pow(position_y - self.position[1], 2)))
-        if distance < self.range and self.state:
-            return True
-        else:
-            return False

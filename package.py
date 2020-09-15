@@ -1,6 +1,5 @@
 """File for package class"""
 
-import math
 import random
 import pygame
 
@@ -13,13 +12,11 @@ class Package(pygame.sprite.Sprite):
         self.position = [0, 0]
         self.state = False
         self.sound = sound
-        self.range = 50
         self.velocity = 0.5
-        self.icon = {'hitpoints': icon[0], 'skin': icon[1], \
-                    'velocity': icon[3], 'gun_reload': icon[2]}
+        self.icon = icon
 
         self.sound.set_volume(0.20)
-        self.type = random.choice(['hitpoints', 'skin', 'velocity', 'gun_reload'])
+        self.type = random.randint(0, 3)
 
     def open(self, player, is_upgraded, player_icon, player_sound):
         """Modify values based on package type
@@ -27,30 +24,18 @@ class Package(pygame.sprite.Sprite):
         2. Is_upgraded - flag used for determining which missile icon to use
         3. Player_icon - a list with new three icons - center, left, right"""
 
-        if self.type == 'hitpoints':
+        if self.type == 0:
             player.hitpoints += 1
-        elif self.type == 'skin':
+        elif self.type == 1:
             player.icon = player_icon
             player.sound = player_sound
             is_upgraded = True
-        elif self.type == 'velocity':
+        elif self.type == 3:
             player.velocity += 1
-        elif self.type == 'gun_reload':
+        elif self.type == 2:
             if player.reload_step < 20:
                 player.reload_step += 1
         return is_upgraded
-
-    def is_collision(self, position_x, position_y):
-        """Check if the player picks up a package
-        1. PositionX - position on the x-axis where the package collides with an object
-        2. PositionY - position on the y-axis where the package collides with an object"""
-
-        distance = math.sqrt(math.pow(position_x - self.position[0], 2) + \
-                            (math.pow(position_y - self.position[1], 2)))
-        if distance < self.range and self.state:
-            return True
-        else:
-            return False
 
     def move(self, screen):
         """Move and draw package

@@ -1,6 +1,5 @@
 """File for player class"""
 
-import math
 import pygame
 
 from missile import Missile
@@ -21,18 +20,6 @@ class Player(pygame.sprite.Sprite):
         self.reload_time = 0
         self.is_reloading = False
         self.sound = sound
-
-    def is_collision(self, position_x, position_y):
-        """Check if player collide with enemy
-        1. PositionX - position on the x-axis where the player collides with an object
-        2. PositionY - position on the y-axis where the player collides with an object"""
-
-        distance = math.sqrt(math.pow(position_x - self.position[0], 2) + \
-                            (math.pow(position_y - self.position[1], 2)))
-        if distance < 35:
-            return True
-        else:
-            return False
 
     def move(self, screen, screen_params):
         """Move
@@ -89,10 +76,10 @@ class Player(pygame.sprite.Sprite):
                 player_missile.append(Missile(missile_icon, -10))
 
                 launch_x = (self.icon[0].get_width() / 2) - \
-                    (player_missile[-1].icon.get_width() / 2)
+                    (player_missile[-1].icon[0].get_width() / 2)
 
                 launch_y = (self.icon[0].get_height() / 2) - \
-                    (player_missile[-1].icon.get_width() / 2)
+                    (player_missile[-1].icon[0].get_width() / 2)
 
                 player_missile[-1].position[0] = self.position[0] + launch_x
                 player_missile[-1].position[1] = self.position[1] - launch_y

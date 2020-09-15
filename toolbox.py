@@ -1,5 +1,6 @@
 """File for functions which load resources"""
 
+import math
 import random
 import pygame
 from pygame import mixer
@@ -103,3 +104,19 @@ def moving_background2(background, screen, bg1_y, bg2_y):
     screen.blit(background, (0, bg2_y))
 
     return bg1_y, bg2_y
+
+def is_collision(obj1, obj2, crange):
+    """Check collision between two objects
+    1. obj1    - object one
+    2. obj2    - object two
+    3. cRange - distance between two points when function returns true"""
+
+    o1x = obj1.position[0] + (obj1.icon[0].get_width() / 2)
+    o1y = obj1.position[1] + (obj1.icon[0].get_height() / 2)
+
+    o2x = obj2.position[0] + (obj2.icon[0].get_width() / 2)
+    o2y = obj2.position[1] + (obj2.icon[0].get_height() / 2)
+
+    distance = math.sqrt(math.pow(o1x - o2x, 2) + (math.pow(o1y - o2y, 2)))
+
+    return bool(distance < crange)

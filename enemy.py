@@ -8,10 +8,10 @@ from missile import Missile
 class Enemy(pygame.sprite.Sprite):
     """
     1. Screen params - width and height of the screen
-    2. Enemy_icon    - list of three icons - center, left, right"""
+    2. Icon    - list of three icons - center, left, right"""
 
-    def __init__(self, screen_params, enemy_icon):
-        self.icon = enemy_icon
+    def __init__(self, screen_params, icon):
+        self.icon = icon
         self.position = [random.randint(5, screen_params[0] - 100), -10]
         self.velocity = 1
         self.step = 0
@@ -56,9 +56,11 @@ class Enemy(pygame.sprite.Sprite):
             self.is_reloading = True
             enemy_missile.append(Missile(missile_icon, 4))
 
-            launch_x = (self.icon[0].get_width() / 2) - (enemy_missile[-1].icon.get_width() / 2)
+            launch_x = (self.icon[0].get_width() / 2) - \
+                (enemy_missile[-1].icon[0].get_width() / 2)
 
-            launch_y = (self.icon[0].get_height() / 2) - (enemy_missile[-1].icon.get_height() / 2)
+            launch_y = (self.icon[0].get_height() / 2) - \
+                (enemy_missile[-1].icon[0].get_height() / 2)
 
             enemy_missile[-1].position[0] = self.position[0] + launch_x
             enemy_missile[-1].position[1] = self.position[1] + launch_y
