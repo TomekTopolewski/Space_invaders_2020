@@ -5,18 +5,17 @@ from text import Text
 from button import Button
 from toolbox import load_sound, load_image
 
-def game_over(score, screen, screen_params):
+def game_over(score, display):
     """Game over window
     1. Score         - number of points the player earned
-    2. Screen        - the surface where we will draw a text
-    3. Screen params - a list of two values, window's width and height"""
+    2. Display       - the surface where we will draw a text"""
 
     clock = pygame.time.Clock()
 
     try:
         background = [pygame.image.load('data/images/background_001.jpg')]
     except pygame.error:
-        background = pygame.Surface((screen_params[0], screen_params[1]))
+        background = pygame.Surface((display[0][0], display[0][1]))
         background.fill((0, 0, 0))
 
     game_over_txt = Text(72, (255, 255, 255), 'data/fonts/space_age.ttf')
@@ -38,12 +37,12 @@ def game_over(score, screen, screen_params):
                 pygame.quit()
                 quit()
 
-        screen.blit(background[0], (0, 0))
-        game_over_txt.draw_center(screen, 120)
-        score.draw(screen, 320, 180)
+        display[1].blit(background[0], (0, 0))
+        game_over_txt.draw_center(display[1], 120)
+        score.draw(display[1], 320, 180)
 
         again_button.render()
-        again_button.draw(screen)
+        again_button.draw(display[1])
         again_button.action(mouse, click)
 
         if again_button.status:
@@ -52,6 +51,6 @@ def game_over(score, screen, screen_params):
 
         # Draw custom cursor
         cursor = load_image('data/icons/cursor.png')
-        screen.blit(cursor, mouse)
+        display[1].blit(cursor, mouse)
 
         pygame.display.update()

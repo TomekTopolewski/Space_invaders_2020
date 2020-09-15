@@ -7,13 +7,13 @@ from missile import Missile
 
 class Enemy(pygame.sprite.Sprite):
     """
-    1. Screen_params - width and height used for creating enemies on the screen
+    1. Screen params - width and height of the screen
     2. Enemy_icon    - list of three icons - center, left, right"""
 
     def __init__(self, screen_params, enemy_icon):
         self.icon = enemy_icon
-        self.position = [random.randint(5, screen_params[0]- 100), -10]
-        self.velocity = 2.5
+        self.position = [random.randint(5, screen_params[0] - 100), -10]
+        self.velocity = 1
         self.step = 0
         self.move_type = 0
         self.hitpoints = 2
@@ -64,14 +64,14 @@ class Enemy(pygame.sprite.Sprite):
             enemy_missile[-1].position[1] = self.position[1] + launch_y
             enemy_missile[-1].state = True
 
-    def draw_hp(self, screen):
+    def draw_hp(self, display):
         """Draw hitpoints bar
-        1. Screen - surface where we will draw a health bar"""
+        1. Display - surface where we will draw a bar"""
 
         surface = pygame.Surface((self.icon[0].get_width(), 4))
         pygame.draw.rect(surface, (255, 80, 80), (0, 0, self.icon[0].get_width(), 4))
         pygame.draw.rect(surface, (0, 255, 0), (0, 0, int(self.cell * self.hitpoints), 4))
-        screen.blit(surface, (self.position[0], self.position[1] - 5))
+        display.blit(surface, (self.position[0], self.position[1] - 5))
 
     def reload(self, time):
         """Reload
@@ -83,90 +83,79 @@ class Enemy(pygame.sprite.Sprite):
             self.is_reloading = False
             self.reload_time = 0
 
-    def _forward(self, screen):
+    def _forward(self, display):
         """Fly forward
-        1. Screen - surface where we will draw a ship"""
+        1. Display - surface where we will move"""
 
-        if self.step % 2 == 0:
-            self.position[1] += self.velocity
-        screen.blit(self.icon[0], (self.position[0], self.position[1]))
+        self.position[1] += self.velocity
+        display.blit(self.icon[0], (self.position[0], self.position[1]))
         self.step += 1
 
-    def _diagonal_right_down(self, screen, screen_params):
+    def _diagonal_right_down(self, display):
         r"""Fly like this \ down
-        1. Screen        - surface where we will draw a ship
-        2. Screen_params - width and height used for checking if the enemy won't leave the screen"""
+        1. Display - surface and screen params"""
 
-        self._check_right(screen_params)
-        if self.step % 2 == 0:
-            self.position[0] += self.velocity
-            self.position[1] += self.velocity
-        screen.blit(self.icon[2], (self.position[0], self.position[1]))
+        self._check_right(display[0])
+        self.position[0] += self.velocity
+        self.position[1] += self.velocity
+        display[1].blit(self.icon[2], (self.position[0], self.position[1]))
         self.step += 1
 
-    def _diagonal_rigt_up(self, screen):
+    def _diagonal_rigt_up(self, display):
         r"""Fly like this \ up
-        1. Screen - surface where we will draw a ship"""
+        1. Display - surface where we will move"""
 
         self._check_up()
         self._check_left()
-        if self.step % 2 == 0:
-            self.position[0] -= self.velocity
-            self.position[1] -= self.velocity
-        screen.blit(self.icon[2], (self.position[0], self.position[1]))
+        self.position[0] -= self.velocity
+        self.position[1] -= self.velocity
+        display.blit(self.icon[2], (self.position[0], self.position[1]))
         self.step += 1
 
-    def _diagonal_left_down(self, screen):
+    def _diagonal_left_down(self, display):
         r"""Fly like this / down
-        1. Screen - surface where we will draw a ship"""
+        1. Display - surface where we will move"""
 
         self._check_left()
-        if self.step % 2 == 0:
-            self.position[0] -= self.velocity
-            self.position[1] += self.velocity
-        screen.blit(self.icon[1], (self.position[0], self.position[1]))
+        self.position[0] -= self.velocity
+        self.position[1] += self.velocity
+        display.blit(self.icon[1], (self.position[0], self.position[1]))
         self.step += 1
 
-    def _diagonal_left_up(self, screen, screen_params):
+    def _diagonal_left_up(self, display):
         r"""Fly like this / up
-        1. Screen        - surface where we will draw a ship
-        2. Screen_params - width and height used for checking if the enemy won't leave the screen"""
+        1. Display - surface and screen params"""
 
         self._check_up()
-        self._check_right(screen_params)
-        if self.step % 2 == 0:
-            self.position[0] += self.velocity
-            self.position[1] -= self.velocity
-        screen.blit(self.icon[1], (self.position[0], self.position[1]))
+        self._check_right(display[0])
+        self.position[0] += self.velocity
+        self.position[1] -= self.velocity
+        display[1].blit(self.icon[1], (self.position[0], self.position[1]))
         self.step += 1
 
-    def _right(self, screen, screen_params):
+    def _right(self, display):
         """Fly right
-        1. Screen        - surface where we will draw a ship
-        2. Screen_params - width and height used for checking if the enemy won't leave the screen"""
+        1. Display - surface and screen params"""
 
-        self._check_right(screen_params)
-        if self.step % 2 == 0:
-            self.position[0] += self.velocity
-        screen.blit(self.icon[2], (self.position[0], self.position[1]))
+        self._check_right(display[0])
+        self.position[0] += self.velocity
+        display[1].blit(self.icon[2], (self.position[0], self.position[1]))
         self.step += 1
 
-    def _left(self, screen):
+    def _left(self, display):
         """Fly left
-        1. Screen - surface where we will draw a ship"""
+        1. Display - surface where we will draw"""
 
         self._check_left()
-        if self.step % 2 == 0:
-            self.position[0] -= self.velocity
-        screen.blit(self.icon[1], (self.position[0], self.position[1]))
+        self.position[0] -= self.velocity
+        display.blit(self.icon[1], (self.position[0], self.position[1]))
         self.step += 1
 
-    def _check_right(self, screen_params):
+    def _check_right(self, display):
         """Check right
-        1. Screen        - surface where we will draw a ship
-        2. Screen_params - width and height used for checking if the enemy won't leave the screen"""
+        1. Display - screen params"""
 
-        if self.position[0] >= screen_params[0] - self.icon[0].get_width():
+        if self.position[0] >= display[0] - self.icon[0].get_width():
             self.position[0] -= self.velocity
             self.step = 0
             self.move_type = random.randint(0, 4)
@@ -185,26 +174,25 @@ class Enemy(pygame.sprite.Sprite):
             self.step = 0
             self.move_type = random.randint(0, 4)
 
-    def move(self, screen, screen_params):
-        """Advanced move
-        1. Screen        - surface where we will draw a ship
-        2. Screen_params - width and height used for checking if the enemy won't leave the screen"""
+    def move(self, display):
+        """Move
+        1. Display - surface and screen params"""
 
         if self.step == 100:
             self.step = 0
             self.move_type = random.randint(0, 6)
 
         if self.move_type == 0:
-            self._forward(screen)
+            self._forward(display[1])
         elif self.move_type == 1:
-            self._diagonal_right_down(screen, screen_params)
+            self._diagonal_right_down(display[:2])
         elif self.move_type == 2:
-            self._diagonal_rigt_up(screen)
+            self._diagonal_rigt_up(display[1])
         elif self.move_type == 3:
-            self._diagonal_left_down(screen)
+            self._diagonal_left_down(display[1])
         elif self.move_type == 4:
-            self._diagonal_left_up(screen, screen_params)
+            self._diagonal_left_up(display[:2])
         elif self.move_type == 5:
-            self._right(screen, screen_params)
+            self._right(display[:2])
         elif self.move_type == 6:
-            self._left(screen)
+            self._left(display[1])
