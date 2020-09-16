@@ -5,7 +5,7 @@ import pygame
 
 from pygame import mixer
 from text import Text
-from comet import Comet
+from object import Object
 from toolbox import load_image, load_sound, load_music
 from button import Button
 
@@ -17,8 +17,6 @@ def menu(state, display):
     cometx = []
     comety = []
     comet_icon = load_image('data/icons/comet_001.png')
-    cometx.append(Comet(comet_icon, [827, random.randint(0, 850)]))
-    comety.append(Comet(comet_icon, [random.randint(0, 800), 0]))
 
     change_background = 0
     background = display[2][0]
@@ -82,16 +80,18 @@ def menu(state, display):
 
         # Drop comets x
         if random.randint(0, 250) == 42:
-            cometx.append(Comet(comet_icon, [827, random.randint(0, 850)]))
+            cometx.append(Object([comet_icon], [827, random.randint(0, 850)], 5, False))
+            cometx[-1].state = True
 
         # Drop comets y
         if random.randint(0, 250) == 42:
-            comety.append(Comet(comet_icon, [random.randint(0, 800), 0]))
+            comety.append(Object([comet_icon], [random.randint(0, 800), 0], 5, False))
+            comety[-1].state = True
 
         # Loop through comets x
         for i, _ in enumerate(cometx):
             # Move
-            cometx[i].move(display[1])
+            cometx[i].movexy(display[1])
 
             # Check screen leave
             if cometx[i].position[1] > display[0][1]:
@@ -100,7 +100,7 @@ def menu(state, display):
         # Loop through comets y
         for i, _ in enumerate(comety):
             # Move
-            comety[i].move(display[1])
+            comety[i].movexy(display[1])
 
             # Check screen leave
             if comety[i].position[1] > display[0][1]:

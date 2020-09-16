@@ -2,7 +2,7 @@
 
 import pygame
 
-from missile import Missile
+from object import Object
 
 class Player(pygame.sprite.Sprite):
     """
@@ -73,7 +73,7 @@ class Player(pygame.sprite.Sprite):
 
         if keys[pygame.K_SPACE] or keys[pygame.K_LSHIFT]:
             if not self.is_reloading:
-                player_missile.append(Missile(missile_icon, -10))
+                player_missile.append(Object([missile_icon], [0, 0], -10, False))
 
                 launch_x = (self.icon[0].get_width() / 2) - \
                     (player_missile[-1].icon[0].get_width() / 2)

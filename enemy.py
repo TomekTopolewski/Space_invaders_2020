@@ -3,7 +3,7 @@
 import random
 import pygame
 
-from missile import Missile
+from object import Object
 
 class Enemy(pygame.sprite.Sprite):
     """
@@ -54,7 +54,7 @@ class Enemy(pygame.sprite.Sprite):
 
         if not self.is_reloading and random.randint(0, 200) == 5:
             self.is_reloading = True
-            enemy_missile.append(Missile(missile_icon, 4))
+            enemy_missile.append(Object([missile_icon], [0, 0], 4, False))
 
             launch_x = (self.icon[0].get_width() / 2) - \
                 (enemy_missile[-1].icon[0].get_width() / 2)
