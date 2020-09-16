@@ -3,7 +3,7 @@
 import random
 import pygame
 
-from object import Object
+from objects import Object
 
 class Enemy(pygame.sprite.Sprite):
     """
@@ -22,6 +22,7 @@ class Enemy(pygame.sprite.Sprite):
         self.reload_step = 1
         self.reload_time = 0
         self.is_reloading = False
+        self.state = True
 
     def level(self, score_value, enemy_icon):
         """Progress mechanism

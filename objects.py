@@ -17,6 +17,7 @@ class Object(pygame.sprite.Sprite):
         self.sound = sound
         self.type = 0
         self.last = 0
+        self.hitpoints = 1
 
     def movex(self, screen):
         """Move in x-axis

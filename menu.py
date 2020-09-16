@@ -5,7 +5,7 @@ import pygame
 
 from pygame import mixer
 from text import Text
-from object import Object
+from objects import Object
 from toolbox import load_image, load_sound, load_music
 from button import Button
 

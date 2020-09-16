@@ -6,7 +6,7 @@ import pygame
 from player import Player
 from enemy import Enemy
 from text import Text
-from object import Object
+from objects import Object
 
 from pause import pause
 from game_over import game_over
@@ -71,7 +71,8 @@ def main(state, display, object_icons, object_sounds):
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p:
-                    pause(display, score, hitpoints)
+                    if pause(display, score, hitpoints):
+                        return True
 
         # Player's move, shoot and reload
         player.move(display[1], display[0])
@@ -84,232 +85,156 @@ def main(state, display, object_icons, object_sounds):
         if player.is_reloading:
             player.reload(500)
 
-        # Loop through the enemy list and do various tasks
-        for i, _ in enumerate(enemies):
-            # Move
-            enemies[i].move(display[:2])
+        # Player's collision with environment
+        player_envi = enemies + enemy_missile + debris + asteroid
+        for i, _ in enumerate(player_envi):
 
-            # Check screen leave
-            if enemies[i].position[1] > (display[0][1] - (enemies[i].icon[0].get_height() / 2)):
-                player.hitpoints -= 1
-
-                if player.hitpoints >= 1:
-                    enemies[i] = Enemy(display[0], enemy_icon[0])
-                    enemies[i].level(score.value, enemy_icon)
-                    hitpoints.value = player.hitpoints
-                else:
-                    hitpoints.value = player.hitpoints
-                    state = False
-                    if game_over(score, display):
-                        return True
-
-            # Draw hitpoints bar
-            enemies[i].draw_hp(display[1])
-
-            # Shoot
-            enemies[i].shoot(enemy_missile, missile_icon[2])
-
-            # Reload the gun
-            if enemies[i].is_reloading:
-                enemies[i].reload(150)
-
-            # Check collision with the player
-            if is_collision(player, enemies[i], 40):
+            if player_envi[i].state and is_collision(player_envi[i], player, 40):
                 player.hitpoints -= 1
 
                 explosion.append(Object(explosion_icon, [0, 0], False, explosion_sound))
-                explosion[-1].burst(display[1], enemies[i].position)
+                explosion[-1].burst(display[1], player_envi[i].position)
                 explosion[-1].sound.set_volume(0.25)
                 explosion[-1].sound.play()
 
-                debris.append(Object(debris_icon, enemies[i].position, 0.5, False))
-                debris[-1].state = True
+                if player.hitpoints == 0:
+                    player.state = False
 
-                hitpoints.value = player.hitpoints
+                player_envi[i].state = False
 
-                if player.hitpoints >= 1:
-                    enemies[i] = Enemy(display[0], enemy_icon[0])
-                    enemies[i].level(score.value, enemy_icon)
-
-                    player.position[0] = 0
-                    player.position[1] = display[0][1] - player.icon[0].get_height()
-                else:
-                    state = False
-                    if game_over(score, display):
-                        return True
-
-            # Check collision with asteroids
-            for _i, _ in enumerate(asteroid):
-                if is_collision(asteroid[_i], enemies[i], 40):
+        # Enemies collision with environment
+        enemy_envi = player_missile + asteroid
+        for i, _ in enumerate(enemies):
+            for _i, _ in enumerate(enemy_envi):
+                if enemy_envi[_i].state and is_collision(enemy_envi[_i], enemies[i], 40):
                     enemies[i].hitpoints -= 1
 
                     explosion.append(Object(explosion_icon, [0, 0], False, explosion_sound))
-                    explosion[-1].burst(display[1], asteroid[_i].position)
+                    explosion[-1].burst(display[1], enemy_envi[_i].position)
+                    explosion[-1].sound.set_volume(0.25)
+                    explosion[-1].sound.play()
 
                     if enemies[i].hitpoints == 0:
-                        debris.append(Object(debris_icon, enemies[i].position, 0.5, False))
-                        debris[-1].state = True
+                        if enemy_envi[_i].type == 4:
+                            score.value += 1
+                        enemies[i].state = False
 
-                        enemies[i] = Enemy(display[0], enemy_icon[0])
-                        enemies[i].level(score.value, enemy_icon)
+                    enemy_envi[_i].state = False
 
-                    asteroid.pop(_i)
+        # Player's missiles collision with environment
+        missile_envi = debris + asteroid + enemy_missile
+        for i, _ in enumerate(player_missile):
+            for _i, _ in enumerate(missile_envi):
+                if missile_envi[_i].state and is_collision(missile_envi[_i], player_missile[i], 40):
+                    missile_envi[_i].hitpoints -= 1
 
-        # Loop through the enemy's missile list and do various tasks
-        for i, _ in enumerate(enemy_missile):
-            # Fly
-            enemy_missile[i].movex(display[1])
+                    explodex = missile_envi[_i].position[0] + \
+                        missile_envi[_i].icon[0].get_width() / 2
+                    explodey = missile_envi[_i].position[1] + \
+                        missile_envi[_i].icon[0].get_height() / 2
 
-            # Check screen leave
-            if enemy_missile[i].position[1] > display[0][1]:
-                enemy_missile[i].state = False
+                    explosion.append(Object(explosion_icon, [0, 0], False, explosion_sound))
+                    explosion[-1].burst(display[1], [explodex, explodey])
+                    explosion[-1].sound.set_volume(0.25)
+                    explosion[-1].sound.play()
 
-            # Check the player's ship hit
-            if enemy_missile[i].state and is_collision(enemy_missile[i], player, 40):
+                    if missile_envi[_i].hitpoints == 0:
+                        missile_envi[_i].state = False
+
+                    player_missile[i].state = False
+
+        # Enemies
+        for i, _ in enumerate(enemies):
+            if not enemies[i].state:
+                debris.append(Object(debris_icon, enemies[i].position, 0.5, False))
+                debris[-1].state = True
+
+                if random.randint(0, 10) <= enemies[i].drop_rate:
+                    ptype = random.randint(0, 3)
+                    package.append(Object(\
+                        [package_icon[ptype]], [0, 0], 0.5, package_sound))
+
+                    package[-1].position[0] = enemies[i].position[0] + \
+                        enemies[i].icon[0].get_width() / 4
+                    package[-1].position[1] = enemies[i].position[1] + \
+                        enemies[i].icon[0].get_height() / 4
+                    package[-1].state = True
+                    package[-1].sound.set_volume(0.20)
+                    package[-1].type = ptype
+
+                enemies[i] = Enemy(display[0], enemy_icon[0])
+                enemies[i].level(score.value, enemy_icon)
+
+            enemies[i].move(display[:2])
+
+            if enemies[i].position[1] > (display[0][1] - (enemies[i].icon[0].get_height() / 2)):
                 player.hitpoints -= 1
-                hitpoints.value = player.hitpoints
-                enemy_missile[i].state = False
 
-                explosion.append(Object(explosion_icon, [0, 0], False, explosion_sound))
-                explosion[-1].burst(display[1], enemy_missile[i].position)
-                explosion[-1].sound.set_volume(0.25)
-                explosion[-1].sound.play()
+                enemies[i] = Enemy(display[0], enemy_icon[0])
+                enemies[i].level(score.value, enemy_icon)
 
                 if player.hitpoints == 0:
-                    state = False
-                    if game_over(score, display):
-                        return True
+                    player.state = False
 
-            # Check collision with asteroids
+            enemies[i].draw_hp(display[1])
+
+            enemies[i].shoot(enemy_missile, missile_icon[2])
+
+            if enemies[i].is_reloading:
+                enemies[i].reload(150)
+
+        # Enemy's missiles
+        for i, _ in enumerate(enemy_missile):
             if enemy_missile[i].state:
+                enemy_missile[i].movex(display[1])
+
+                if enemy_missile[i].position[1] > display[0][1]:
+                    enemy_missile[i].state = False
+
                 for _i, _ in enumerate(asteroid):
                     if is_collision(asteroid[_i], enemy_missile[i], 40):
+                        asteroid[_i].hitpoints -= 1
+
                         explosion.append(Object(explosion_icon, [0, 0], False, explosion_sound))
                         explosion[-1].burst(display[1], asteroid[_i].position)
-                        asteroid.pop(_i)
+
+                        if asteroid[_i].hitpoints == 0:
+                            asteroid[_i].state = False
+
                         enemy_missile[i].state = False
 
-            # Remove unnecessary objects
             if not enemy_missile[i].state:
                 enemy_missile.pop(i)
 
-        # Loop through the player's missile list and do various tasks
+        # Player's missiles
         for i, _ in enumerate(player_missile):
-            # Move
-            player_missile[i].movex(display[1])
-
-            # Check leave
-            if player_missile[i].position[1] < -32:
-                player_missile[i].state = False
-
-            # Check collision with the enemy's missile
             if player_missile[i].state:
-                for _i, _ in enumerate(enemy_missile):
-                    if is_collision(enemy_missile[_i], player_missile[i], 40):
-                        explosion.append(Object(explosion_icon, [0, 0], False, explosion_sound))
-                        explosion[-1].burst(display[1], enemy_missile[_i].position)
-                        explosion[-1].sound.set_volume(0.25)
-                        explosion[-1].sound.play()
-                        enemy_missile.pop(_i)
-                        player_missile[i].state = False
+                player_missile[i].movex(display[1])
 
-            # Check collision with asteroids
-            if player_missile[i].state:
-                for _i, _ in enumerate(asteroid):
-                    if is_collision(asteroid[_i], player_missile[i], 40):
-                        explosion.append(Object(explosion_icon, [0, 0], False, explosion_sound))
-                        explosion[-1].burst(display[1], player_missile[i].position)
-                        explosion[-1].sound.set_volume(0.25)
-                        explosion[-1].sound.play()
-                        asteroid.pop(_i)
-                        player_missile[i].state = False
+                if player_missile[i].position[1] < -32:
+                    player_missile[i].state = False
 
-            # Check collision with debris
-            if player_missile[i].state:
-                for _i, _ in enumerate(debris):
-                    if is_collision(debris[_i], player_missile[i], 40):
-                        explosion.append(Object(explosion_icon, [0, 0], False, explosion_sound))
-                        explosion[-1].burst(display[1], player_missile[i].position)
-                        explosion[-1].sound.set_volume(0.25)
-                        explosion[-1].sound.play()
-                        debris.pop(_i)
-                        player_missile[i].state = False
-
-            # Check enemy's ship hit
-            if player_missile[i].state:
-                for _i, _ in enumerate(enemies):
-                    if is_collision(player_missile[i], enemies[_i], 40):
-                        enemies[_i].hitpoints -= 1
-                        player_missile[i].state = False
-
-                        explosion.append(Object(explosion_icon, [0, 0], False, explosion_sound))
-                        explosion[-1].burst(display[1], player_missile[i].position)
-                        explosion[-1].sound.set_volume(0.25)
-                        explosion[-1].sound.play()
-
-                        if enemies[_i].hitpoints == 0:
-                            score.value += 1
-                            debris.append(Object(debris_icon, enemies[_i].position, 0.5, False))
-                            debris[-1].state = True
-
-                            if random.randint(0, 10) <= enemies[_i].drop_rate:
-                                ptype = random.randint(0, 3)
-                                package.append(Object([package_icon[ptype]], [0, 0], 0.5, package_sound))
-
-                                package[-1].position[0] = enemies[_i].position[0] + \
-                                    enemies[_i].icon[0].get_width() / 4
-                                package[-1].position[1] = enemies[_i].position[1] + \
-                                    enemies[_i].icon[0].get_height() / 4
-                                package[-1].state = True
-                                package[-1].sound.set_volume(0.20)
-                                package[-1].type = ptype
-
-                            enemies[_i] = Enemy(display[0], enemy_icon[0])
-                            enemies[_i].level(score.value, enemy_icon)
-
-            # Remove unnecessary objects
             if not player_missile[i].state:
                 player_missile.pop(i)
 
-        # Loop through debris list an do various tasks
+        # Debrises
         for i, _ in enumerate(debris):
+            if debris[i].state:
+                debris[i].keep(display[1])
 
-            # Slowly disappear
-            debris[i].keep(display[1])
+                if debris[i].position[1] > display[0][1]:
+                    debris[i].state = False
 
-            # Check player's ship hit
-            if is_collision(debris[i], player, 40):
-                player.hitpoints -= 1
-                hitpoints.value = player.hitpoints
-
-                explosion.append(Object(explosion_icon, [0, 0], False, explosion_sound))
-                explosion[-1].burst(display[1], debris[i].position)
-                explosion[-1].sound.set_volume(0.25)
-                explosion[-1].sound.play()
-
-                if player.hitpoints == 0:
-                    state = False
-                    if game_over(score, display):
-                        return True
-
-                debris[i].state = False
-
-            # Check screen leave
-            if debris[i].state and debris[i].position[1] > display[0][1]:
-                debris[i].state = False
-
-            # Remove unnecessary objects
             if not debris[i].state:
                 debris.pop(i)
 
-        # Fly and open the package
+        # Packages
         for i, _ in enumerate(package):
             package[i].movex(display[1])
 
             if is_collision(package[i], player, 40):
                 is_upgraded = package[i].open(player, is_upgraded, player_icon[1], missile_sound[1])
                 package[i].sound.play()
-                hitpoints.value = player.hitpoints
                 package.pop(i)
 
         # Spot boss
@@ -317,7 +242,7 @@ def main(state, display, object_icons, object_sounds):
             enemies.append(Enemy(display[0], enemy_icon[6]))
             enemies[-1].boss()
 
-        # Draw explosion
+        # Draw explosions
         for i, _ in enumerate(explosion):
             explosion[i].burst_last(display[1])
 
@@ -330,36 +255,24 @@ def main(state, display, object_icons, object_sounds):
                 [random.randint(5, display[0][0] - 50), -30], 0.5, 0))
             asteroid[-1].state = True
 
-        # Loop through asteroid list and do various tasks
+        # Asteroids
         for i, _ in enumerate(asteroid):
-            # Move
-            asteroid[i].movex(display[1])
+            if asteroid[i].state:
+                asteroid[i].movex(display[1])
 
-            # Check player's ship hit
-            if is_collision(asteroid[i], player, 40):
-                player.hitpoints -= 1
-                hitpoints.value = player.hitpoints
+                if asteroid[i].position[1] > display[0][1]:
+                    asteroid[i].state = False
 
-                explosion.append(Object(explosion_icon, [0, 0], False, explosion_sound))
-                explosion[-1].burst(display[1], asteroid[i].position)
-                explosion[-1].sound.set_volume(0.25)
-                explosion[-1].sound.play()
-
-                if player.hitpoints == 0:
-                    state = False
-                    if game_over(score, display):
-                        return True
-
-                asteroid[i].state = False
-
-            # Check screen leave
-            if asteroid[i].state and asteroid[i].position[1] > display[0][1]:
-                asteroid[i].state = False
-
-            # Remove unnecessary objects
             if not asteroid[i].state:
                 asteroid.pop(i)
 
+        # Game over
+        if not player.state:
+            state = False
+            if game_over(score, display):
+                return True
+
         score.draw(display[1], [10, 10])
+        hitpoints.value = player.hitpoints
         hitpoints.draw(display[1], [10, 30])
         pygame.display.update()

@@ -2,7 +2,7 @@
 
 import pygame
 
-from object import Object
+from objects import Object
 
 class Player(pygame.sprite.Sprite):
     """
@@ -20,6 +20,7 @@ class Player(pygame.sprite.Sprite):
         self.reload_time = 0
         self.is_reloading = False
         self.sound = sound
+        self.state = True
 
     def move(self, screen, screen_params):
         """Move
@@ -81,6 +82,8 @@ class Player(pygame.sprite.Sprite):
                 launch_y = (self.icon[0].get_height() / 2) - \
                     (player_missile[-1].icon[0].get_width() / 2)
 
+                # Type 4 is used for check if enemy was destroyed by player's missile in enemy_envi
+                player_missile[-1].type = 4
                 player_missile[-1].position[0] = self.position[0] + launch_x
                 player_missile[-1].position[1] = self.position[1] - launch_y
                 self.sound.set_volume(0.25)
