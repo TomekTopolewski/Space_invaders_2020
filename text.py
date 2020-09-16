@@ -17,28 +17,27 @@ class Text():
             self.font = pygame.font.Font(None, size)
         self.color = color
 
-    def draw(self, screen, position_x, position_y):
+    def draw(self, screen, position):
         """Draw text and numbers
-        1. Screen    - the surface where we will draw a text
-        2. PositionX - position on the x-axis where we will draw
-        3. PositionY - postion on the y-axis where we will draw"""
+        1. Screen   - the surface where we will draw a text
+        2. Position - position on the x and y-axis"""
 
         score_render = self.font.render(str(self.text) + str(self.value), True, self.color)
-        screen.blit(score_render, (position_x, position_y))
+        screen.blit(score_render, (position[0], position[1]))
 
-    def draw_text(self, screen, position_x, position_y):
+    def draw_text(self, screen, position):
         """Draw text
-        1. Screen    - the surface where we will draw a text
-        2. PositionX - position on the x-axis where we will draw
-        3. PositionY - postion on the y-axis where we will draw"""
+        1. Screen   - the surface where we will draw a text
+        2. Position - position on the x and y-axis"""
 
         score_render = self.font.render(str(self.text), True, self.color)
-        screen.blit(score_render, (position_x, position_y))
+        screen.blit(score_render, (position[0], position[1]))
 
-    def draw_center(self, screen, position_y):
+    def draw_center(self, screen, position):
         """Draw text center on the x-axis
-        1. Screen    - the surface where we will draw a text"""
+        1. Screen   - the surface where we will draw a text
+        2. Position - position on the y-axis"""
 
         score_render = self.font.render(str(self.text), True, self.color)
         centerx = (screen.get_width() / 2) - (score_render.get_width() / 2)
-        screen.blit(score_render, (centerx, position_y))
+        screen.blit(score_render, (centerx, position))

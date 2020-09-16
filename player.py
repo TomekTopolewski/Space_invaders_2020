@@ -23,7 +23,7 @@ class Player(pygame.sprite.Sprite):
 
     def move(self, screen, screen_params):
         """Move
-        1. Screen        - the surface where we will draw a player ship
+        1. Screen        - the surface where we will draw an object
         2. Screen_params - width and height used for checking if the player
                            won't leave the screen"""
 
@@ -66,8 +66,8 @@ class Player(pygame.sprite.Sprite):
 
     def shoot(self, player_missile, missile_icon):
         """Shoot
-        1. Player_missile   - list with player's missiles
-        2. Missile_icon     - list with missiles of icons"""
+        1. Player_missile - list with player's missiles
+        2. Missile_icon   - list with missiles of icons"""
 
         keys = pygame.key.get_pressed()
 

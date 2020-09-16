@@ -360,6 +360,6 @@ def main(state, display, object_icons, object_sounds):
             if not asteroid[i].state:
                 asteroid.pop(i)
 
-        score.draw(display[1], 10, 10)
-        hitpoints.draw(display[1], 10, 30)
+        score.draw(display[1], [10, 10])
+        hitpoints.draw(display[1], [10, 30])
         pygame.display.update()

@@ -7,8 +7,8 @@ from toolbox import load_sound, load_image
 
 def game_over(score, display):
     """Game over window
-    1. Score         - number of points the player earned
-    2. Display       - the surface where we will draw a text"""
+    1. Score   - number of points the player earned
+    2. Display - the surface where we will draw a text"""
 
     clock = pygame.time.Clock()
 
@@ -39,7 +39,7 @@ def game_over(score, display):
 
         display[1].blit(background[0], (0, 0))
         game_over_txt.draw_center(display[1], 120)
-        score.draw(display[1], 320, 180)
+        score.draw(display[1], [320, 180])
 
         again_button.render()
         again_button.draw(display[1])

@@ -4,9 +4,9 @@ import pygame
 
 class Object(pygame.sprite.Sprite):
     """
-    1. Icon     - image of an object
-    2. Position - position on the screen
-    3. Velocity - move in x and y-axis
+    1. Icon     - image of an object (list)
+    2. Position - position on the screen (list)
+    3. Velocity - move in x and y-axis (int)
     4. Sound    - sound of an object (false if none)"""
 
     def __init__(self, icon, position, velocity, sound):
@@ -19,15 +19,15 @@ class Object(pygame.sprite.Sprite):
         self.last = 0
 
     def movex(self, screen):
-        """Move and draw an object
-        1. Screen - the surface where we will draw an object"""
+        """Move in x-axis
+        1. Screen - surface where we will draw an object"""
 
         self.position[1] += self.velocity
         screen.blit(self.icon[0], (self.position[0], self.position[1]))
 
     def movexy(self, screen):
-        """Move and draw an object
-         1. Screen - the surface where we will draw an object"""
+        """Move in x and y-axis
+         1. Screen - surface where we will draw an object"""
 
         self.position[0] -= self.velocity
         self.position[1] += self.velocity
@@ -54,7 +54,7 @@ class Object(pygame.sprite.Sprite):
 
     def keep(self, screen):
         """(for debris) Keep object for four seconds
-         1. Screen - the surface where we will draw an object"""
+         1. Screen - surface where we will draw an object"""
 
         self.position[1] += self.velocity
         if self.last < 60:
@@ -71,8 +71,8 @@ class Object(pygame.sprite.Sprite):
 
     def burst(self, screen, position):
         """(for explosion) Draw on the screen
-        1. Screen   - the surface where we will draw an explosion
-        2. Position - position on the x and y-axis where the explosion will appear"""
+        1. Screen   - surface where we will draw an object
+        2. Position - position on the screen"""
 
         self.last = 10
         self.state = True
@@ -81,7 +81,7 @@ class Object(pygame.sprite.Sprite):
 
     def burst_last(self, screen):
         """(for explosion) Keep on the screen
-        1. Screen - the surface where we will draw an explosion"""
+        1. Screen - surface where we will draw an object"""
 
         if self.last > 0:
             screen.blit(self.icon, (self.position[0], self.position[1]))

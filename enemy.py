@@ -49,8 +49,8 @@ class Enemy(pygame.sprite.Sprite):
 
     def shoot(self, enemy_missile, missile_icon):
         """Shoot
-        1. Enemy_missile    - list of enemy's missile
-        2. Missile_icon     - list with missiles of icons"""
+        1. Enemy_missile - list of enemy's missile
+        2. Missile_icon  - list with missiles of icons"""
 
         if not self.is_reloading and random.randint(0, 200) == 5:
             self.is_reloading = True

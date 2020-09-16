@@ -11,7 +11,7 @@ from button import Button
 
 def menu(state, display):
     """Intro window
-    1. Screen - the surface where we will draw a text"""
+    1. Screen - the surface where we will draw objects"""
 
     clock = pygame.time.Clock()
     cometx = []

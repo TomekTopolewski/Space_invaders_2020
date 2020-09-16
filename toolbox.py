@@ -109,7 +109,7 @@ def is_collision(obj1, obj2, crange):
     """Check collision between two objects
     1. obj1    - object one
     2. obj2    - object two
-    3. cRange - distance between two points when function returns true"""
+    3. cRange  - distance between two points when function returns true"""
 
     o1x = obj1.position[0] + (obj1.icon[0].get_width() / 2)
     o1y = obj1.position[1] + (obj1.icon[0].get_height() / 2)
