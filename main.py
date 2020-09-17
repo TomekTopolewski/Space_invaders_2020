@@ -147,7 +147,7 @@ def main(state, display, object_icons, object_sounds):
                 debris.append(Object(debris_icon, enemies[i].position, 0.5, False))
                 debris[-1].state = True
 
-                if random.randint(0, 10) <= enemies[i].drop_rate:
+                if random.randint(0, 15) <= enemies[i].drop_rate:
                     ptype = random.randint(0, 3)
                     package.append(Object(\
                         [package_icon[ptype]], [0, 0], 0.5, package_sound))
@@ -191,7 +191,7 @@ def main(state, display, object_icons, object_sounds):
                         asteroid[_i].hitpoints -= 1
 
                         explosion.append(Object(explosion_icon, asteroid[_i].position, \
-                            False, explosion_sound))
+                            False, False))
                         explosion[-1].state = True
 
                         if asteroid[_i].hitpoints == 0:
