@@ -55,7 +55,7 @@ def main(state, display, object_icons, object_sounds):
     bg2_y = display[2][0].get_height() * -1
 
     while number_of_enemies < 5:
-        enemies.append(Enemy(display[0], enemy_icon[0]))
+        enemies.append(Enemy(display[0], enemy_icon[0], 4000))
         number_of_enemies += 1
 
     while state:
@@ -74,16 +74,14 @@ def main(state, display, object_icons, object_sounds):
                     if pause(display, score, hitpoints):
                         return True
 
-        # Player's move, shoot and reload
+        # Player's move
         player.move(display[1], display[0])
 
+        # Player's shoot
         if is_upgraded:
             player.shoot(player_missile, missile_icon[0])
         else:
             player.shoot(player_missile, missile_icon[1])
-
-        if player.is_reloading:
-            player.reload(500)
 
         # Player's collision with environment
         player_envi = enemies + enemy_missile + debris + asteroid
@@ -162,7 +160,7 @@ def main(state, display, object_icons, object_sounds):
                     package[-1].sound.set_volume(0.20)
                     package[-1].type = ptype
 
-                enemies[i] = Enemy(display[0], enemy_icon[0])
+                enemies[i] = Enemy(display[0], enemy_icon[0], 4000)
                 enemies[i].level(score.value, enemy_icon)
 
             enemies[i].move(display[:2])
@@ -170,7 +168,7 @@ def main(state, display, object_icons, object_sounds):
             if enemies[i].position[1] > (display[0][1] - (enemies[i].icon[0].get_height() / 2)):
                 player.hitpoints -= 1
 
-                enemies[i] = Enemy(display[0], enemy_icon[0])
+                enemies[i] = Enemy(display[0], enemy_icon[0], 4000)
                 enemies[i].level(score.value, enemy_icon)
 
                 if player.hitpoints == 0:
@@ -179,9 +177,6 @@ def main(state, display, object_icons, object_sounds):
             enemies[i].draw_hp(display[1])
 
             enemies[i].shoot(enemy_missile, missile_icon[2])
-
-            if enemies[i].is_reloading:
-                enemies[i].reload(150)
 
         # Enemy's missiles
         for i, _ in enumerate(enemy_missile):
@@ -239,7 +234,7 @@ def main(state, display, object_icons, object_sounds):
 
         # Spot boss
         if random.randint(0, 3000) == 666:
-            enemies.append(Enemy(display[0], enemy_icon[6]))
+            enemies.append(Enemy(display[0], enemy_icon[6], 2500))
             enemies[-1].boss()
 
         # Draw explosions

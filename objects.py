@@ -49,8 +49,8 @@ class Object(pygame.sprite.Sprite):
         elif self.type == 3:
             player.velocity += 1
         elif self.type == 2:
-            if player.reload_step < 20:
-                player.reload_step += 1
+            if player.reload > 500:
+                player.reload -= 50
         return is_upgraded
 
     def keep(self, screen):

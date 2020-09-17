@@ -8,9 +8,9 @@ from objects import Object
 class Enemy(pygame.sprite.Sprite):
     """
     1. Screen params - width and height of the screen
-    2. Icon    - list of three icons - center, left, right"""
+    2. Icon          - list of three icons - center, left, right"""
 
-    def __init__(self, screen_params, icon):
+    def __init__(self, screen_params, icon, reload0):
         self.icon = icon
         self.position = [random.randint(5, screen_params[0] - 100), -10]
         self.velocity = 1
@@ -19,10 +19,9 @@ class Enemy(pygame.sprite.Sprite):
         self.hitpoints = 2
         self.drop_rate = 1
         self.cell = self.icon[0].get_width() / self.hitpoints
-        self.reload_step = 1
-        self.reload_time = 0
-        self.is_reloading = False
+        self.reload = reload0
         self.state = True
+        self.time0 = -reload0
 
     def level(self, score_value, enemy_icon):
         """Progress mechanism
@@ -53,8 +52,9 @@ class Enemy(pygame.sprite.Sprite):
         1. Enemy_missile - list of enemy's missile
         2. Missile_icon  - list with missiles of icons"""
 
-        if not self.is_reloading and random.randint(0, 200) == 5:
-            self.is_reloading = True
+        time1 = pygame.time.get_ticks()
+
+        if time1 - self.time0 > self.reload:
             enemy_missile.append(Object([missile_icon], [0, 0], 4, False))
 
             launch_x = (self.icon[0].get_width() / 2) - \
@@ -66,6 +66,7 @@ class Enemy(pygame.sprite.Sprite):
             enemy_missile[-1].position[0] = self.position[0] + launch_x
             enemy_missile[-1].position[1] = self.position[1] + launch_y
             enemy_missile[-1].state = True
+            self.time0 = pygame.time.get_ticks()
 
     def draw_hp(self, display):
         """Draw hitpoints bar
@@ -75,16 +76,6 @@ class Enemy(pygame.sprite.Sprite):
         pygame.draw.rect(surface, (255, 80, 80), (0, 0, self.icon[0].get_width(), 4))
         pygame.draw.rect(surface, (0, 255, 0), (0, 0, int(self.cell * self.hitpoints), 4))
         display.blit(surface, (self.position[0], self.position[1] - 5))
-
-    def reload(self, time):
-        """Reload
-        1. Time - number used for calculating reload between shots"""
-
-        self.reload_time += self.reload_step
-
-        if self.reload_time >= time:
-            self.is_reloading = False
-            self.reload_time = 0
 
     def _forward(self, display):
         """Fly forward

@@ -16,9 +16,8 @@ class Player(pygame.sprite.Sprite):
         self.position = [370, 480]
         self.velocity = velocity
         self.hitpoints = hitpoints
-        self.reload_step = 10
-        self.reload_time = 0
-        self.is_reloading = False
+        self.reload = 1000
+        self.time0 = -self.reload
         self.sound = sound
         self.state = True
 
@@ -69,11 +68,11 @@ class Player(pygame.sprite.Sprite):
         """Shoot
         1. Player_missile - list with player's missiles
         2. Missile_icon   - list with missiles of icons"""
-
+        time1 = pygame.time.get_ticks()
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_SPACE] or keys[pygame.K_LSHIFT]:
-            if not self.is_reloading:
+            if time1 - self.time0 > self.reload:
                 player_missile.append(Object([missile_icon], [0, 0], -10, False))
 
                 launch_x = (self.icon[0].get_width() / 2) - \
@@ -89,14 +88,4 @@ class Player(pygame.sprite.Sprite):
                 self.sound.set_volume(0.25)
                 self.sound.play()
                 player_missile[-1].state = True
-                self.is_reloading = True
-
-    def reload(self, time):
-        """Reload
-        1. Time - number used for calculating reload between shots"""
-
-        self.reload_time += self.reload_step
-
-        if self.reload_time >= time:
-            self.is_reloading = False
-            self.reload_time = 0
+                self.time0 = pygame.time.get_ticks()
