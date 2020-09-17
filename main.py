@@ -90,9 +90,9 @@ def main(state, display, object_icons, object_sounds):
             if player_envi[i].state and is_collision(player_envi[i], player, 40):
                 player.hitpoints -= 1
 
-                explosion.append(Object(explosion_icon, [0, 0], False, explosion_sound))
-                explosion[-1].burst(display[1], player_envi[i].position)
-                explosion[-1].sound.set_volume(0.25)
+                explosion.append(Object(explosion_icon, player_envi[i].position, \
+                    False, explosion_sound))
+                explosion[-1].state = True
                 explosion[-1].sound.play()
 
                 if player.hitpoints == 0:
@@ -107,9 +107,9 @@ def main(state, display, object_icons, object_sounds):
                 if enemy_envi[_i].state and is_collision(enemy_envi[_i], enemies[i], 40):
                     enemies[i].hitpoints -= 1
 
-                    explosion.append(Object(explosion_icon, [0, 0], False, explosion_sound))
-                    explosion[-1].burst(display[1], enemy_envi[_i].position)
-                    explosion[-1].sound.set_volume(0.25)
+                    explosion.append(Object(explosion_icon, enemy_envi[_i].position, \
+                        False, explosion_sound))
+                    explosion[-1].state = True
                     explosion[-1].sound.play()
 
                     if enemies[i].hitpoints == 0:
@@ -131,9 +131,9 @@ def main(state, display, object_icons, object_sounds):
                     explodey = missile_envi[_i].position[1] + \
                         missile_envi[_i].icon[0].get_height() / 2
 
-                    explosion.append(Object(explosion_icon, [0, 0], False, explosion_sound))
-                    explosion[-1].burst(display[1], [explodex, explodey])
-                    explosion[-1].sound.set_volume(0.25)
+                    explosion.append(Object(explosion_icon, [explodex, explodey], \
+                        False, explosion_sound))
+                    explosion[-1].state = True
                     explosion[-1].sound.play()
 
                     if missile_envi[_i].hitpoints == 0:
@@ -190,8 +190,9 @@ def main(state, display, object_icons, object_sounds):
                     if is_collision(asteroid[_i], enemy_missile[i], 40):
                         asteroid[_i].hitpoints -= 1
 
-                        explosion.append(Object(explosion_icon, [0, 0], False, explosion_sound))
-                        explosion[-1].burst(display[1], asteroid[_i].position)
+                        explosion.append(Object(explosion_icon, asteroid[_i].position, \
+                            False, explosion_sound))
+                        explosion[-1].state = True
 
                         if asteroid[_i].hitpoints == 0:
                             asteroid[_i].state = False
@@ -232,14 +233,17 @@ def main(state, display, object_icons, object_sounds):
                 package[i].sound.play()
                 package.pop(i)
 
-        # Spot boss
+        # Spot enemy boss
         if random.randint(0, 3000) == 666:
             enemies.append(Enemy(display[0], enemy_icon[6], 2500))
             enemies[-1].boss()
 
         # Draw explosions
         for i, _ in enumerate(explosion):
-            explosion[i].burst_last(display[1])
+            if pygame.time.get_ticks() - explosion[i].time0 < 200:
+                display[1].blit(explosion[i].icon, (explosion[i].position))
+            else:
+                explosion[i].state = False
 
             if not explosion[i].state:
                 explosion.pop(i)

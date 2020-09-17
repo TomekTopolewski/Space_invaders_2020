@@ -16,8 +16,11 @@ class Object(pygame.sprite.Sprite):
         self.icon = icon
         self.sound = sound
         self.type = 0
-        self.last = 0
         self.hitpoints = 1
+        self.time0 = pygame.time.get_ticks()
+
+        if self.sound:
+            self.sound.set_volume(0.25)
 
     def movex(self, screen):
         """Move in x-axis
@@ -54,38 +57,20 @@ class Object(pygame.sprite.Sprite):
         return is_upgraded
 
     def keep(self, screen):
-        """(for debris) Keep object for four seconds
+        """(for debris) Disappering animation
          1. Screen - surface where we will draw an object"""
 
         self.position[1] += self.velocity
-        if self.last < 60:
-            self.last += 1
+        time1 = pygame.time.get_ticks()
+
+        if time1 - self.time0 < 100:
             screen.blit(self.icon[0], (self.position[0], self.position[1]))
-        elif self.last >= 60 and self.last < 120:
-            self.last += 1
+
+        elif time1 - self.time0 >= 100 and time1 - self.time0 < 200:
             screen.blit(self.icon[1], (self.position[0], self.position[1]))
-        elif self.last >= 120 and self.last < 180:
-            self.last += 1
+
+        elif time1 - self.time0 >= 200 and time1 - self.time0 < 300:
             screen.blit(self.icon[2], (self.position[0], self.position[1]))
-        elif self.last >= 180:
-            self.state = False
 
-    def burst(self, screen, position):
-        """(for explosion) Draw on the screen
-        1. Screen   - surface where we will draw an object
-        2. Position - position on the screen"""
-
-        self.last = 10
-        self.state = True
-        self.position = position
-        screen.blit(self.icon, (self.position[0], self.position[1]))
-
-    def burst_last(self, screen):
-        """(for explosion) Keep on the screen
-        1. Screen - surface where we will draw an object"""
-
-        if self.last > 0:
-            screen.blit(self.icon, (self.position[0], self.position[1]))
-            self.last -= 1
-        else:
+        elif time1 - self.time0 >= 300:
             self.state = False
