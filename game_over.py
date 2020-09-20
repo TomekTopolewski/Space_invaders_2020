@@ -2,12 +2,11 @@
 
 import pygame
 
-from pygame import mixer
 from text import Text
 from button import Button
 from toolbox import load_img
 
-def game_over(score, display, vol):
+def game_over(score, display):
     """1. score - number of points the player earned
     2. display - the surface where we will draw a text"""
 

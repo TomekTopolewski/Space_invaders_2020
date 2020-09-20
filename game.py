@@ -92,4 +92,4 @@ while True:
 
     vol, score = main(screen, object_icons, object_sounds, vol)
 
-    game_over(score, screen, vol)
+    game_over(score, screen)
