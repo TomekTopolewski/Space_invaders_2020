@@ -3,29 +3,28 @@
 import pygame
 from text import Text
 from button import Button
-from toolbox import load_sound, load_image
+from toolbox import load_sound, load_img
 
 def pause(display, score, hitpoints):
-    """Pause window
-    1. Display   - the surface where we will draw objects
-    2. Score     - number of points the player earned
-    3. Hitpoints - number of hitpoints the player has"""
+    """1. display - the surface where we will draw objects
+    2. score - number of points the player earned
+    3. hitpoints - number of hitpoints the player has"""
 
     clock = pygame.time.Clock()
 
     pause_txt = Text(72, (255, 255, 255), 'data/fonts/space_age.ttf')
     pause_txt.text = "Pause"
 
-    return_button = Button([0, 0], "Return", 36, (100, 100, 100), \
+    returns = Button([0, 0], "Return", 36, (100, 100, 100), \
     load_sound('data/sound/button.wav'))
 
-    play_button = Button([0, 0], "New game", 36, (100, 100, 100), \
+    play = Button([0, 0], "New game", 36, (100, 100, 100), \
     load_sound('data/sound/button.wav'))
 
-    quit_button = Button([0, 0], "Quit", 36, (100, 100, 100), \
+    quits = Button([0, 0], "Quit", 36, (100, 100, 100), \
         load_sound('data/sound/button.wav'))
 
-    button = [return_button, play_button, quit_button]
+    button = [returns, play, quits]
     choose = [False] * 3
     state = True
 
@@ -47,24 +46,24 @@ def pause(display, score, hitpoints):
                 quit()
 
         # Loop through buttons and display them
-        position_y = display[0][1] - 150
+        pos_y = display[0][1] - 150
 
         for i, _ in enumerate(button):
             button[i].render()
-            button[i].position[0] = display[0][0] - button[i].renderb.get_width() - 15
-            button[i].position[1] = position_y
+            button[i].pos[0] = display[0][0] - button[i].line.get_width() - 15
+            button[i].pos[1] = pos_y
             button[i].draw(display[1])
             choose = button[i].action_menu(mouse, click, choose, i)
-            position_y += 50
+            pos_y += 50
 
         if choose[0]:
-            if play_button.sound.get_num_channels() == 0:
-                play_button.sound.play()
+            if play.sound.get_num_channels() == 0:
+                play.sound.play()
             state = False
 
         if choose[1]:
-            if play_button.sound.get_num_channels() == 0:
-                play_button.sound.play()
+            if play.sound.get_num_channels() == 0:
+                play.sound.play()
             state = False
             return True
 
@@ -74,7 +73,7 @@ def pause(display, score, hitpoints):
             quit()
 
         # Draw custom cursor
-        cursor = load_image('data/icons/cursor.png')
+        cursor = load_img('data/icons/cursor.png')
         display[1].blit(cursor, mouse)
 
         pygame.display.update()

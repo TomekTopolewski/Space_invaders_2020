@@ -1,4 +1,4 @@
-"""File for functions which load resources"""
+"""File with useful functions"""
 
 import math
 import random
@@ -16,107 +16,68 @@ class NoneSound:
     def set_volume(self, value):
         """Set volume"""
 
-def load_image(filename):
-    """Loading images
-    1. Filename - path to a file"""
+def load_img(file):
+    """1. file - path to a file"""
 
     try:
-        image = pygame.image.load(filename)
+        img = pygame.image.load(file)
     except pygame.error:
         default = pygame.Surface((64, 64))
         pygame.draw.rect(default, \
                 (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), \
                 (0, 0, 64, 64))
-        image = default
-    return image
+        img = default
+    return img
 
-def load_background(filename, width, height):
-    """Loading background
-    1. Filename - path to a file
-    2. Width    - file width (used when we can't load a file)
-    3. Height   - file height (used when we can't load a file)"""
+def load_sound(file):
+    """1. file - path to a file"""
 
     try:
-        image = pygame.image.load(filename)
-    except pygame.error:
-        image = pygame.Surface((width, height))
-        image.fill((0, 0, 0))
-    return image
-
-def load_sound(filename):
-    """Loading sounds
-    1. Filename - path to a file"""
-
-    try:
-        sound = mixer.Sound(filename)
+        sound = mixer.Sound(file)
     except FileNotFoundError:
         sound = NoneSound()
     return sound
 
-def load_music(filename):
-    """Load background music
-    1. Filename - path to a file"""
+def load_music(file):
+    """1. file - path to a file"""
 
     try:
-        music = mixer.music.load(filename)
+        music = mixer.music.load(file)
     except pygame.error:
         music = False
     return music
 
-def moving_background(background, screen, bg1_y, bg2_y):
-    """Move the background
-    1. Background - image we want to move
-    2. Screen     - surface where we will draw an image
-    1. Bg1_y      - position on the y-axis of the first image
-    2. Bg2_y      - position on the y-axis of the second image"""
+def moving_bkgd(bkgd, screen, bkgd_one_y, bkgd_two_y):
+    """1. bkgd - image we want to move
+    2. screen - surface where we will draw an image
+    3. bkgd_one_y - position on the y-axis of the first image
+    4. bkgd_two_y - position on the y-axis of the second image"""
 
-    bg1_y -= 0.25
-    bg2_y -= 0.25
+    bkgd_one_y += 0.5
+    bkgd_two_y += 0.5
 
-    if bg1_y < background.get_height() * -1:
-        bg1_y = background.get_height()
+    if bkgd_one_y > bkgd.get_height():
+        bkgd_one_y = bkgd.get_height() * -1
 
-    if bg2_y < background.get_height() * -1:
-        bg2_y = background.get_height()
+    if bkgd_two_y > bkgd.get_height():
+        bkgd_two_y = bkgd.get_height() * -1
 
-    screen.blit(background, (0, bg1_y))
-    screen.blit(background, (0, bg2_y))
+    screen.blit(bkgd, (0, bkgd_one_y))
+    screen.blit(bkgd, (0, bkgd_two_y))
 
-    return bg1_y, bg2_y
+    return bkgd_one_y, bkgd_two_y
 
-def moving_background2(background, screen, bg1_y, bg2_y):
-    """Move the background
-    1. Background - image we want to move
-    2. Screen     - surface where we will draw an image
-    1. Bg1_y      - position on the y-axis of the first image
-    2. Bg2_y      - position on the y-axis of the second image"""
+def is_collision(obj_one, obj_two, rng):
+    """1. obj_one - object one
+    2. obj_two - object two
+    3. rng - distance between two points when function returns true"""
 
-    bg1_y += 0.5
-    bg2_y += 0.5
+    o1x = obj_one.pos[0] + (obj_one.icon[0].get_width() / 2)
+    o1y = obj_one.pos[1] + (obj_one.icon[0].get_height() / 2)
 
-    if bg1_y > background.get_height():
-        bg1_y = background.get_height() * -1
-
-    if bg2_y > background.get_height():
-        bg2_y = background.get_height() * -1
-
-    screen.blit(background, (0, bg1_y))
-    screen.blit(background, (0, bg2_y))
-
-    return bg1_y, bg2_y
-
-def is_collision(obj1, obj2, crange):
-    """Check collision between two objects
-    1. obj1    - object one
-    2. obj2    - object two
-    3. cRange  - distance between two points when function returns true"""
-
-    o1x = obj1.position[0] + (obj1.icon[0].get_width() / 2)
-    o1y = obj1.position[1] + (obj1.icon[0].get_height() / 2)
-
-    o2x = obj2.position[0] + (obj2.icon[0].get_width() / 2)
-    o2y = obj2.position[1] + (obj2.icon[0].get_height() / 2)
+    o2x = obj_two.pos[0] + (obj_two.icon[0].get_width() / 2)
+    o2y = obj_two.pos[1] + (obj_two.icon[0].get_height() / 2)
 
     distance = math.sqrt(math.pow(o1x - o2x, 2) + (math.pow(o1y - o2y, 2)))
 
-    return bool(distance < crange)
+    return bool(distance < rng)

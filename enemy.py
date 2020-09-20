@@ -6,51 +6,49 @@ import pygame
 from objects import Object
 
 class Enemy(pygame.sprite.Sprite):
-    """
-    1. Screen params - width and height of the screen
-    2. Icon          - list of three icons - center, left, right"""
+    """1. display - width and height of the screen
+    2. icon - list of three icons - center, left, right
+    3. reload0 - reload time"""
 
-    def __init__(self, screen_params, icon, reload0):
+    def __init__(self, display, icon, reload0):
         self.icon = icon
-        self.position = [random.randint(5, screen_params[0] - 100), -10]
-        self.velocity = 1
+        self.pos = [random.randint(5, display[0] - 100), -10]
+        self.vel = 1
         self.step = 0
         self.move_type = 0
         self.hitpoints = 2
-        self.drop_rate = 1
+        self.drop = 1
         self.cell = self.icon[0].get_width() / self.hitpoints
         self.reload = reload0
         self.state = True
         self.time0 = -reload0
 
-    def level(self, score_value, enemy_icon):
-        """Progress mechanism
-        1. Score_value - number of points that player earned
-        2. Enemy icon  - list with a lists of three icons - center, left, right"""
+    def level(self, score, icon):
+        """1. score - number of points that player earned
+        2. enemy icon - list with a lists of three icons - center, left, right"""
 
-        if score_value > 10 and score_value <= 20:
-            self.icon = enemy_icon[1]
-        elif score_value > 20 and score_value <= 30:
-            self.icon = enemy_icon[2]
-        elif score_value > 30 and score_value <= 40:
-            self.icon = enemy_icon[3]
-        elif score_value > 40 and score_value <= 50:
-            self.icon = enemy_icon[4]
-        elif score_value > 50 and score_value <= 60:
-            self.icon = enemy_icon[5]
-        elif score_value > 60:
-            self.icon = enemy_icon[random.randint(0, 5)]
+        if score > 10 and score <= 20:
+            self.icon = icon[1]
+        elif score > 20 and score <= 30:
+            self.icon = icon[2]
+        elif score > 30 and score <= 40:
+            self.icon = icon[3]
+        elif score > 40 and score <= 50:
+            self.icon = icon[4]
+        elif score > 50 and score <= 60:
+            self.icon = icon[5]
+        elif score > 60:
+            self.icon = icon[random.randint(0, 5)]
 
     def boss(self):
         """Boss"""
-        self.drop_rate = 10
+        self.drop = 10
         self.hitpoints = 5
         self.cell = self.icon[0].get_width() / self.hitpoints
 
     def shoot(self, enemy_missile, missile_icon):
-        """Shoot
-        1. Enemy_missile - list of enemy's missile
-        2. Missile_icon  - list with missiles of icons"""
+        """1. enemy_missile - list of enemy's missile
+        2. missile_icon  - list with missiles of icons"""
 
         time1 = pygame.time.get_ticks()
 
@@ -63,114 +61,104 @@ class Enemy(pygame.sprite.Sprite):
             launch_y = (self.icon[0].get_height() / 2) - \
                 (enemy_missile[-1].icon[0].get_height() / 2)
 
-            enemy_missile[-1].position[0] = self.position[0] + launch_x
-            enemy_missile[-1].position[1] = self.position[1] + launch_y
+            enemy_missile[-1].pos[0] = self.pos[0] + launch_x
+            enemy_missile[-1].pos[1] = self.pos[1] + launch_y
             enemy_missile[-1].state = True
             self.time0 = pygame.time.get_ticks()
 
     def draw_hp(self, display):
-        """Draw hitpoints bar
-        1. Display - surface where we will draw a bar"""
+        """1. display - surface where we will draw a bar"""
 
         surface = pygame.Surface((self.icon[0].get_width(), 4))
         pygame.draw.rect(surface, (255, 80, 80), (0, 0, self.icon[0].get_width(), 4))
         pygame.draw.rect(surface, (0, 255, 0), (0, 0, int(self.cell * self.hitpoints), 4))
-        display.blit(surface, (self.position[0], self.position[1] - 5))
+        display.blit(surface, (self.pos[0], self.pos[1] - 5))
 
     def _forward(self, display):
-        """Fly forward
-        1. Display - surface where we will move"""
+        """1. display - surface where we will move"""
 
-        self.position[1] += self.velocity
-        display.blit(self.icon[0], (self.position[0], self.position[1]))
+        self.pos[1] += self.vel
+        display.blit(self.icon[0], (self.pos[0], self.pos[1]))
         self.step += 1
 
     def _diagonal_right_down(self, display):
-        r"""Fly like this \ down
-        1. Display - surface and screen params"""
+        """1. display - surface and screen params"""
 
         self._check_right(display[0])
-        self.position[0] += self.velocity
-        self.position[1] += self.velocity
-        display[1].blit(self.icon[2], (self.position[0], self.position[1]))
+        self.pos[0] += self.vel
+        self.pos[1] += self.vel
+        display[1].blit(self.icon[2], (self.pos[0], self.pos[1]))
         self.step += 1
 
     def _diagonal_rigt_up(self, display):
-        r"""Fly like this \ up
-        1. Display - surface where we will move"""
+        """1. display - surface where we will move"""
 
         self._check_up()
         self._check_left()
-        self.position[0] -= self.velocity
-        self.position[1] -= self.velocity
-        display.blit(self.icon[2], (self.position[0], self.position[1]))
+        self.pos[0] -= self.vel
+        self.pos[1] -= self.vel
+        display.blit(self.icon[2], (self.pos[0], self.pos[1]))
         self.step += 1
 
     def _diagonal_left_down(self, display):
-        r"""Fly like this / down
-        1. Display - surface where we will move"""
+        """1. display - surface where we will move"""
 
         self._check_left()
-        self.position[0] -= self.velocity
-        self.position[1] += self.velocity
-        display.blit(self.icon[1], (self.position[0], self.position[1]))
+        self.pos[0] -= self.vel
+        self.pos[1] += self.vel
+        display.blit(self.icon[1], (self.pos[0], self.pos[1]))
         self.step += 1
 
     def _diagonal_left_up(self, display):
-        r"""Fly like this / up
-        1. Display - surface and screen params"""
+        """1. display - surface and screen params"""
 
         self._check_up()
         self._check_right(display[0])
-        self.position[0] += self.velocity
-        self.position[1] -= self.velocity
-        display[1].blit(self.icon[1], (self.position[0], self.position[1]))
+        self.pos[0] += self.vel
+        self.pos[1] -= self.vel
+        display[1].blit(self.icon[1], (self.pos[0], self.pos[1]))
         self.step += 1
 
     def _right(self, display):
-        """Fly right
-        1. Display - surface and screen params"""
+        """1. display - surface and screen params"""
 
         self._check_right(display[0])
-        self.position[0] += self.velocity
-        display[1].blit(self.icon[2], (self.position[0], self.position[1]))
+        self.pos[0] += self.vel
+        display[1].blit(self.icon[2], (self.pos[0], self.pos[1]))
         self.step += 1
 
     def _left(self, display):
-        """Fly left
-        1. Display - surface where we will draw"""
+        """1. display - surface where we will move"""
 
         self._check_left()
-        self.position[0] -= self.velocity
-        display.blit(self.icon[1], (self.position[0], self.position[1]))
+        self.pos[0] -= self.vel
+        display.blit(self.icon[1], (self.pos[0], self.pos[1]))
         self.step += 1
 
     def _check_right(self, display):
-        """Check right
-        1. Display - screen params"""
+        """1. display - screen params"""
 
-        if self.position[0] >= display[0] - self.icon[0].get_width():
-            self.position[0] -= self.velocity
+        if self.pos[0] >= display[0] - self.icon[0].get_width():
+            self.pos[0] -= self.vel
             self.step = 0
             self.move_type = random.randint(0, 4)
 
     def _check_left(self):
         """Check left"""
-        if self.position[0] <= 0:
-            self.position[0] += self.velocity
+        if self.pos[0] <= 0:
+            self.pos[0] += self.vel
             self.step = 0
             self.move_type = random.randint(0, 4)
 
     def _check_up(self):
         """Check up"""
-        if self.position[1] <= 0:
-            self.position[1] += self.velocity
+        if self.pos[1] <= 0:
+            self.pos[1] += self.vel
             self.step = 0
             self.move_type = random.randint(0, 4)
 
     def move(self, display):
-        """Move
-        1. Display - surface and screen params"""
+        """1. display - surface and screen params"""
 
         if self.step == 100:
             self.step = 0
