@@ -6,7 +6,7 @@ from pygame import mixer
 from text import Text
 from button import Button
 from button_img import ButtonImg
-from toolbox import load_sound, load_img
+from toolbox import load_img
 
 def pause(display, score, hitpoints, vol):
     """1. display - the surface where we will draw objects
@@ -18,26 +18,19 @@ def pause(display, score, hitpoints, vol):
     pause_txt = Text(72, (255, 255, 255), 'data/fonts/space_age.ttf')
     pause_txt.text = "Pause"
 
-    back = Button([0, 0], "Return", 36, (155, 155, 155), \
-    load_sound('data/sound/button.wav'))
+    back = Button([0, 0], "Return", 36, (155, 155, 155), False)
 
-    end = Button([0, 0], "Quit", 36, (155, 155, 155), \
-        load_sound('data/sound/button.wav'))
+    end = Button([0, 0], "Quit", 36, (155, 155, 155), False)
 
-    gears = ButtonImg([0, 0], load_img('data/icons/gears_001.png'), \
-        load_sound('data/sound/package.wav'))
+    gears = ButtonImg([0, 0], load_img('data/icons/gears_001.png'), False)
 
-    vol_up = ButtonImg([0, 0], load_img('data/icons/speaker_001.png'), \
-        load_sound('data/sound/package.wav'))
+    vol_up = ButtonImg([0, 0], load_img('data/icons/speaker_001.png'), False)
 
-    vol_down = ButtonImg([0, 0], load_img('data/icons/speaker_002.png'), \
-        load_sound('data/sound/package.wav'))
+    vol_down = ButtonImg([0, 0], load_img('data/icons/speaker_002.png'), False)
 
-    vol_off = ButtonImg([0, 0], load_img('data/icons/speaker_003.png'), \
-        load_sound('data/sound/package.wav'))
+    vol_off = ButtonImg([0, 0], load_img('data/icons/speaker_003.png'), False)
 
     opt = [vol_up, vol_down, vol_off]
-
     button = [back, end]
     sh_options = False
 
@@ -69,8 +62,6 @@ def pause(display, score, hitpoints, vol):
         if back.inside(mouse):
             back.color = (255, 255, 255)
             if click[0] == 1:
-                if back.sound.get_num_channels() == 0:
-                    back.sound.play()
                 return vol
         else:
             back.color = (155, 155, 155)
@@ -78,8 +69,6 @@ def pause(display, score, hitpoints, vol):
         if end.inside(mouse):
             end.color = (255, 255, 255)
             if click[0] == 1:
-                if end.sound.get_num_channels() == 0:
-                    end.sound.play()
                 pygame.quit()
                 quit()
         else:
@@ -131,9 +120,5 @@ def pause(display, score, hitpoints, vol):
 
         # Set sound level
         mixer.music.set_volume(vol)
-
-        for i, _ in enumerate(button):
-            if button[i].sound:
-                button[i].sound.set_volume(vol)
 
         pygame.display.update()

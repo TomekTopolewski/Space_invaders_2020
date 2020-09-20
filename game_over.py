@@ -5,7 +5,7 @@ import pygame
 from pygame import mixer
 from text import Text
 from button import Button
-from toolbox import load_sound, load_img
+from toolbox import load_img
 
 def game_over(score, display, vol):
     """1. score - number of points the player earned
@@ -22,11 +22,9 @@ def game_over(score, display, vol):
     title = Text(72, (255, 255, 255), 'data/fonts/space_age.ttf')
     title.text = "Game Over!"
 
-    again = Button([0, 0], "Main menu", 36, (155, 155, 155), \
-        load_sound('data/sound/button.wav'))
+    again = Button([0, 0], "Main menu", 36, (155, 155, 155), False)
 
-    end = Button([0, 0], "Quit", 36, (155, 155, 155), \
-        load_sound('data/sound/button.wav'))
+    end = Button([0, 0], "Quit", 36, (155, 155, 155), False)
 
     button = [again, end]
 
@@ -56,8 +54,6 @@ def game_over(score, display, vol):
         if again.inside(mouse):
             again.color = (255, 255, 255)
             if click[0] == 1:
-                if again.sound.get_num_channels() == 0:
-                    again.sound.play()
                 return True
         else:
             again.color = (155, 155, 155)
@@ -65,8 +61,6 @@ def game_over(score, display, vol):
         if end.inside(mouse):
             end.color = (255, 255, 255)
             if click[0] == 1:
-                if end.sound.get_num_channels() == 0:
-                    end.sound.play()
                 pygame.quit()
                 quit()
         else:
@@ -75,12 +69,5 @@ def game_over(score, display, vol):
         # Draw custom cursor
         cursor = load_img('data/icons/cursor.png')
         display[1].blit(cursor, mouse)
-
-        # Set sound level
-        mixer.music.set_volume(vol)
-
-        for i, _ in enumerate(button):
-            if button[i].sound:
-                button[i].sound.set_volume(vol)
 
         pygame.display.update()

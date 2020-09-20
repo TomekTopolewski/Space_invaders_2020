@@ -39,28 +39,22 @@ def intro(display, vol):
 
     play = Button([0, 0], "Play", 36, (125, 125, 125), load_sound('data/sound/button.wav'))
 
-    about = Button([0, 0], "About", 36, (155, 155, 155), load_sound('data/sound/button.wav'))
+    about = Button([0, 0], "About", 36, (155, 155, 155), False)
 
-    end = Button([0, 0], "Quit", 36, (155, 155, 155), load_sound('data/sound/button.wav'))
+    end = Button([0, 0], "Quit", 36, (155, 155, 155), False)
 
-    gears = ButtonImg([0, 0], load_img('data/icons/gears_001.png'), \
-        load_sound('data/sound/package.wav'))
+    gears = ButtonImg([0, 0], load_img('data/icons/gears_001.png'), False)
 
-    vol_up = ButtonImg([0, 0], load_img('data/icons/speaker_001.png'), \
-        load_sound('data/sound/package.wav'))
+    vol_up = ButtonImg([0, 0], load_img('data/icons/speaker_001.png'), False)
 
-    vol_down = ButtonImg([0, 0], load_img('data/icons/speaker_002.png'), \
-        load_sound('data/sound/package.wav'))
+    vol_down = ButtonImg([0, 0], load_img('data/icons/speaker_002.png'), False)
 
-    vol_off = ButtonImg([0, 0], load_img('data/icons/speaker_003.png'), \
-        load_sound('data/sound/package.wav'))
+    vol_off = ButtonImg([0, 0], load_img('data/icons/speaker_003.png'), False)
 
-    controls = ButtonImg([0, 0], load_img('data/icons/controls_001.png'), \
-        load_sound('data/sound/package.wav'))
+    controls = ButtonImg([0, 0], load_img('data/icons/controls_001.png'), False)
 
     main_opt = [play, about, end]
     opt = [vol_up, vol_down, vol_off, controls]
-    button = main_opt + opt
 
     pygame.mixer.pre_init(0, 0, 16, 0)
     if load_music('data/sound/background.wav') is not False:
@@ -195,8 +189,6 @@ def intro(display, vol):
         if end.inside(mouse):
             end.color = (255, 255, 255)
             if click[0] == 1:
-                if end.sound.get_num_channels() == 0:
-                    end.sound.play()
                 pygame.quit()
                 quit()
         else:
@@ -204,10 +196,11 @@ def intro(display, vol):
 
         if about.inside(mouse):
             about.color = (255, 255, 255)
-            if click[0] == 1:
-                if about.sound.get_num_channels() == 0:
-                    about.sound.play()
-                sh_about = True
+            if click[0] == 1 and not about.status:
+                about.status = True
+                sh_about = not sh_about
+            elif click[0] == 0 and about.status:
+                about.status = False
         else:
             about.color = (155, 155, 155)
 
@@ -223,10 +216,7 @@ def intro(display, vol):
 
         # Set sound level
         mixer.music.set_volume(vol)
-
-        for i, _ in enumerate(button):
-            if button[i].sound:
-                button[i].sound.set_volume(vol)
+        play.sound.set_volume(vol)
 
         # Draw custom cursor
         cursor = load_img('data/icons/cursor.png')
