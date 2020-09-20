@@ -16,12 +16,8 @@ class ButtonImg():
 
         screen.blit(self.img, (self.pos))
 
-    def action(self, mouse, click):
-        """1. mouse - mouse position
-        2. click - click event"""
+    def inside(self, mouse):
+        """1. mouse - mouse position"""
 
-        if self.pos[0] + self.img.get_width() > mouse[0] > self.pos[0] and \
-            self.pos[1] + self.img.get_height() > mouse[1] > self.pos[1]:
-
-            if click[0] == 1:
-                self.state = True
+        return bool(self.pos[0] + self.img.get_width() > mouse[0] > self.pos[0] and \
+            self.pos[1] + self.img.get_height() > mouse[1] > self.pos[1])

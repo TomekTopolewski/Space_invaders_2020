@@ -10,7 +10,7 @@ from toolbox import load_img, load_sound, load_music
 from button import Button
 from button_img import ButtonImg
 
-def menus(state, display):
+def intro(display, vol):
     """1. screen - the surface where we will draw objects"""
 
     clock = pygame.time.Clock()
@@ -39,38 +39,38 @@ def menus(state, display):
 
     play = Button([0, 0], "Play", 36, (125, 125, 125), load_sound('data/sound/button.wav'))
 
-    about = Button([0, 0], "About", 36, (125, 125, 125), load_sound('data/sound/button.wav'))
+    about = Button([0, 0], "About", 36, (155, 155, 155), load_sound('data/sound/button.wav'))
 
-    quits = Button([0, 0], "Quit", 36, (125, 125, 125), load_sound('data/sound/button.wav'))
+    end = Button([0, 0], "Quit", 36, (155, 155, 155), load_sound('data/sound/button.wav'))
 
     gears = ButtonImg([0, 0], load_img('data/icons/gears_001.png'), \
         load_sound('data/sound/package.wav'))
 
-    volume_up = ButtonImg([0, 0], load_img('data/icons/speaker_001.png'), \
+    vol_up = ButtonImg([0, 0], load_img('data/icons/speaker_001.png'), \
         load_sound('data/sound/package.wav'))
 
-    volume_down = ButtonImg([0, 0], load_img('data/icons/speaker_002.png'), \
+    vol_down = ButtonImg([0, 0], load_img('data/icons/speaker_002.png'), \
         load_sound('data/sound/package.wav'))
 
-    volume_off = ButtonImg([0, 0], load_img('data/icons/speaker_003.png'), \
+    vol_off = ButtonImg([0, 0], load_img('data/icons/speaker_003.png'), \
         load_sound('data/sound/package.wav'))
 
     controls = ButtonImg([0, 0], load_img('data/icons/controls_001.png'), \
         load_sound('data/sound/package.wav'))
 
-    main_opt = [play, about, quits]
-    opt = [volume_up, volume_down, volume_off, controls]
-
-    pygame.display.update()
+    main_opt = [play, about, end]
+    opt = [vol_up, vol_down, vol_off, controls]
+    button = main_opt + opt
 
     pygame.mixer.pre_init(0, 0, 16, 0)
     if load_music('data/sound/background.wav') is not False:
-        mixer.music.set_volume(0.50)
         mixer.music.play(-1)
 
-    choose = [False] * 4
+    sh_controls = False
+    sh_options = False
+    sh_about = False
 
-    while state:
+    while True:
         clock.tick(60)
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
@@ -78,7 +78,6 @@ def menus(state, display):
         # Read keyboard
         for i in pygame.event.get():
             if i.type == pygame.QUIT:
-                state = False
                 pygame.quit()
                 quit()
 
@@ -103,42 +102,48 @@ def menus(state, display):
 
         # Loop through comets x
         for i, _ in enumerate(comets_x):
-            # Move
             comets_x[i].movexy(display[1])
 
-            # Check screen leave
             if comets_x[i].pos[1] > display[0][1]:
                 comets_x.pop(i)
 
         # Loop through comets y
         for i, _ in enumerate(comets_y):
-            # Move
             comets_y[i].movexy(display[1])
 
-            # Check screen leave
             if comets_y[i].pos[1] > display[0][1]:
                 comets_y.pop(i)
 
         title.draw_center(display[1], 5)
 
-        # Loop through options buttons and display them
+        # Draw gears button
         pos_y = 10
-
         gears.pos[0] = display[0][0] - gears.img.get_width() - 10
         gears.pos[1] = pos_y
         gears.draw(display[1])
-        gears.action(mouse, click)
         pos_y += 50
 
-        if gears.state:
+        if gears.inside(mouse) and click[0] == 1 and not gears.state:
+            gears.state = True
+            sh_options = not sh_options
+        elif click[0] == 0 and gears.state:
+            gears.state = False
+
+        # Draw option buttons
+        if sh_options:
             for i, _ in enumerate(opt):
                 opt[i].pos[0] = display[0][0] - opt[i].img.get_width() - 10
                 opt[i].pos[1] = pos_y
                 opt[i].draw(display[1])
-                opt[i].action(mouse, click)
                 pos_y += 50
 
-        if controls.state:
+        if controls.inside(mouse) and click[0] == 1 and not controls.state:
+            controls.state = True
+            sh_controls = not sh_controls
+        elif click[0] == 0 and controls.state:
+            controls.state = False
+
+        if sh_controls:
             pos[1] = 200
             for i, j in enumerate(options_txt):
                 line = norm_font.font.render(j.strip(), True, norm_font.color)
@@ -148,7 +153,27 @@ def menus(state, display):
                 if i == len(options_txt) - 1:
                     pos[1] = 200
 
-        # Loop through menu buttons and display them
+        if vol_up.inside(mouse) and click[0] == 1 and not vol_up.state:
+            vol_up.state = True
+            if vol <= 1.00:
+                vol += 0.10
+        elif click[0] == 0 and vol_up.state:
+            vol_up.state = False
+
+        if vol_down.inside(mouse) and click[0] == 1 and not vol_down.state:
+            vol_down.state = True
+            if vol > 0:
+                vol -= 0.10
+        elif click[0] == 0 and vol_down.state:
+            vol_down.state = False
+
+        if vol_off.inside(mouse) and click[0] == 1 and not vol_off.state:
+            vol_off.state = True
+            vol = 0
+        elif click[0] == 0 and vol_off.state:
+            vol_off.state = False
+
+        # Menu buttons
         pos_y = display[0][1] - 150
 
         for i, _ in enumerate(main_opt):
@@ -156,19 +181,37 @@ def menus(state, display):
             main_opt[i].pos[0] = display[0][0] - main_opt[i].line.get_width() - 15
             main_opt[i].pos[1] = pos_y
             main_opt[i].draw(display[1])
-            choose = main_opt[i].action_menu(mouse, click, choose, i)
             pos_y += 50
 
-        if choose[0]:
-            if play.sound.get_num_channels() == 0:
-                play.sound.play()
+        if play.inside(mouse):
+            play.color = (255, 255, 255)
+            if click[0] == 1:
+                if play.sound.get_num_channels() == 0:
+                    play.sound.play()
+                return vol
+        else:
+            play.color = (155, 155, 155)
 
-            state = False
+        if end.inside(mouse):
+            end.color = (255, 255, 255)
+            if click[0] == 1:
+                if end.sound.get_num_channels() == 0:
+                    end.sound.play()
+                pygame.quit()
+                quit()
+        else:
+            end.color = (155, 155, 155)
 
-        elif choose[1]:
-            if about.sound.get_num_channels() == 0:
-                about.sound.play()
+        if about.inside(mouse):
+            about.color = (255, 255, 255)
+            if click[0] == 1:
+                if about.sound.get_num_channels() == 0:
+                    about.sound.play()
+                sh_about = True
+        else:
+            about.color = (155, 155, 155)
 
+        if sh_about:
             pos[1] = 70
             for i, j in enumerate(about_txt):
                 line = norm_font.font.render(j.strip(), True, norm_font.color)
@@ -178,10 +221,12 @@ def menus(state, display):
                 if i == len(about_txt) - 1:
                     pos[1] = 70
 
-        elif choose[2]:
-            state = False
-            pygame.quit()
-            quit()
+        # Set sound level
+        mixer.music.set_volume(vol)
+
+        for i, _ in enumerate(button):
+            if button[i].sound:
+                button[i].sound.set_volume(vol)
 
         # Draw custom cursor
         cursor = load_img('data/icons/cursor.png')

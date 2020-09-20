@@ -2,7 +2,8 @@
 
 import pygame
 from main import main
-from menu import menus
+from menu import intro
+from game_over import game_over
 from toolbox import load_img, load_sound
 
 pygame.init()
@@ -83,8 +84,12 @@ object_icons = [enemy1, enemy2, enemy3, enemy4, enemy5, enemy6, enemy7, \
 # Build a list with sounds
 object_sounds = [missile1s, explosion1s, box1s]
 
-#Game sequence
-menus(True, screen)
+vol = 0.2
 
-while main(True, screen, object_icons, object_sounds):
-    main(True, screen, object_icons, object_sounds)
+# Start game
+while True:
+    vol = intro(screen, vol)
+
+    vol, score = main(screen, object_icons, object_sounds, vol)
+
+    game_over(score, screen, vol)

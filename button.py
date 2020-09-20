@@ -17,7 +17,6 @@ class Button():
         self.line = 0
         self.status = False
         self.sound = sound
-        self.sound.set_volume(0.70)
 
         try:
             self.font = pygame.font.Font("data/fonts/space_age.ttf", self.size)
@@ -34,35 +33,8 @@ class Button():
 
         screen.blit(self.line, (self.pos))
 
-    def action_menu(self, mouse, click, choose, pos):
-        """1. mouse - mouse position
-        2. click - click event
-        3. choose - menu list
-        4. pos - position in the menu list"""
+    def inside(self, mouse):
+        """1. mouse - mouse position"""
 
-        if self.pos[0] + self.line.get_width() > mouse[0] > self.pos[0] and \
-            self.pos[1] + self.line.get_height() > mouse[1] > self.pos[1]:
-            self.color = (255, 255, 255)
-
-            if click[0] == 1:
-                choose = [False for i in choose]
-                choose[pos] = True
-
-        else:
-            self.color = (125, 125, 125)
-
-        return choose
-
-    def action(self, mouse, click):
-        """1. mouse - mouse position
-        2. click - click event"""
-
-        if self.pos[0] + self.line.get_width() > mouse[0] > self.pos[0] and \
-            self.pos[1] + self.line.get_height() > mouse[1] > self.pos[1]:
-            self.color = (255, 255, 255)
-
-            if click[0] == 1:
-                self.status = True
-
-        else:
-            self.color = (125, 125, 125)
+        return bool(self.pos[0] + self.line.get_width() > mouse[0] > self.pos[0] and \
+            self.pos[1] + self.line.get_height() > mouse[1] > self.pos[1])

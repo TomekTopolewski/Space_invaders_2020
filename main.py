@@ -3,19 +3,19 @@
 import random
 import pygame
 
+from pygame import mixer
 from player import Player
 from enemy import Enemy
 from text import Text
 from objects import Object
 
 from pause import pause
-from game_over import game_over
 from toolbox import moving_bkgd, is_collision
 
 if not pygame.mixer:
     print("Pygame mixer module not available")
 
-def main(state, display, obj_icons, obj_sounds):
+def main(display, obj_icons, obj_sounds, vol):
     """Main loop"""
 
     pla_icon = obj_icons[7:9]
@@ -58,21 +58,19 @@ def main(state, display, obj_icons, obj_sounds):
         enemies.append(Enemy(display[0], ene_icon[0], 4000))
         number_of_enemies += 1
 
-    while state:
+    while True:
         clock.tick(60)
 
         bkgd_one, bkgd_two = moving_bkgd(display[2][0], display[1], bkgd_one, bkgd_two)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                state = False
                 pygame.quit()
                 quit()
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p:
-                    if pause(display, score, hitpoints):
-                        return True
+                    vol = pause(display, score, hitpoints, vol)
 
         # Player's move
         player.move(display[1], display[0])
@@ -256,17 +254,18 @@ def main(state, display, obj_icons, obj_sounds):
 
         # Game over
         if not player.state:
-            state = False
-            if game_over(score, display):
-                return True
+            return vol, score
 
         # Set sound level
         obj = explosion + box + pla_missile
+        mixer.music.set_volume(vol)
+
         for i, _ in enumerate(obj):
             if obj[i].sound:
-                obj[i].sound.set_volume(0.25)
+                obj[i].sound.set_volume(vol)
 
         score.draw(display[1], [10, 10])
         hitpoints.value = player.hitpoints
         hitpoints.draw(display[1], [10, 30])
+
         pygame.display.update()
