@@ -1,5 +1,6 @@
 """File for intro function"""
 
+import sys
 import random
 import pygame
 
@@ -72,8 +73,7 @@ def intro(display, vol):
         # Read keyboard
         for i in pygame.event.get():
             if i.type == pygame.QUIT:
-                pygame.quit()
-                quit()
+                sys.exit()
 
         # Display background
         display[1].blit(bkgd, (0, 0))
@@ -189,8 +189,7 @@ def intro(display, vol):
         if end.inside(mouse):
             end.color = (255, 255, 255)
             if click[0] == 1:
-                pygame.quit()
-                quit()
+                sys.exit()
         else:
             end.color = (155, 155, 155)
 

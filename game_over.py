@@ -1,5 +1,5 @@
 """File for game over function"""
-
+import sys
 import pygame
 
 from text import Text
@@ -34,8 +34,7 @@ def game_over(score, display):
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
+                sys.exit()
 
         display[1].blit(bkgd[0], (0, 0))
         title.draw_center(display[1], 120)
@@ -60,8 +59,7 @@ def game_over(score, display):
         if end.inside(mouse):
             end.color = (255, 255, 255)
             if click[0] == 1:
-                pygame.quit()
-                quit()
+                sys.exit()
         else:
             end.color = (155, 155, 155)
 

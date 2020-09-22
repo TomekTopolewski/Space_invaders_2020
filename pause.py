@@ -1,5 +1,5 @@
 """File for pause function"""
-
+import sys
 import pygame
 
 from pygame import mixer
@@ -47,8 +47,7 @@ def pause(display, score, hitpoints, vol):
 
         for _event in pygame.event.get():
             if _event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
+                sys.exit()
 
         # Draw buttons
         pos_y = display[0][1] - 100
@@ -69,8 +68,7 @@ def pause(display, score, hitpoints, vol):
         if end.inside(mouse):
             end.color = (255, 255, 255)
             if click[0] == 1:
-                pygame.quit()
-                quit()
+                sys.exit()
         else:
             end.color = (155, 155, 155)
 

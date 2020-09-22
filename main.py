@@ -1,5 +1,6 @@
 """Main"""
 
+import sys
 import random
 import pygame
 
@@ -65,8 +66,7 @@ def main(display, obj_icons, obj_sounds, vol):
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
+                sys.exit()
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p:
