@@ -23,23 +23,6 @@ class Enemy(pygame.sprite.Sprite):
         self.state = True
         self.time0 = -reload0
 
-    def level(self, score, icon):
-        """1. score - number of points that player earned
-        2. enemy icon - list with a lists of three icons - center, left, right"""
-
-        if score > 10 and score <= 20:
-            self.icon = icon[1]
-        elif score > 20 and score <= 30:
-            self.icon = icon[2]
-        elif score > 30 and score <= 40:
-            self.icon = icon[3]
-        elif score > 40 and score <= 50:
-            self.icon = icon[4]
-        elif score > 50 and score <= 60:
-            self.icon = icon[5]
-        elif score > 60:
-            self.icon = icon[random.randint(0, 5)]
-
     def boss(self):
         """Boss"""
         self.drop = 10

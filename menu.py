@@ -55,7 +55,7 @@ def intro(display, vol):
     controls = ButtonImg([0, 0], load_img('data/icons/controls_001.png'), False)
 
     main_opt = [play, about, end]
-    opt = [vol_up, vol_down, vol_off, controls]
+    options = [vol_up, vol_down, vol_off, controls]
 
     pygame.mixer.pre_init(0, 0, 16, 0)
     if load_music('data/sound/background.wav') is not False:
@@ -95,18 +95,18 @@ def intro(display, vol):
             comets_y[-1].state = True
 
         # Loop through comets x
-        for i, _ in enumerate(comets_x):
-            comets_x[i].movexy(display[1])
+        for comet in comets_x:
+            comet.movexy(display[1])
 
-            if comets_x[i].pos[1] > display[0][1]:
-                comets_x.pop(i)
+            if comet.pos[1] > display[0][1]:
+                comets_x.remove(comet)
 
         # Loop through comets y
-        for i, _ in enumerate(comets_y):
-            comets_y[i].movexy(display[1])
+        for comet in comets_y:
+            comet.movexy(display[1])
 
-            if comets_y[i].pos[1] > display[0][1]:
-                comets_y.pop(i)
+            if comet.pos[1] > display[0][1]:
+                comets_y.remove(comet)
 
         title.draw_center(display[1], 5)
 
@@ -125,10 +125,10 @@ def intro(display, vol):
 
         # Draw option buttons
         if sh_options:
-            for i, _ in enumerate(opt):
-                opt[i].pos[0] = display[0][0] - opt[i].img.get_width() - 10
-                opt[i].pos[1] = pos_y
-                opt[i].draw(display[1])
+            for opt in options:
+                opt.pos[0] = display[0][0] - opt.img.get_width() - 10
+                opt.pos[1] = pos_y
+                opt.draw(display[1])
                 pos_y += 50
 
         if controls.inside(mouse) and click[0] == 1 and not controls.state:
@@ -170,11 +170,11 @@ def intro(display, vol):
         # Menu buttons
         pos_y = display[0][1] - 150
 
-        for i, _ in enumerate(main_opt):
-            main_opt[i].render()
-            main_opt[i].pos[0] = display[0][0] - main_opt[i].line.get_width() - 15
-            main_opt[i].pos[1] = pos_y
-            main_opt[i].draw(display[1])
+        for opt in main_opt:
+            opt.render()
+            opt.pos[0] = display[0][0] - opt.line.get_width() - 15
+            opt.pos[1] = pos_y
+            opt.draw(display[1])
             pos_y += 50
 
         if play.inside(mouse):

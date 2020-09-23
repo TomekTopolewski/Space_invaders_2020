@@ -30,8 +30,8 @@ def pause(display, score, hitpoints, vol):
 
     vol_off = ButtonImg([0, 0], load_img('data/icons/speaker_003.png'), False)
 
-    opt = [vol_up, vol_down, vol_off]
-    button = [back, end]
+    options = [vol_up, vol_down, vol_off]
+    buttons = [back, end]
     sh_options = False
 
     while True:
@@ -51,11 +51,11 @@ def pause(display, score, hitpoints, vol):
 
         # Draw buttons
         pos_y = display[0][1] - 100
-        for i, _ in enumerate(button):
-            button[i].render()
-            button[i].pos[0] = display[0][0] - button[i].line.get_width() - 15
-            button[i].pos[1] = pos_y
-            button[i].draw(display[1])
+        for button in buttons:
+            button.render()
+            button.pos[0] = display[0][0] - button.line.get_width() - 15
+            button.pos[1] = pos_y
+            button.draw(display[1])
             pos_y += 50
 
         if back.inside(mouse):
@@ -86,10 +86,10 @@ def pause(display, score, hitpoints, vol):
             gears.state = False
 
         if sh_options:
-            for i, _ in enumerate(opt):
-                opt[i].pos[0] = display[0][0] - opt[i].img.get_width() - 10
-                opt[i].pos[1] = pos_y
-                opt[i].draw(display[1])
+            for opt in options:
+                opt.pos[0] = display[0][0] - opt.img.get_width() - 10
+                opt.pos[1] = pos_y
+                opt.draw(display[1])
                 pos_y += 50
 
         if vol_up.inside(mouse) and click[0] == 1 and not vol_up.state:

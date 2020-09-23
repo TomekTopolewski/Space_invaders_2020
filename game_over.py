@@ -25,7 +25,7 @@ def game_over(score, display):
 
     end = Button([0, 0], "Quit", 36, (155, 155, 155), False)
 
-    button = [again, end]
+    buttons = [again, end]
 
     while True:
         clock.tick(60)
@@ -42,11 +42,11 @@ def game_over(score, display):
 
         # Draw buttons
         pos_y = display[0][1] - 100
-        for i, _ in enumerate(button):
-            button[i].render()
-            button[i].pos[0] = display[0][0] - button[i].line.get_width() - 15
-            button[i].pos[1] = pos_y
-            button[i].draw(display[1])
+        for button in buttons:
+            button.render()
+            button.pos[0] = display[0][0] - button.line.get_width() - 15
+            button.pos[1] = pos_y
+            button.draw(display[1])
             pos_y += 50
 
         if again.inside(mouse):
