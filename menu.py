@@ -139,13 +139,10 @@ def intro(display, vol):
 
         if sh_controls:
             pos[1] = 200
-            for i, j in enumerate(options_txt):
-                line = norm_font.font.render(j.strip(), True, norm_font.color)
+            for line in options_txt:
+                line = norm_font.font.render(line.strip(), True, norm_font.color)
                 display[1].blit(line, (pos))
                 pos[1] += 30
-
-                if i == len(options_txt) - 1:
-                    pos[1] = 200
 
         if vol_up.inside(mouse) and click[0] == 1 and not vol_up.state:
             vol_up.state = True
@@ -205,13 +202,10 @@ def intro(display, vol):
 
         if sh_about:
             pos[1] = 70
-            for i, j in enumerate(about_txt):
-                line = norm_font.font.render(j.strip(), True, norm_font.color)
+            for line in about_txt:
+                line = norm_font.font.render(line.strip(), True, norm_font.color)
                 display[1].blit(line, (pos))
                 pos[1] += 30
-
-                if i == len(about_txt) - 1:
-                    pos[1] = 70
 
         # Set sound level
         mixer.music.set_volume(vol)
