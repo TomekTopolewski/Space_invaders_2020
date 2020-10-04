@@ -117,3 +117,16 @@ def vol_buttons_act(vol_buttons, mouse, click, vol):
         vol_buttons[2].state = False
 
     return vol
+
+def button_act(button, mouse, click):
+    """button, mouse, click"""
+    status = False
+
+    if button.inside(mouse):
+        button.color = (255, 255, 255)
+        if click[0] == 1:
+            status = True
+    else:
+        button.color = (155, 155, 155)
+
+    return status

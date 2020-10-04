@@ -120,11 +120,11 @@ def game(scrn, obj_icons, obj_sounds, vol):
                         debris[-1].state = True
 
                         if random.randint(0, 15) <= enemy.drop:
-                            ptype = random.randint(0, 3)
-                            boxes.append(Object([obj_icons[11][ptype]], \
+                            btype = random.randint(0, 3)
+                            boxes.append(Object([obj_icons[11][btype]], \
                                 enemy.pos, 0.25, obj_sounds[2]))
                             boxes[-1].state = True
-                            boxes[-1].type = ptype
+                            boxes[-1].type = btype
 
                         enemies.remove(enemy)
                         player_missiles.remove(missile)

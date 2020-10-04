@@ -5,17 +5,10 @@ import pygame
 
 from text import Text
 from button import Button
-from toolbox import load_img
+from toolbox import load_img, button_act
 
-def game_over(score, scrn):
-    """score, scrn"""
-
-    clock = pygame.time.Clock()
-
-    cursor = load_img('data/icons/cursor.png')
-
-    title = Text(72, (255, 255, 255), 'data/fonts/space_age.ttf')
-    title.text = "Game Over!"
+def menu_buttons_def(scrn):
+    """scrn"""
 
     again = Button([0, 0], "Main menu", 36)
     end = Button([0, 0], "Quit", 36)
@@ -28,6 +21,20 @@ def game_over(score, scrn):
         button.pos[1] = pos[1]
         pos[1] += 50
 
+    return menu_buttons
+
+def game_over(score, scrn):
+    """score, scrn"""
+
+    clock = pygame.time.Clock()
+
+    cursor = load_img('data/icons/cursor.png')
+
+    title = Text(72, (255, 255, 255), 'data/fonts/space_age.ttf')
+    title.text = "Game Over!"
+
+    menu_buttons = menu_buttons_def(scrn)
+
     while True:
         clock.tick(60)
 
@@ -38,19 +45,11 @@ def game_over(score, scrn):
             if event.type == pygame.QUIT:
                 sys.exit()
 
-        if again.inside(mouse):
-            again.color = (255, 255, 255)
-            if click[0] == 1:
-                return True
-        else:
-            again.color = (155, 155, 155)
+        if button_act(menu_buttons[0], mouse, click):
+            return True
 
-        if end.inside(mouse):
-            end.color = (255, 255, 255)
-            if click[0] == 1:
-                sys.exit()
-        else:
-            end.color = (155, 155, 155)
+        if button_act(menu_buttons[1], mouse, click):
+            sys.exit()
 
         scrn[1].blit(scrn[2], (0, 0))
         title.draw_center(scrn[1], 120)

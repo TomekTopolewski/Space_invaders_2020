@@ -5,32 +5,11 @@ import pygame
 
 from pygame import mixer
 from text import Text
-from toolbox import load_img, load_music, vol_buttons_def, vol_buttons_act
+from toolbox import load_img, vol_buttons_def, vol_buttons_act, button_act
 from button import Button
 
-def menu(scrn, vol):
-    """Menu"""
-
-    clock = pygame.time.Clock()
-
-    cursor = load_img('data/icons/cursor.png')
-
-    try:
-        about_txt = open('data/text/about.txt', 'r').readlines()
-    except FileNotFoundError:
-        about_txt = ["Can't load text"]
-
-    try:
-        options_txt = open('data/text/options.txt', 'r').readlines()
-    except FileNotFoundError:
-        options_txt = ["Can't load text"]
-
-    font = Text(22, (200, 200, 200), "data/fonts/BebasNeue-Regular.ttf")
-
-    title = Text(38, (125, 125, 125), 'data/fonts/space_age.ttf')
-    title.text = "Space Invaders 2020"
-
-    vol_buttons = vol_buttons_def(scrn)
+def menu_buttons_def(scrn):
+    """scrn"""
 
     play = Button([0, 0], "Play", 36)
     about = Button([0, 0], "About", 36)
@@ -45,12 +24,37 @@ def menu(scrn, vol):
         button.pos[1] = pos[1]
         pos[1] += 50
 
-    pygame.mixer.pre_init(0, 0, 16, 0)
-    if load_music('data/sound/background.wav') is not False:
-        mixer.music.play(-1)
+    return menu_buttons
 
-    sh_controls = False
-    sh_about = False
+def sh_text(fname, font, scrn):
+    """fname, font, scrn"""
+    try:
+        txt = open(fname, 'r').readlines()
+    except FileNotFoundError:
+        txt = ["Can't load text"]
+
+    pos = [5, 70]
+    for line in txt:
+        line = font.font.render(line.strip(), True, font.color)
+        scrn[1].blit(line, (pos))
+        pos[1] += 30
+
+def menu(scrn, vol):
+    """Menu"""
+
+    clock = pygame.time.Clock()
+
+    cursor = load_img('data/icons/cursor.png')
+
+    font = Text(22, (200, 200, 200), "data/fonts/BebasNeue-Regular.ttf")
+
+    title = Text(38, (125, 125, 125), 'data/fonts/space_age.ttf')
+    title.text = "Space Invaders 2020"
+
+    vol_buttons = vol_buttons_def(scrn)
+    menu_buttons = menu_buttons_def(scrn)
+
+    sh_txt = [False, False]
 
     while True:
         clock.tick(60)
@@ -64,39 +68,19 @@ def menu(scrn, vol):
 
         vol = vol_buttons_act(vol_buttons, mouse, click, vol)
 
-        if play.inside(mouse):
-            play.color = (255, 255, 255)
-            if click[0] == 1:
-                return vol
-        else:
-            play.color = (155, 155, 155)
+        if button_act(menu_buttons[0], mouse, click):
+            return vol
 
-        if end.inside(mouse):
-            end.color = (255, 255, 255)
-            if click[0] == 1:
-                sys.exit()
-        else:
-            end.color = (155, 155, 155)
+        if button_act(menu_buttons[3], mouse, click):
+            sys.exit()
 
-        if about.inside(mouse):
-            about.color = (255, 255, 255)
-            if click[0] == 1 and not about.status:
-                about.status = True
-                sh_about = not sh_about
-            elif click[0] == 0 and about.status:
-                about.status = False
-        else:
-            about.color = (155, 155, 155)
+        if button_act(menu_buttons[1], mouse, click):
+            sh_txt[0] = True
+            sh_txt[1] = False
 
-        if opt.inside(mouse):
-            opt.color = (255, 255, 255)
-            if click[0] == 1 and not opt.status:
-                opt.status = True
-                sh_controls = not sh_controls
-            elif click[0] == 0 and opt.status:
-                opt.status = False
-        else:
-            opt.color = (155, 155, 155)
+        if button_act(menu_buttons[2], mouse, click):
+            sh_txt[1] = True
+            sh_txt[0] = False
 
         mixer.music.set_volume(vol)
 
@@ -110,19 +94,11 @@ def menu(scrn, vol):
         for button in vol_buttons:
             button.draw(scrn[1])
 
-        if sh_about:
-            pos = [5, 70]
-            for line in about_txt:
-                line = font.font.render(line.strip(), True, font.color)
-                scrn[1].blit(line, (pos))
-                pos[1] += 30
+        if sh_txt[0]:
+            sh_text('data/text/about.txt', font, scrn)
 
-        if sh_controls:
-            pos = [5, 200]
-            for line in options_txt:
-                line = font.font.render(line.strip(), True, font.color)
-                scrn[1].blit(line, (pos))
-                pos[1] += 30
+        if sh_txt[1]:
+            sh_text('data/text/options.txt', font, scrn)
 
         scrn[1].blit(cursor, mouse)
 

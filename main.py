@@ -1,10 +1,12 @@
 """Main"""
 
 import pygame
+
+from pygame import mixer
 from game import game
 from menu import menu
 from game_over import game_over
-from toolbox import load_img, load_sound
+from toolbox import load_img, load_sound, load_music
 
 pygame.init()
 
@@ -69,6 +71,10 @@ object_icons = [enemy1, enemy2, enemy3, enemy4, enemy5, enemy6, enemy7, \
     player1, player2, missile, explosion, box, asteroid, debris]
 
 object_sounds = [m_sound, exp_sound, box_sound]
+
+pygame.mixer.pre_init(0, 0, 16, 0)
+if load_music('data/sound/background.wav') is not False:
+    mixer.music.play(-1)
 
 while True:
     vol = menu(scrn, 0.2)

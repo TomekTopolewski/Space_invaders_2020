@@ -6,7 +6,23 @@ import pygame
 from pygame import mixer
 from text import Text
 from button import Button
-from toolbox import load_img, vol_buttons_def, vol_buttons_act
+from toolbox import load_img, vol_buttons_def, vol_buttons_act, button_act
+
+def menu_buttons_def(scrn):
+    """scrn"""
+
+    back = Button([0, 0], "Return", 36)
+    end = Button([0, 0], "Quit", 36)
+    menu_buttons = [back, end]
+
+    pos = [0, scrn[0][1] - 100]
+    for button in menu_buttons:
+        button.render()
+        button.pos[0] = scrn[0][0] - button.line.get_width() - 15
+        button.pos[1] = pos[1]
+        pos[1] += 50
+
+    return menu_buttons
 
 def pause(scrn, score, hitpoints, vol):
     """Pause"""
@@ -19,17 +35,7 @@ def pause(scrn, score, hitpoints, vol):
     pause_txt.text = "Pause"
 
     vol_buttons = vol_buttons_def(scrn)
-
-    back = Button([0, 0], "Return", 36)
-    end = Button([0, 0], "Quit", 36)
-    menu_buttons = [back, end]
-
-    pos = [0, scrn[0][1] - 100]
-    for button in menu_buttons:
-        button.render()
-        button.pos[0] = scrn[0][0] - button.line.get_width() - 15
-        button.pos[1] = pos[1]
-        pos[1] += 50
+    menu_buttons = menu_buttons_def(scrn)
 
     while True:
         clock.tick(60)
@@ -43,19 +49,11 @@ def pause(scrn, score, hitpoints, vol):
 
         vol = vol_buttons_act(vol_buttons, mouse, click, vol)
 
-        if back.inside(mouse):
-            back.color = (255, 255, 255)
-            if click[0] == 1:
-                return vol
-        else:
-            back.color = (155, 155, 155)
+        if button_act(menu_buttons[0], mouse, click):
+            return vol
 
-        if end.inside(mouse):
-            end.color = (255, 255, 255)
-            if click[0] == 1:
-                sys.exit()
-        else:
-            end.color = (155, 155, 155)
+        if button_act(menu_buttons[1], mouse, click):
+            sys.exit()
 
         mixer.music.set_volume(vol)
 
