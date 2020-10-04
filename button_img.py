@@ -8,10 +8,10 @@ class ButtonImg():
         self.img = img
         self.state = False
 
-    def draw(self, screen):
-        """self, screen"""
+    def draw(self, scrn):
+        """self, scrn"""
 
-        screen.blit(self.img, (self.pos))
+        scrn.blit(self.img, (self.pos))
 
     def inside(self, mouse):
         """self, mouse"""

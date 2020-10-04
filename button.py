@@ -23,10 +23,10 @@ class Button():
 
         self.line = self.font.render(self.msg, True, self.color)
 
-    def draw(self, screen):
-        """self, screen"""
+    def draw(self, scrn):
+        """self, scrn"""
 
-        screen.blit(self.line, (self.pos))
+        scrn.blit(self.line, (self.pos))
 
     def inside(self, mouse):
         """self, mouse"""

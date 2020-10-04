@@ -8,7 +8,7 @@ from text import Text
 from button import Button
 from toolbox import load_img, vol_buttons_def, vol_buttons_act
 
-def pause(screen, score, hitpoints, vol):
+def pause(scrn, score, hitpoints, vol):
     """Pause"""
 
     clock = pygame.time.Clock()
@@ -18,16 +18,16 @@ def pause(screen, score, hitpoints, vol):
     pause_txt = Text(72, (255, 255, 255), 'data/fonts/space_age.ttf')
     pause_txt.text = "Pause"
 
-    vol_buttons = vol_buttons_def(screen)
+    vol_buttons = vol_buttons_def(scrn)
 
     back = Button([0, 0], "Return", 36)
     end = Button([0, 0], "Quit", 36)
     menu_buttons = [back, end]
 
-    pos = [0, screen[0][1] - 100]
+    pos = [0, scrn[0][1] - 100]
     for button in menu_buttons:
         button.render()
-        button.pos[0] = screen[0][0] - button.line.get_width() - 15
+        button.pos[0] = scrn[0][0] - button.line.get_width() - 15
         button.pos[1] = pos[1]
         pos[1] += 50
 
@@ -59,19 +59,19 @@ def pause(screen, score, hitpoints, vol):
 
         mixer.music.set_volume(vol)
 
-        screen[1].blit(screen[2], (0, 0))
+        scrn[1].blit(scrn[2], (0, 0))
 
-        score.draw(screen[1], [10, 10])
-        hitpoints.draw(screen[1], [10, 30])
-        pause_txt.draw_text(screen[1], [270, 200])
+        score.draw(scrn[1], [10, 10])
+        hitpoints.draw(scrn[1], [10, 30])
+        pause_txt.draw_text(scrn[1], [270, 200])
 
         for button in menu_buttons:
             button.render()
-            button.draw(screen[1])
+            button.draw(scrn[1])
 
         for button in vol_buttons:
-            button.draw(screen[1])
+            button.draw(scrn[1])
 
-        screen[1].blit(cursor, mouse)
+        scrn[1].blit(cursor, mouse)
 
         pygame.display.update()

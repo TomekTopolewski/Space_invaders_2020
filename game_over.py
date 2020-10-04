@@ -7,8 +7,8 @@ from text import Text
 from button import Button
 from toolbox import load_img
 
-def game_over(score, screen):
-    """score, screen"""
+def game_over(score, scrn):
+    """score, scrn"""
 
     clock = pygame.time.Clock()
 
@@ -21,10 +21,10 @@ def game_over(score, screen):
     end = Button([0, 0], "Quit", 36)
     menu_buttons = [again, end]
 
-    pos = [0, screen[0][1] - 100]
+    pos = [0, scrn[0][1] - 100]
     for button in menu_buttons:
         button.render()
-        button.pos[0] = screen[0][0] - button.line.get_width() - 15
+        button.pos[0] = scrn[0][0] - button.line.get_width() - 15
         button.pos[1] = pos[1]
         pos[1] += 50
 
@@ -52,14 +52,14 @@ def game_over(score, screen):
         else:
             end.color = (155, 155, 155)
 
-        screen[1].blit(screen[2], (0, 0))
-        title.draw_center(screen[1], 120)
-        score.draw(screen[1], [320, 180])
+        scrn[1].blit(scrn[2], (0, 0))
+        title.draw_center(scrn[1], 120)
+        score.draw(scrn[1], [320, 180])
 
         for button in menu_buttons:
             button.render()
-            button.draw(screen[1])
+            button.draw(scrn[1])
 
-        screen[1].blit(cursor, mouse)
+        scrn[1].blit(cursor, mouse)
 
         pygame.display.update()

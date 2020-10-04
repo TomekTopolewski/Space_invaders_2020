@@ -49,20 +49,20 @@ def load_music(fname):
         music = False
     return music
 
-def moving_bkgd(bkgd, screen, bkgd_one_y, bkgd_two_y):
-    """bkgd, screen, bkgd_one_y, bkgd_two_y"""
+def moving_bkgd(scrn, bkgd_one_y, bkgd_two_y):
+    """scrn, bkgd_one_y, bkgd_two_y"""
 
     bkgd_one_y += 0.5
     bkgd_two_y += 0.5
 
-    if bkgd_one_y > bkgd.get_height():
-        bkgd_one_y = bkgd.get_height() * -1
+    if bkgd_one_y > scrn[0][1]:
+        bkgd_one_y = scrn[0][1] * -1
 
-    if bkgd_two_y > bkgd.get_height():
-        bkgd_two_y = bkgd.get_height() * -1
+    if bkgd_two_y > scrn[0][1]:
+        bkgd_two_y = scrn[0][1] * -1
 
-    screen.blit(bkgd, (0, bkgd_one_y))
-    screen.blit(bkgd, (0, bkgd_two_y))
+    scrn[1].blit(scrn[2], (0, bkgd_one_y))
+    scrn[1].blit(scrn[2], (0, bkgd_two_y))
 
     return bkgd_one_y, bkgd_two_y
 
@@ -79,8 +79,8 @@ def is_collision(obj_one, obj_two, rng):
 
     return bool(distance < rng)
 
-def vol_buttons_def(screen):
-    """screen"""
+def vol_buttons_def(scrn):
+    """scrn"""
 
     vol_up = ButtonImg([0, 10], load_img('data/icons/speaker_001.png'))
     vol_down = ButtonImg([0, 60], load_img('data/icons/speaker_002.png'))
@@ -89,7 +89,7 @@ def vol_buttons_def(screen):
     vol_buttons = [vol_up, vol_down, vol_off]
 
     for button in vol_buttons:
-        button.pos[0] = screen[0][0] - button.img.get_width() - 15
+        button.pos[0] = scrn[0][0] - button.img.get_width() - 15
 
     return vol_buttons
 

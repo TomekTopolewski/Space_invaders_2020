@@ -12,9 +12,9 @@ pygame.display.set_caption("Space Invaders 2020")
 window_icon = load_img('data/icons/aircraft-icon.png')
 pygame.display.set_icon(window_icon)
 
-screen = [(827, 880)]
-screen.append(pygame.display.set_mode((screen[0][0], screen[0][1])))
-screen.append(load_img('data/images/background_004.jpg'))
+scrn = [(827, 880)]
+scrn.append(pygame.display.set_mode((scrn[0][0], scrn[0][1])))
+scrn.append(load_img('data/images/background_004.jpg'))
 
 pygame.mouse.set_visible(0)
 
@@ -71,11 +71,11 @@ object_icons = [enemy1, enemy2, enemy3, enemy4, enemy5, enemy6, enemy7, \
 object_sounds = [m_sound, exp_sound, box_sound]
 
 while True:
-    vol = menu(screen, 0.2)
+    vol = menu(scrn, 0.2)
 
     enter_game.set_volume(vol)
     enter_game.play()
 
-    vol, score = game(screen, object_icons, object_sounds, vol)
+    vol, score = game(scrn, object_icons, object_sounds, vol)
 
-    game_over(score, screen)
+    game_over(score, scrn)

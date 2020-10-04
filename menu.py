@@ -8,7 +8,7 @@ from text import Text
 from toolbox import load_img, load_music, vol_buttons_def, vol_buttons_act
 from button import Button
 
-def menu(screen, vol):
+def menu(scrn, vol):
     """Menu"""
 
     clock = pygame.time.Clock()
@@ -30,7 +30,7 @@ def menu(screen, vol):
     title = Text(38, (125, 125, 125), 'data/fonts/space_age.ttf')
     title.text = "Space Invaders 2020"
 
-    vol_buttons = vol_buttons_def(screen)
+    vol_buttons = vol_buttons_def(scrn)
 
     play = Button([0, 0], "Play", 36)
     about = Button([0, 0], "About", 36)
@@ -38,10 +38,10 @@ def menu(screen, vol):
     opt = Button([0, 0], "Options", 36)
     menu_buttons = [play, about, opt, end]
 
-    pos = [0, screen[0][1] - 200]
+    pos = [0, scrn[0][1] - 200]
     for button in menu_buttons:
         button.render()
-        button.pos[0] = screen[0][0] - button.line.get_width() - 15
+        button.pos[0] = scrn[0][0] - button.line.get_width() - 15
         button.pos[1] = pos[1]
         pos[1] += 50
 
@@ -100,30 +100,30 @@ def menu(screen, vol):
 
         mixer.music.set_volume(vol)
 
-        screen[1].blit(screen[2], (0, 0))
-        title.draw_center(screen[1], 5)
+        scrn[1].blit(scrn[2], (0, 0))
+        title.draw_center(scrn[1], 5)
 
         for button in menu_buttons:
             button.render()
-            button.draw(screen[1])
+            button.draw(scrn[1])
 
         for button in vol_buttons:
-            button.draw(screen[1])
+            button.draw(scrn[1])
 
         if sh_about:
             pos = [5, 70]
             for line in about_txt:
                 line = font.font.render(line.strip(), True, font.color)
-                screen[1].blit(line, (pos))
+                scrn[1].blit(line, (pos))
                 pos[1] += 30
 
         if sh_controls:
             pos = [5, 200]
             for line in options_txt:
                 line = font.font.render(line.strip(), True, font.color)
-                screen[1].blit(line, (pos))
+                scrn[1].blit(line, (pos))
                 pos[1] += 30
 
-        screen[1].blit(cursor, mouse)
+        scrn[1].blit(cursor, mouse)
 
         pygame.display.update()
