@@ -1,41 +1,33 @@
-"""File for text class"""
+"""Text"""
 
 import pygame
 
 class Text():
-    """1. size - size of a text
-    2. color - color of a text
-    3. font_path - path to the font file"""
+    """Text"""
 
-    def __init__(self, size, color, font_path):
+    def __init__(self, size, color, fpath):
         self.value = 0
         self.text = ""
         try:
-            self.font = pygame.font.Font(font_path, size)
+            self.font = pygame.font.Font(fpath, size)
         except FileNotFoundError:
             self.font = pygame.font.Font(None, size)
         self.color = color
 
     def draw(self, screen, pos):
-        """Draw text and numbers
-        1. screen - the surface where we will draw a text
-        2. pos - position on the x and y-axis"""
+        """self, screen, pos"""
 
         line = self.font.render(str(self.text) + str(self.value), True, self.color)
         screen.blit(line, (pos[0], pos[1]))
 
     def draw_text(self, screen, pos):
-        """Draw text
-        1. screen - the surface where we will draw a text
-        2. pos - position on the x and y-axis"""
+        """self, screen, pos"""
 
         line = self.font.render(str(self.text), True, self.color)
         screen.blit(line, (pos[0], pos[1]))
 
     def draw_center(self, screen, pos):
-        """Draw text center on the x-axis
-        1. screen - the surface where we will draw a text
-        2. pos - position on the y-axis"""
+        """self, screen, pos"""
 
         line = self.font.render(str(self.text), True, self.color)
         centerx = (screen.get_width() / 2) - (line.get_width() / 2)

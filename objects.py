@@ -1,12 +1,9 @@
-"""File for object class"""
+"""Object"""
 
 import pygame
 
 class Object(pygame.sprite.Sprite):
-    """1. icon - image of an object (list)
-    2. pos - position on the screen (list)
-    3. vel - move in x and y-axis (int)
-    4. sound - sound of an object (false if none)"""
+    """Object"""
 
     def __init__(self, icon, pos, vel, sound):
         self.pos = pos
@@ -19,25 +16,20 @@ class Object(pygame.sprite.Sprite):
         self.time0 = pygame.time.get_ticks()
 
     def movex(self, screen):
-        """Move in x-axis
-        1. screen - surface where we will draw an object"""
+        """self, screen"""
 
         self.pos[1] += self.vel
         screen.blit(self.icon[0], (self.pos[0], self.pos[1]))
 
     def movexy(self, screen):
-        """Move in x and y-axis
-         1. screen - surface where we will draw an object"""
+        """self, screen"""
 
         self.pos[0] -= self.vel
         self.pos[1] += self.vel
         screen.blit(self.icon[0], (self.pos[0], self.pos[1]))
 
     def open(self, player, is_upgraded, player_icon):
-        """(fox boxes) Modify values based on a object type
-        1. player - object of a player class
-        2. is_upgraded - flag used for determining which missile icon to use
-        3. player_icon - list with new three icons - center, left, right"""
+        """(fox boxes) self, player, is_upgraded, player_icon"""
 
         if self.type == 0:
             player.hitpoints += 1
@@ -52,8 +44,7 @@ class Object(pygame.sprite.Sprite):
         return is_upgraded
 
     def keep(self, screen):
-        """(for debris) Disappering animation
-         1. screen - surface where we will draw an object"""
+        """(for debris) self, screen"""
 
         self.pos[1] += self.vel
         time1 = pygame.time.get_ticks()

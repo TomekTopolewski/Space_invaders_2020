@@ -1,26 +1,19 @@
-"""File for intro function"""
+"""Menu"""
 
 import sys
-import random
 import pygame
 
 from pygame import mixer
 from text import Text
-from objects import Object
-from toolbox import load_img, load_sound, load_music
+from toolbox import load_img, load_music, vol_buttons_def, vol_buttons_act
 from button import Button
-from button_img import ButtonImg
 
-def intro(display, vol):
-    """1. screen - the surface where we will draw objects"""
+def menu(screen, vol):
+    """Menu"""
 
     clock = pygame.time.Clock()
-    comets_x = []
-    comets_y = []
-    comet_icon = load_img('data/icons/comet_001.png')
 
-    change_bkgd = 0
-    bkgd = display[2][0]
+    cursor = load_img('data/icons/cursor.png')
 
     try:
         about_txt = open('data/text/about.txt', 'r').readlines()
@@ -32,153 +25,48 @@ def intro(display, vol):
     except FileNotFoundError:
         options_txt = ["Can't load text"]
 
-    pos = [5, 70]
-    norm_font = Text(22, (200, 200, 200), "data/fonts/BebasNeue-Regular.ttf")
+    font = Text(22, (200, 200, 200), "data/fonts/BebasNeue-Regular.ttf")
 
     title = Text(38, (125, 125, 125), 'data/fonts/space_age.ttf')
     title.text = "Space Invaders 2020"
 
-    play = Button([0, 0], "Play", 36, (125, 125, 125), load_sound('data/sound/button.wav'))
+    vol_buttons = vol_buttons_def(screen)
 
-    about = Button([0, 0], "About", 36, (155, 155, 155), False)
+    play = Button([0, 0], "Play", 36)
+    about = Button([0, 0], "About", 36)
+    end = Button([0, 0], "Quit", 36)
+    opt = Button([0, 0], "Options", 36)
+    menu_buttons = [play, about, opt, end]
 
-    end = Button([0, 0], "Quit", 36, (155, 155, 155), False)
-
-    gears = ButtonImg([0, 0], load_img('data/icons/gears_001.png'), False)
-
-    vol_up = ButtonImg([0, 0], load_img('data/icons/speaker_001.png'), False)
-
-    vol_down = ButtonImg([0, 0], load_img('data/icons/speaker_002.png'), False)
-
-    vol_off = ButtonImg([0, 0], load_img('data/icons/speaker_003.png'), False)
-
-    controls = ButtonImg([0, 0], load_img('data/icons/controls_001.png'), False)
-
-    main_opt = [play, about, end]
-    options = [vol_up, vol_down, vol_off, controls]
+    pos = [0, screen[0][1] - 200]
+    for button in menu_buttons:
+        button.render()
+        button.pos[0] = screen[0][0] - button.line.get_width() - 15
+        button.pos[1] = pos[1]
+        pos[1] += 50
 
     pygame.mixer.pre_init(0, 0, 16, 0)
     if load_music('data/sound/background.wav') is not False:
         mixer.music.play(-1)
 
     sh_controls = False
-    sh_options = False
     sh_about = False
 
     while True:
         clock.tick(60)
+
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
 
-        # Read keyboard
         for i in pygame.event.get():
             if i.type == pygame.QUIT:
                 sys.exit()
 
-        # Display background
-        display[1].blit(bkgd, (0, 0))
-        change_bkgd += 1
-
-        # Animate background
-        if change_bkgd == 30:
-            bkgd = random.choice(display[2])
-            change_bkgd = 0
-
-        # Drop comets x
-        if random.randint(0, 250) == 42:
-            comets_x.append(Object([comet_icon], [827, random.randint(0, 850)], 5, False))
-            comets_x[-1].state = True
-
-        # Drop comets y
-        if random.randint(0, 250) == 42:
-            comets_y.append(Object([comet_icon], [random.randint(0, 800), 0], 5, False))
-            comets_y[-1].state = True
-
-        # Loop through comets x
-        for comet in comets_x:
-            comet.movexy(display[1])
-
-            if comet.pos[1] > display[0][1]:
-                comets_x.remove(comet)
-
-        # Loop through comets y
-        for comet in comets_y:
-            comet.movexy(display[1])
-
-            if comet.pos[1] > display[0][1]:
-                comets_y.remove(comet)
-
-        title.draw_center(display[1], 5)
-
-        # Draw gears button
-        pos_y = 10
-        gears.pos[0] = display[0][0] - gears.img.get_width() - 10
-        gears.pos[1] = pos_y
-        gears.draw(display[1])
-        pos_y += 50
-
-        if gears.inside(mouse) and click[0] == 1 and not gears.state:
-            gears.state = True
-            sh_options = not sh_options
-        elif click[0] == 0 and gears.state:
-            gears.state = False
-
-        # Draw option buttons
-        if sh_options:
-            for opt in options:
-                opt.pos[0] = display[0][0] - opt.img.get_width() - 10
-                opt.pos[1] = pos_y
-                opt.draw(display[1])
-                pos_y += 50
-
-        if controls.inside(mouse) and click[0] == 1 and not controls.state:
-            controls.state = True
-            sh_controls = not sh_controls
-        elif click[0] == 0 and controls.state:
-            controls.state = False
-
-        if sh_controls:
-            pos[1] = 200
-            for line in options_txt:
-                line = norm_font.font.render(line.strip(), True, norm_font.color)
-                display[1].blit(line, (pos))
-                pos[1] += 30
-
-        if vol_up.inside(mouse) and click[0] == 1 and not vol_up.state:
-            vol_up.state = True
-            if vol <= 1.00:
-                vol += 0.10
-        elif click[0] == 0 and vol_up.state:
-            vol_up.state = False
-
-        if vol_down.inside(mouse) and click[0] == 1 and not vol_down.state:
-            vol_down.state = True
-            if vol > 0:
-                vol -= 0.10
-        elif click[0] == 0 and vol_down.state:
-            vol_down.state = False
-
-        if vol_off.inside(mouse) and click[0] == 1 and not vol_off.state:
-            vol_off.state = True
-            vol = 0
-        elif click[0] == 0 and vol_off.state:
-            vol_off.state = False
-
-        # Menu buttons
-        pos_y = display[0][1] - 150
-
-        for opt in main_opt:
-            opt.render()
-            opt.pos[0] = display[0][0] - opt.line.get_width() - 15
-            opt.pos[1] = pos_y
-            opt.draw(display[1])
-            pos_y += 50
+        vol = vol_buttons_act(vol_buttons, mouse, click, vol)
 
         if play.inside(mouse):
             play.color = (255, 255, 255)
             if click[0] == 1:
-                if play.sound.get_num_channels() == 0:
-                    play.sound.play()
                 return vol
         else:
             play.color = (155, 155, 155)
@@ -200,19 +88,42 @@ def intro(display, vol):
         else:
             about.color = (155, 155, 155)
 
+        if opt.inside(mouse):
+            opt.color = (255, 255, 255)
+            if click[0] == 1 and not opt.status:
+                opt.status = True
+                sh_controls = not sh_controls
+            elif click[0] == 0 and opt.status:
+                opt.status = False
+        else:
+            opt.color = (155, 155, 155)
+
+        mixer.music.set_volume(vol)
+
+        screen[1].blit(screen[2], (0, 0))
+        title.draw_center(screen[1], 5)
+
+        for button in menu_buttons:
+            button.render()
+            button.draw(screen[1])
+
+        for button in vol_buttons:
+            button.draw(screen[1])
+
         if sh_about:
-            pos[1] = 70
+            pos = [5, 70]
             for line in about_txt:
-                line = norm_font.font.render(line.strip(), True, norm_font.color)
-                display[1].blit(line, (pos))
+                line = font.font.render(line.strip(), True, font.color)
+                screen[1].blit(line, (pos))
                 pos[1] += 30
 
-        # Set sound level
-        mixer.music.set_volume(vol)
-        play.sound.set_volume(vol)
+        if sh_controls:
+            pos = [5, 200]
+            for line in options_txt:
+                line = font.font.render(line.strip(), True, font.color)
+                screen[1].blit(line, (pos))
+                pos[1] += 30
 
-        # Draw custom cursor
-        cursor = load_img('data/icons/cursor.png')
-        display[1].blit(cursor, mouse)
+        screen[1].blit(cursor, mouse)
 
         pygame.display.update()

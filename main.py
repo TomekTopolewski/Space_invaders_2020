@@ -1,282 +1,81 @@
 """Main"""
 
-import sys
-import random
 import pygame
+from game import game
+from menu import menu
+from game_over import game_over
+from toolbox import load_img, load_sound
 
-from pygame import mixer
-from player import Player
-from enemy import Enemy
-from text import Text
-from objects import Object
+pygame.init()
 
-from pause import pause
-from toolbox import moving_bkgd, is_collision
+pygame.display.set_caption("Space Invaders 2020")
+window_icon = load_img('data/icons/aircraft-icon.png')
+pygame.display.set_icon(window_icon)
 
-if not pygame.mixer:
-    print("Pygame mixer module not available")
+screen = [(827, 880)]
+screen.append(pygame.display.set_mode((screen[0][0], screen[0][1])))
+screen.append(load_img('data/images/background_004.jpg'))
 
-def main(display, obj_icons, obj_sounds, vol):
-    """Main loop"""
+pygame.mouse.set_visible(0)
 
-    pla_icon = obj_icons[7:9]
-    ene_icon = obj_icons[:7]
-    mis_icon = obj_icons[9]
-    exp_icon = obj_icons[10]
-    box_icon = obj_icons[11]
-    ast_icon = obj_icons[12]
-    deb_icon = obj_icons[13]
+enemy1 = [load_img('data/icons/enemy_001.png'), load_img('data/icons/enemy_001-left.png'), \
+    load_img('data/icons/enemy_001-right.png')]
 
-    mis_sound = obj_sounds[0]
-    exp_sound = obj_sounds[1]
-    box_sound = obj_sounds[2]
+enemy2 = [load_img('data/icons/enemy_002.png'), load_img('data/icons/enemy_002-left.png'), \
+    load_img('data/icons/enemy_002-right.png')]
 
-    clock = pygame.time.Clock()
+enemy3 = [load_img('data/icons/enemy_003.png'), load_img('data/icons/enemy_003-left.png'), \
+    load_img('data/icons/enemy_003-right.png')]
 
-    player = Player(7, 3, pla_icon[0])
+enemy4 = [load_img('data/icons/enemy_004.png'), load_img('data/icons/enemy_004-left.png'), \
+    load_img('data/icons/enemy_004-right.png')]
 
-    score = Text(32, (255, 255, 255), 'data/fonts/space_age.ttf')
-    score.text = "Score: "
+enemy5 = [load_img('data/icons/enemy_005.png'), load_img('data/icons/enemy_005-left.png'), \
+    load_img('data/icons/enemy_005-right.png')]
 
-    hitpoints = Text(22, (255, 255, 255), 'data/fonts/space_age.ttf')
-    hitpoints.text = "HP: "
-    hitpoints.value = player.hitpoints
+enemy6 = [load_img('data/icons/enemy_006.png'), load_img('data/icons/enemy_006-left.png'), \
+    load_img('data/icons/enemy_006-right.png')]
 
-    boxes = []
-    enemies = []
-    enemy_missiles = []
-    player_missiles = []
-    explosions = []
-    asteroids = []
-    debris = []
-    is_upgraded = False
+enemy7 = [load_img('data/icons/enemy_007.png'), load_img('data/icons/enemy_007-left.png'), \
+    load_img('data/icons/enemy_007-right.png')]
 
-    bkgd_one = 0
-    bkgd_two = display[2][0].get_height() * -1
+box = [load_img('data/icons/box_003.png'), load_img('data/icons/box_004.png'), \
+    load_img('data/icons/box_001.png'), load_img('data/icons/box_002.png')]
 
-    number_of_enemies = 5
+player1 = [load_img('data/icons/player_001.png'), load_img('data/icons/player_001-left.png'), \
+    load_img('data/icons/player_001-right.png')]
 
-    while True:
-        clock.tick(60)
+player2 = [load_img('data/icons/player_002.png'), load_img('data/icons/player_002-left.png'), \
+    load_img('data/icons/player_002-right.png')]
 
-        bkgd_one, bkgd_two = moving_bkgd(display[2][0], display[1], bkgd_one, bkgd_two)
+missile = [load_img('data/icons/missile_001.png'), load_img('data/icons/missile_002.png'),\
+    load_img('data/icons/missile_003.png')]
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                sys.exit()
+explosion = load_img('data/icons/explosion.png')
 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_p:
-                    vol = pause(display, score, hitpoints, vol)
+asteroid = [load_img('data/icons/asteroid_001.png'), load_img('data/icons/asteroid_002.png'),\
+    load_img('data/icons/asteroid_003.png'), load_img('data/icons/asteroid_004.png'), \
+    load_img('data/icons/asteroid_005.png')]
 
+debris = [load_img('data/icons/debris_001.png'), load_img('data/icons/debris_002.png'), \
+    load_img('data/icons/debris_003.png')]
 
-        while len(enemies) < number_of_enemies:
-            enemies.append(Enemy(display[0], ene_icon[random.randint(0, 5)], 4000))
+m_sound = [load_sound('data/sound/shoot.wav'), load_sound('data/sound/shoot2.wav')]
+exp_sound = load_sound('data/sound/explosion.wav')
+box_sound = load_sound('data/sound/package.wav')
+enter_game = load_sound('data/sound/button.wav')
 
-        player.move(display[1], display[0])
+object_icons = [enemy1, enemy2, enemy3, enemy4, enemy5, enemy6, enemy7, \
+    player1, player2, missile, explosion, box, asteroid, debris]
 
-        if is_upgraded:
-            player.shoot(player_missiles, mis_icon[0], mis_sound[1])
-        else:
-            player.shoot(player_missiles, mis_icon[1], mis_sound[0])
+object_sounds = [m_sound, exp_sound, box_sound]
 
-        for enemy in enemies:
-            if is_collision(player, enemy, 40):
-                player.hitpoints -= 1
+while True:
+    vol = menu(screen, 0.2)
 
-                explosions.append(Object(exp_icon, enemy.pos, False, exp_sound))
-                explosions[-1].state = True
-                explosions[-1].sound.play()
+    enter_game.set_volume(vol)
+    enter_game.play()
 
-                if player.hitpoints == 0:
-                    return vol, score
+    vol, score = game(screen, object_icons, object_sounds, vol)
 
-                enemies.remove(enemy)
-
-        for missile in enemy_missiles:
-            if is_collision(player, missile, 40):
-                player.hitpoints -= 1
-
-                explosions.append(Object(exp_icon, missile.pos, False, exp_sound))
-                explosions[-1].state = True
-                explosions[-1].sound.play()
-
-                if player.hitpoints == 0:
-                    return vol, score
-
-                enemy_missiles.remove(missile)
-
-        for asteroid in asteroids:
-            if is_collision(player, asteroid, 40):
-                player.hitpoints -= 1
-
-                explosions.append(Object(exp_icon, asteroid.pos, False, exp_sound))
-                explosions[-1].state = True
-                explosions[-1].sound.play()
-
-                if player.hitpoints == 0:
-                    return vol, score
-
-                asteroids.remove(asteroid)
-
-        for enemy in enemies:
-            for missile in player_missiles:
-                if is_collision(enemy, missile, 40):
-                    enemy.hitpoints -= 1
-
-                    explosions.append(Object(exp_icon, missile.pos, False, exp_sound))
-                    explosions[-1].state = True
-                    explosions[-1].sound.play()
-
-                    if enemy.hitpoints == 0:
-                        score.value += 1
-
-                        debris.append(Object(deb_icon, enemy.pos, 0.5, False))
-                        debris[-1].state = True
-
-                        if random.randint(0, 15) <= enemy.drop:
-                            ptype = random.randint(0, 3)
-                            boxes.append(Object([box_icon[ptype]], enemy.pos, 0.25, box_sound))
-                            boxes[-1].state = True
-                            boxes[-1].type = ptype
-
-                        enemies.remove(enemy)
-                        player_missiles.remove(missile)
-                        break
-
-                    player_missiles.remove(missile)
-
-        for enemy in enemies:
-            for asteroid in asteroids:
-                if is_collision(enemy, asteroid, 40):
-                    enemy.hitpoints -= 1
-
-                    explosions.append(Object(exp_icon, asteroid.pos, False, exp_sound))
-                    explosions[-1].state = True
-
-                    if enemy.hitpoints == 0:
-                        debris.append(Object(deb_icon, enemy.pos, 0.5, False))
-                        debris[-1].state = True
-
-                        enemies.remove(enemy)
-                        asteroids.remove(asteroid)
-                        break
-
-                    asteroids.remove(asteroid)
-
-        for missile in player_missiles:
-            for asteroid in asteroids:
-                if is_collision(missile, asteroid, 40):
-                    asteroid.hitpoints -= 1
-
-                    explosions.append(Object(exp_icon, missile.pos, False, exp_sound))
-                    explosions[-1].state = True
-                    explosions[-1].sound.play()
-
-                    if asteroid.hitpoints == 0:
-                        asteroids.remove(asteroid)
-
-                    player_missiles.remove(missile)
-                    break
-
-        for player_missile in player_missiles:
-            for enemy_missile in  enemy_missiles:
-                if is_collision(player_missile, enemy_missile, 40):
-                    enemy_missile.hitpoints -= 1
-
-                    explosions.append(Object(exp_icon, player_missile.pos, False, exp_sound))
-                    explosions[-1].state = True
-                    explosions[-1].sound.play()
-
-                    if enemy_missile.hitpoints == 0:
-                        enemy_missiles.remove(enemy_missile)
-
-                    player_missiles.remove(player_missile)
-                    break
-
-        for missile in enemy_missiles:
-            for asteroid in asteroids:
-                if is_collision(missile, asteroid, 40):
-                    asteroid.hitpoints -= 1
-
-                    explosions.append(Object(exp_icon, asteroid.pos, False, False))
-                    explosions[-1].state = True
-
-                    if asteroid.hitpoints == 0:
-                        asteroids.remove(asteroid)
-
-                    enemy_missiles.remove(missile)
-                    break
-
-        for enemy in enemies:
-            enemy.move(display[:2])
-            enemy.draw_hp(display[1])
-            enemy.shoot(enemy_missiles, mis_icon[2])
-
-            if enemy.pos[1] > (display[0][1] - (enemy.icon[0].get_height() / 2)):
-                player.hitpoints -= 1
-                enemies.remove(enemy)
-
-                if player.hitpoints == 0:
-                    return vol, score
-
-        for missile in player_missiles:
-            missile.movex(display[1])
-
-            if missile.pos[1] < -32:
-                player_missiles.remove(missile)
-
-        for missile in enemy_missiles:
-            missile.movex(display[1])
-
-            if missile.pos[1] > display[0][1]:
-                enemy_missiles.remove(missile)
-
-        for deb in debris:
-            deb.keep(display[1])
-
-            if deb.pos[1] > display[0][1]:
-                debris.remove(deb)
-
-        for box in boxes:
-            box.movex(display[1])
-
-            if is_collision(box, player, 40):
-                is_upgraded = box.open(player, is_upgraded, pla_icon[1])
-                box.sound.play()
-                boxes.remove(box)
-
-        if random.randint(0, 3000) == 666:
-            enemies.append(Enemy(display[0], ene_icon[6], 2500))
-            enemies[-1].boss()
-            number_of_enemies += 1
-
-        for explosion in explosions:
-            if pygame.time.get_ticks() - explosion.time0 < 200:
-                display[1].blit(explosion.icon, (explosion.pos))
-            else:
-                explosions.remove(explosion)
-
-        if random.randint(0, 70) == 42:
-            asteroids.append(Object([random.choice(ast_icon)], \
-                [random.randint(5, display[0][0] - 50), -30], 0.5, 0))
-            asteroids[-1].state = True
-
-        for asteroid in asteroids:
-            asteroid.movex(display[1])
-
-            if asteroid.pos[1] > display[0][1]:
-                asteroids.remove(asteroid)
-
-        objects = explosions + boxes + player_missiles
-        mixer.music.set_volume(vol)
-
-        for obj in objects:
-            if obj.sound:
-                obj.sound.set_volume(vol)
-
-        score.draw(display[1], [10, 10])
-        hitpoints.value = player.hitpoints
-        hitpoints.draw(display[1], [10, 30])
-
-        pygame.display.update()
+    game_over(score, screen)

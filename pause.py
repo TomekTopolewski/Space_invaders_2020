@@ -1,62 +1,47 @@
-"""File for pause function"""
+"""Pause"""
+
 import sys
 import pygame
 
 from pygame import mixer
 from text import Text
 from button import Button
-from button_img import ButtonImg
-from toolbox import load_img
+from toolbox import load_img, vol_buttons_def, vol_buttons_act
 
-def pause(display, score, hitpoints, vol):
-    """1. display - the surface where we will draw objects
-    2. score - number of points the player earned
-    3. hitpoints - number of hitpoints the player has"""
+def pause(screen, score, hitpoints, vol):
+    """Pause"""
 
     clock = pygame.time.Clock()
+
+    cursor = load_img('data/icons/cursor.png')
 
     pause_txt = Text(72, (255, 255, 255), 'data/fonts/space_age.ttf')
     pause_txt.text = "Pause"
 
-    back = Button([0, 0], "Return", 36, (155, 155, 155), False)
+    vol_buttons = vol_buttons_def(screen)
 
-    end = Button([0, 0], "Quit", 36, (155, 155, 155), False)
+    back = Button([0, 0], "Return", 36)
+    end = Button([0, 0], "Quit", 36)
+    menu_buttons = [back, end]
 
-    gears = ButtonImg([0, 0], load_img('data/icons/gears_001.png'), False)
-
-    vol_up = ButtonImg([0, 0], load_img('data/icons/speaker_001.png'), False)
-
-    vol_down = ButtonImg([0, 0], load_img('data/icons/speaker_002.png'), False)
-
-    vol_off = ButtonImg([0, 0], load_img('data/icons/speaker_003.png'), False)
-
-    options = [vol_up, vol_down, vol_off]
-    buttons = [back, end]
-    sh_options = False
+    pos = [0, screen[0][1] - 100]
+    for button in menu_buttons:
+        button.render()
+        button.pos[0] = screen[0][0] - button.line.get_width() - 15
+        button.pos[1] = pos[1]
+        pos[1] += 50
 
     while True:
         clock.tick(60)
+
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
-
-        display[1].blit(display[2][0], (0, 0))
-
-        score.draw(display[1], [10, 10])
-        hitpoints.draw(display[1], [10, 30])
-        pause_txt.draw_text(display[1], [270, 200])
 
         for _event in pygame.event.get():
             if _event.type == pygame.QUIT:
                 sys.exit()
 
-        # Draw buttons
-        pos_y = display[0][1] - 100
-        for button in buttons:
-            button.render()
-            button.pos[0] = display[0][0] - button.line.get_width() - 15
-            button.pos[1] = pos_y
-            button.draw(display[1])
-            pos_y += 50
+        vol = vol_buttons_act(vol_buttons, mouse, click, vol)
 
         if back.inside(mouse):
             back.color = (255, 255, 255)
@@ -72,51 +57,21 @@ def pause(display, score, hitpoints, vol):
         else:
             end.color = (155, 155, 155)
 
-        # Options buttons
-        pos_y = 10
-        gears.pos[0] = display[0][0] - gears.img.get_width() - 10
-        gears.pos[1] = pos_y
-        gears.draw(display[1])
-        pos_y += 50
-
-        if gears.inside(mouse) and click[0] == 1 and not gears.state:
-            gears.state = True
-            sh_options = not sh_options
-        elif click[0] == 0 and gears.state:
-            gears.state = False
-
-        if sh_options:
-            for opt in options:
-                opt.pos[0] = display[0][0] - opt.img.get_width() - 10
-                opt.pos[1] = pos_y
-                opt.draw(display[1])
-                pos_y += 50
-
-        if vol_up.inside(mouse) and click[0] == 1 and not vol_up.state:
-            vol_up.state = True
-            if vol <= 1.00:
-                vol += 0.10
-        elif click[0] == 0 and vol_up.state:
-            vol_up.state = False
-
-        if vol_down.inside(mouse) and click[0] == 1 and not vol_down.state:
-            vol_down.state = True
-            if vol > 0:
-                vol -= 0.10
-        elif click[0] == 0 and vol_down.state:
-            vol_down.state = False
-
-        if vol_off.inside(mouse) and click[0] == 1 and not vol_off.state:
-            vol_off.state = True
-            vol = 0
-        elif click[0] == 0 and vol_off.state:
-            vol_off.state = False
-
-        # Draw custom cursor
-        cursor = load_img('data/icons/cursor.png')
-        display[1].blit(cursor, mouse)
-
-        # Set sound level
         mixer.music.set_volume(vol)
+
+        screen[1].blit(screen[2], (0, 0))
+
+        score.draw(screen[1], [10, 10])
+        hitpoints.draw(screen[1], [10, 30])
+        pause_txt.draw_text(screen[1], [270, 200])
+
+        for button in menu_buttons:
+            button.render()
+            button.draw(screen[1])
+
+        for button in vol_buttons:
+            button.draw(screen[1])
+
+        screen[1].blit(cursor, mouse)
 
         pygame.display.update()
