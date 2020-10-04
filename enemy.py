@@ -18,13 +18,12 @@ class Enemy(pygame.sprite.Sprite):
         self.drop = 1
         self.cell = self.icon[0].get_width() / self.hitpoints
         self.reload = reload0
-        self.state = True
         self.time0 = -reload0
 
     def boss(self):
         """self"""
 
-        self.drop = 10
+        self.drop = 15
         self.hitpoints = 5
         self.cell = self.icon[0].get_width() / self.hitpoints
 
@@ -51,8 +50,10 @@ class Enemy(pygame.sprite.Sprite):
         """self, scrn"""
 
         surface = pygame.Surface((self.icon[0].get_width(), 4))
+
         pygame.draw.rect(surface, (255, 80, 80), (0, 0, self.icon[0].get_width(), 4))
         pygame.draw.rect(surface, (0, 255, 0), (0, 0, int(self.cell * self.hitpoints), 4))
+
         scrn.blit(surface, (self.pos[0], self.pos[1] - 5))
 
     def _forward(self, scrn):
