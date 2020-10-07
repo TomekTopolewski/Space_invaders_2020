@@ -13,6 +13,13 @@ from objects import Object
 from pause import pause
 from toolbox import moving_bkgd, is_collision
 
+def add_explosion(explosions, obj, obj_icons, obj_sounds):
+    """explosions, obj, obj_icons, obj_sounds"""
+
+    explosions.append(Object(obj_icons[10], obj.pos, False, obj_sounds[1]))
+    explosions[-1].state = True
+    explosions[-1].sound.play()
+
 def add_box(boxes, obj, obj_icons, obj_sounds):
     """boxes, obj, obj_icons, obj_sounds"""
 
@@ -118,10 +125,6 @@ def game(scrn, obj_icons, obj_sounds, vol):
             enemy.draw_hp(scrn[1])
             enemy.shoot(enemy_missiles, obj_icons[9][2])
 
-            if enemy.hpoints == 0:
-
-                continue
-
             if enemy.pos[1] > scrn[0][1]:
                 players[0].hpoints -= 1
                 enemies.remove(enemy)
@@ -143,17 +146,24 @@ def game(scrn, obj_icons, obj_sounds, vol):
 
         obj, _ = obj_collision(player_missiles, asteroids)
         if obj is not False and obj.hpoints == 0:
-            explosions.append(Object())
+            add_explosion(explosions, obj, obj_icons, obj_sounds)
 
-        obj_collision(player_missiles, enemy_missiles)
-
-        _, obj = obj_collision(player_missiles, enemies)
+        obj, _ = obj_collision(player_missiles, enemy_missiles)
         if obj is not False and obj.hpoints == 0:
+            add_explosion(explosions, obj, obj_icons, obj_sounds)
+
+        obj1, obj2 = obj_collision(player_missiles, enemies)
+        if obj1 is not False and obj1.hpoints == 0:
+            add_explosion(explosions, obj1, obj_icons, obj_sounds)
+        if obj2 is not False and obj2.hpoints == 0:
             score.value += 1
-            add_box(boxes, obj, obj_icons, obj_sounds)
+            add_box(boxes, obj2, obj_icons, obj_sounds)
 
         obj_collision(enemy_missiles, asteroids)
-        obj_collision(enemy_missiles, players)
+
+        obj, _ = obj_collision(enemy_missiles, players)
+        if obj is not False:
+            add_explosion(explosions, obj, obj_icons, obj_sounds)
 
         out_of_screen(asteroids, scrn)
         out_of_screen(player_missiles, scrn)
@@ -161,7 +171,6 @@ def game(scrn, obj_icons, obj_sounds, vol):
 
         for box in boxes:
             box.movex(scrn[1])
-
             if is_collision(box, players[0], 40):
                 box.open(players[0])
                 box.sound.play()
@@ -171,10 +180,6 @@ def game(scrn, obj_icons, obj_sounds, vol):
             return vol, score
 
         for explosion in explosions:
-            explosion.icon = obj_icons[10]
-            explosion.sound = obj_sounds[1]
-            explosion.sound.play()
-
             if pygame.time.get_ticks() - explosion.time0 < 200:
                 scrn[1].blit(explosion.icon, (explosion.pos))
             else:
