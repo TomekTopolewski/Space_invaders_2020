@@ -15,7 +15,6 @@ class Enemy(pygame.sprite.Sprite):
         self.step = 0
         self.move_type = 0
         self.hitpoints = 2
-        self.drop = 1
         self.cell = self.icon[0].get_width() / self.hitpoints
         self.reload = reload0
         self.time0 = -reload0
@@ -23,7 +22,6 @@ class Enemy(pygame.sprite.Sprite):
     def boss(self):
         """self"""
 
-        self.drop = 15
         self.hitpoints = 5
         self.cell = self.icon[0].get_width() / self.hitpoints
 

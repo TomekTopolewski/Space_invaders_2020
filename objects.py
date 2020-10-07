@@ -28,20 +28,18 @@ class Object(pygame.sprite.Sprite):
         self.pos[1] += self.vel
         scrn.blit(self.icon[0], (self.pos[0], self.pos[1]))
 
-    def open(self, player, is_upgraded, player_icon):
-        """(fox boxes) self, player, is_upgraded, player_icon"""
+    def open(self, player):
+        """(for boxes) self, player"""
 
         if self.type == 0:
-            player.hitpoints += 1
-        elif self.type == 1:
-            player.icon = player_icon
-            is_upgraded = True
-        elif self.type == 3:
-            player.vel += 1
-        elif self.type == 2:
             if player.reload > 500:
                 player.reload -= 50
-        return is_upgraded
+
+        elif self.type == 1:
+            player.vel += 1
+
+        elif self.type == 2:
+            player.hitpoints += 1
 
     def keep(self, scrn):
         """(for debris) self, scrn"""

@@ -1,5 +1,10 @@
 """Main"""
 
+# To do:
+# 1. Player ship and missile icon
+# 2. Different drop % for boss
+
+
 import pygame
 
 from pygame import mixer
@@ -41,8 +46,8 @@ enemy6 = [load_img('data/icons/enemy_006.png'), load_img('data/icons/enemy_006-l
 enemy7 = [load_img('data/icons/enemy_007.png'), load_img('data/icons/enemy_007-left.png'), \
     load_img('data/icons/enemy_007-right.png')]
 
-box = [load_img('data/icons/box_003.png'), load_img('data/icons/box_004.png'), \
-    load_img('data/icons/box_001.png'), load_img('data/icons/box_002.png')]
+box = [load_img('data/icons/box_001.png'), load_img('data/icons/box_002.png'), \
+    load_img('data/icons/box_003.png')]
 
 player1 = [load_img('data/icons/player_001.png'), load_img('data/icons/player_001-left.png'), \
     load_img('data/icons/player_001-right.png')]

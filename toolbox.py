@@ -49,22 +49,22 @@ def load_music(fname):
         music = False
     return music
 
-def moving_bkgd(scrn, bkgd_one_y, bkgd_two_y):
-    """scrn, bkgd_one_y, bkgd_two_y"""
+def moving_bkgd(scrn, bkgd):
+    """scrn, bkgd"""
 
-    bkgd_one_y += 0.5
-    bkgd_two_y += 0.5
+    bkgd[0] += 0.5
+    bkgd[1] += 0.5
 
-    if bkgd_one_y > scrn[0][1]:
-        bkgd_one_y = scrn[0][1] * -1
+    if bkgd[0] > scrn[0][1]:
+        bkgd[0] = scrn[0][1] * -1
 
-    if bkgd_two_y > scrn[0][1]:
-        bkgd_two_y = scrn[0][1] * -1
+    if bkgd[1] > scrn[0][1]:
+        bkgd[1] = scrn[0][1] * -1
 
-    scrn[1].blit(scrn[2], (0, bkgd_one_y))
-    scrn[1].blit(scrn[2], (0, bkgd_two_y))
+    scrn[1].blit(scrn[2], (0, bkgd[0]))
+    scrn[1].blit(scrn[2], (0, bkgd[1]))
 
-    return bkgd_one_y, bkgd_two_y
+    return bkgd
 
 def is_collision(obj_one, obj_two, rng):
     """obj_one, obj_two, rng"""
