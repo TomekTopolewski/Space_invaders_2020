@@ -41,20 +41,3 @@ class Object(pygame.sprite.Sprite):
         elif self.type == 2:
             player.hpoints += 1
 
-    def keep(self, scrn):
-        """(for debris) self, scrn"""
-
-        self.pos[1] += self.vel
-        time1 = pygame.time.get_ticks()
-
-        if time1 - self.time0 < 100:
-            scrn.blit(self.icon[0], (self.pos[0], self.pos[1]))
-
-        elif time1 - self.time0 >= 100 and time1 - self.time0 < 200:
-            scrn.blit(self.icon[1], (self.pos[0], self.pos[1]))
-
-        elif time1 - self.time0 >= 200 and time1 - self.time0 < 300:
-            scrn.blit(self.icon[2], (self.pos[0], self.pos[1]))
-
-        elif time1 - self.time0 >= 300:
-            self.state = False
