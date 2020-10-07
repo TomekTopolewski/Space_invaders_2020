@@ -7,11 +7,11 @@ from objects import Object
 class Player(pygame.sprite.Sprite):
     """Player"""
 
-    def __init__(self, vel, hitpoints, icon):
+    def __init__(self, vel, hpoints, icon):
         self.icon = icon
         self.pos = [370, 480]
         self.vel = vel
-        self.hitpoints = hitpoints
+        self.hpoints = hpoints
         self.reload = 1000
         self.time0 = -self.reload
         self.state = True

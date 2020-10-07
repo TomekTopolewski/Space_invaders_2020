@@ -1,10 +1,5 @@
 """Main"""
 
-# To do:
-# 1. Player ship and missile icon
-# 2. Different drop % for boss
-
-
 import pygame
 
 from pygame import mixer

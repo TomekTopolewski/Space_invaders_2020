@@ -12,7 +12,7 @@ class Object(pygame.sprite.Sprite):
         self.icon = icon
         self.sound = sound
         self.type = 0
-        self.hitpoints = 1
+        self.hpoints = 1
         self.time0 = pygame.time.get_ticks()
 
     def movex(self, scrn):
@@ -39,7 +39,7 @@ class Object(pygame.sprite.Sprite):
             player.vel += 1
 
         elif self.type == 2:
-            player.hitpoints += 1
+            player.hpoints += 1
 
     def keep(self, scrn):
         """(for debris) self, scrn"""
