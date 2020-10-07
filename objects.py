@@ -8,7 +8,6 @@ class Object(pygame.sprite.Sprite):
     def __init__(self, icon, pos, vel, sound):
         self.pos = pos
         self.vel = vel
-        self.state = False
         self.icon = icon
         self.sound = sound
         self.type = 0
@@ -18,13 +17,6 @@ class Object(pygame.sprite.Sprite):
     def movex(self, scrn):
         """self, scrn"""
 
-        self.pos[1] += self.vel
-        scrn.blit(self.icon[0], (self.pos[0], self.pos[1]))
-
-    def movexy(self, scrn):
-        """self, scrn"""
-
-        self.pos[0] -= self.vel
         self.pos[1] += self.vel
         scrn.blit(self.icon[0], (self.pos[0], self.pos[1]))
 
@@ -40,4 +32,3 @@ class Object(pygame.sprite.Sprite):
 
         elif self.type == 2:
             player.hpoints += 1
-

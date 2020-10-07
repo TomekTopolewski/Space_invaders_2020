@@ -14,7 +14,6 @@ class Player(pygame.sprite.Sprite):
         self.hpoints = hpoints
         self.reload = 1000
         self.time0 = -self.reload
-        self.state = True
 
     def move(self, scrn):
         """self, scrn"""
@@ -75,5 +74,4 @@ class Player(pygame.sprite.Sprite):
                 player_missile[-1].pos[0] = self.pos[0] + launch_x
                 player_missile[-1].pos[1] = self.pos[1] - launch_y
                 player_missile[-1].sound.play()
-                player_missile[-1].state = True
                 self.time0 = pygame.time.get_ticks()

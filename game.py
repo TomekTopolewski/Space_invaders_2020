@@ -13,29 +13,14 @@ from objects import Object
 from pause import pause
 from toolbox import moving_bkgd, is_collision
 
-def add_explosion(explosions, obj, obj_icons, obj_sounds):
-    """explosions, obj, obj_icons, obj_sounds"""
 
-    explosions.append(Object(obj_icons[10], obj.pos, False, obj_sounds[1]))
-    explosions[-1].state = True
-    explosions[-1].sound.play()
+def add_box(obj, obj_icons, obj_sounds):
+    """obj, obj_icons, obj_sounds"""
 
-def add_box(boxes, obj, obj_icons, obj_sounds):
-    """boxes, obj, obj_icons, obj_sounds"""
-
-    if random.randint(0, 1) == 1:
-        btype = random.randint(0, 2)
-        boxes.append(Object([obj_icons[11][btype]], obj.pos, 0.5, obj_sounds[2]))
-        boxes[-1].state = True
-        boxes[-1].type = btype
-
-def add_asteroid(asteroids, scrn, obj_icons):
-    """asteroids, scrn, obj_icons"""
-
-    if random.randint(0, 70) == 42:
-        asteroids.append(Object([random.choice(obj_icons[12])], \
-            [random.randint(5, scrn[0][0] - 50), 0], 0.5, 0))
-        asteroids[-1].state = True
+    btype = random.randint(0, 2)
+    box = Object([obj_icons[11][btype]], obj.pos, 0.5, obj_sounds[2])
+    box.type = btype
+    return box
 
 def obj_collision(objects1, objects2):
     """objects1, objects2, explosions"""
@@ -90,7 +75,7 @@ def game(scrn, obj_icons, obj_sounds, vol):
     explosions = list()
     asteroids = list()
 
-    bkgd = [0, scrn[2].get_height() * -1]
+    bkgd = [0, -scrn[0][1]]
 
     num_of_ene = 5
     players.append(Player(7, 3, obj_icons[7:9][0]))
@@ -109,9 +94,11 @@ def game(scrn, obj_icons, obj_sounds, vol):
                     vol = pause(scrn, score, hpoints, vol)
 
         while len(enemies) < num_of_ene:
-            enemies.append(Enemy(scrn[0], obj_icons[:7][random.randint(0, 5)], 4000))
+            enemies.append(Enemy(scrn[0], obj_icons[:7][random.randint(0, 5)], 4000, 2))
 
-        add_asteroid(asteroids, scrn, obj_icons)
+        if random.randint(0, 70) == 42:
+            asteroids.append((Object([random.choice(obj_icons[12])], \
+                [random.randint(5, scrn[0][0] - 50), 0], 0.5, 0)))
 
         for asteroid in asteroids:
             asteroid.movex(scrn[1])
@@ -130,8 +117,7 @@ def game(scrn, obj_icons, obj_sounds, vol):
                 enemies.remove(enemy)
 
         if random.randint(0, 3000) == 666:
-            enemies.append(Enemy(scrn[0], obj_icons[:7][6], 2500))
-            enemies[-1].boss()
+            enemies.append(Enemy(scrn[0], obj_icons[:7][6], 2500 , 5))
             num_of_ene += 1
 
         for missile in player_missiles:
@@ -140,30 +126,46 @@ def game(scrn, obj_icons, obj_sounds, vol):
         for missile in enemy_missiles:
             missile.movex(scrn[1])
 
-        obj_collision(players, enemies)
-        obj_collision(players, asteroids)
-        obj_collision(enemies, asteroids)
+        _, obj = obj_collision(players, enemies)
+        if obj is not False:
+            explosions.append(Object(obj_icons[10], obj.pos, False, obj_sounds[1]))
+            explosions[-1].sound.play()
+
+        _, obj = obj_collision(players, asteroids)
+        if obj is not False:
+            explosions.append(Object(obj_icons[10], obj.pos, False, False))
+
+        _, obj = obj_collision(enemies, asteroids)
+        if obj is not False:
+            explosions.append(Object(obj_icons[10], obj.pos, False, False))
 
         obj, _ = obj_collision(player_missiles, asteroids)
-        if obj is not False and obj.hpoints == 0:
-            add_explosion(explosions, obj, obj_icons, obj_sounds)
+        if obj is not False:
+            explosions.append(Object(obj_icons[10], obj.pos, False, obj_sounds[1]))
+            explosions[-1].sound.play()
 
         obj, _ = obj_collision(player_missiles, enemy_missiles)
-        if obj is not False and obj.hpoints == 0:
-            add_explosion(explosions, obj, obj_icons, obj_sounds)
+        if obj is not False:
+            explosions.append(Object(obj_icons[10], obj.pos, False, obj_sounds[1]))
+            explosions[-1].sound.play()
 
         obj1, obj2 = obj_collision(player_missiles, enemies)
-        if obj1 is not False and obj1.hpoints == 0:
-            add_explosion(explosions, obj1, obj_icons, obj_sounds)
-        if obj2 is not False and obj2.hpoints == 0:
+        if obj1 is not False:
+            explosions.append(Object(obj_icons[10], obj1.pos, False, obj_sounds[1]))
+            explosions[-1].sound.play()
+        if obj2 is not False:
             score.value += 1
-            add_box(boxes, obj2, obj_icons, obj_sounds)
+            if random.randint(0, 1) == 1:
+                boxes.append(add_box(obj2, obj_icons, obj_sounds))
 
-        obj_collision(enemy_missiles, asteroids)
+        obj, _ = obj_collision(enemy_missiles, asteroids)
+        if obj is not False:
+            explosions.append(Object(obj_icons[10], obj.pos, False, False))
 
         obj, _ = obj_collision(enemy_missiles, players)
         if obj is not False:
-            add_explosion(explosions, obj, obj_icons, obj_sounds)
+            explosions.append(Object(obj_icons[10], obj.pos, False, obj_sounds[1]))
+            explosions[-1].sound.play()
 
         out_of_screen(asteroids, scrn)
         out_of_screen(player_missiles, scrn)
