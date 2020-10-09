@@ -8,22 +8,16 @@ from objects import Object
 class Enemy(pygame.sprite.Sprite):
     """Enemy"""
 
-    def __init__(self, scrn, icon, reload0):
+    def __init__(self, scrn, icon, reload0, hpoints):
         self.icon = icon
         self.pos = [random.randint(5, scrn[0] - 100), -10]
         self.vel = 1
         self.step = 0
         self.move_type = 0
-        self.hitpoints = 2
-        self.cell = self.icon[0].get_width() / self.hitpoints
+        self.hpoints = hpoints
+        self.cell = self.icon[0].get_width() / self.hpoints
         self.reload = reload0
         self.time0 = -reload0
-
-    def boss(self):
-        """self"""
-
-        self.hitpoints = 5
-        self.cell = self.icon[0].get_width() / self.hitpoints
 
     def shoot(self, enemy_missile, missile_icon):
         """self, enemy_missile, missile_icon"""
@@ -41,7 +35,6 @@ class Enemy(pygame.sprite.Sprite):
 
             enemy_missile[-1].pos[0] = self.pos[0] + launch_x
             enemy_missile[-1].pos[1] = self.pos[1] + launch_y
-            enemy_missile[-1].state = True
             self.time0 = pygame.time.get_ticks()
 
     def draw_hp(self, scrn):
@@ -50,7 +43,7 @@ class Enemy(pygame.sprite.Sprite):
         surface = pygame.Surface((self.icon[0].get_width(), 4))
 
         pygame.draw.rect(surface, (255, 80, 80), (0, 0, self.icon[0].get_width(), 4))
-        pygame.draw.rect(surface, (0, 255, 0), (0, 0, int(self.cell * self.hitpoints), 4))
+        pygame.draw.rect(surface, (0, 255, 0), (0, 0, int(self.cell * self.hpoints), 4))
 
         scrn.blit(surface, (self.pos[0], self.pos[1] - 5))
 

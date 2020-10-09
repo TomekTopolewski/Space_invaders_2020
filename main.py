@@ -1,10 +1,5 @@
 """Main"""
 
-# To do:
-# 1. Player ship and missile icon
-# 2. Different drop % for boss
-
-
 import pygame
 
 from pygame import mixer
@@ -64,16 +59,13 @@ asteroid = [load_img('data/icons/asteroid_001.png'), load_img('data/icons/astero
     load_img('data/icons/asteroid_003.png'), load_img('data/icons/asteroid_004.png'), \
     load_img('data/icons/asteroid_005.png')]
 
-debris = [load_img('data/icons/debris_001.png'), load_img('data/icons/debris_002.png'), \
-    load_img('data/icons/debris_003.png')]
-
 m_sound = [load_sound('data/sound/shoot.wav'), load_sound('data/sound/shoot2.wav')]
 exp_sound = load_sound('data/sound/explosion.wav')
 box_sound = load_sound('data/sound/package.wav')
 enter_game = load_sound('data/sound/button.wav')
 
 object_icons = [enemy1, enemy2, enemy3, enemy4, enemy5, enemy6, enemy7, \
-    player1, player2, missile, explosion, box, asteroid, debris]
+    player1, player2, missile, explosion, box, asteroid]
 
 object_sounds = [m_sound, exp_sound, box_sound]
 
