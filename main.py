@@ -42,7 +42,7 @@ enemy7 = [load_img('data/icons/enemy_007.png'), load_img('data/icons/enemy_007-l
     load_img('data/icons/enemy_007-right.png')]
 
 box = [load_img('data/icons/box_001.png'), load_img('data/icons/box_002.png'), \
-    load_img('data/icons/box_003.png')]
+    load_img('data/icons/box_003.png'), load_img('data/icons/box_004.png')]
 
 player1 = [load_img('data/icons/player_001.png'), load_img('data/icons/player_001-left.png'), \
     load_img('data/icons/player_001-right.png')]
@@ -50,7 +50,7 @@ player1 = [load_img('data/icons/player_001.png'), load_img('data/icons/player_00
 player2 = [load_img('data/icons/player_002.png'), load_img('data/icons/player_002-left.png'), \
     load_img('data/icons/player_002-right.png')]
 
-missile = [load_img('data/icons/missile_001.png'), load_img('data/icons/missile_002.png'),\
+missile = [load_img('data/icons/missile_002.png'), load_img('data/icons/missile_001.png'),\
     load_img('data/icons/missile_003.png')]
 
 explosion = load_img('data/icons/explosion.png')

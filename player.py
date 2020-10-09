@@ -9,7 +9,7 @@ class Player(pygame.sprite.Sprite):
 
     def __init__(self, vel, hpoints, icon):
         self.icon = icon
-        self.pos = [370, 480]
+        self.pos = [370, 780]
         self.vel = vel
         self.hpoints = hpoints
         self.reload = 1000

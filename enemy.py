@@ -8,9 +8,9 @@ from objects import Object
 class Enemy(pygame.sprite.Sprite):
     """Enemy"""
 
-    def __init__(self, scrn, icon, reload0, hpoints):
+    def __init__(self, pos, icon, reload0, hpoints):
         self.icon = icon
-        self.pos = [random.randint(5, scrn[0] - 100), -10]
+        self.pos = pos
         self.vel = 1
         self.step = 0
         self.move_type = 0
@@ -25,7 +25,7 @@ class Enemy(pygame.sprite.Sprite):
         time1 = pygame.time.get_ticks()
 
         if time1 - self.time0 > self.reload:
-            enemy_missile.append(Object([missile_icon], [0, 0], 4, False))
+            enemy_missile.append(Object([missile_icon], [0, 0], 4))
 
             launch_x = (self.icon[0].get_width() / 2) - \
                 (enemy_missile[-1].icon[0].get_width() / 2)
@@ -66,7 +66,6 @@ class Enemy(pygame.sprite.Sprite):
     def _diagonal_rigt_up(self, scrn):
         """self, scrn"""
 
-        self._check_up()
         self._check_left()
         self.pos[0] -= self.vel
         self.pos[1] -= self.vel
@@ -85,7 +84,6 @@ class Enemy(pygame.sprite.Sprite):
     def _diagonal_left_up(self, scrn):
         """self, scrn"""
 
-        self._check_up()
         self._check_right(scrn[0])
         self.pos[0] += self.vel
         self.pos[1] -= self.vel
@@ -120,13 +118,6 @@ class Enemy(pygame.sprite.Sprite):
         """self"""
         if self.pos[0] <= 0:
             self.pos[0] += self.vel
-            self.step = 0
-            self.move_type = random.randint(0, 4)
-
-    def _check_up(self):
-        """self"""
-        if self.pos[1] <= 0:
-            self.pos[1] += self.vel
             self.step = 0
             self.move_type = random.randint(0, 4)
 
