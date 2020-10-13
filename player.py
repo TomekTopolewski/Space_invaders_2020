@@ -63,7 +63,7 @@ class Player(pygame.sprite.Sprite):
 
         if keys[pygame.K_SPACE] or keys[pygame.K_LSHIFT]:
             if time1 - self.time0 > self.reload:
-                player_missile.append(Object([missile_icon], [0, 0], -10, missile_sound))
+                player_missile.append(Object(missile_icon, [0, 0], -10, missile_sound))
 
                 launch_x = (self.icon[0].get_width() / 2) - \
                     (player_missile[-1].icon[0].get_width() / 2)

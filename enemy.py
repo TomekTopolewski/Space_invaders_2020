@@ -25,7 +25,7 @@ class Enemy(pygame.sprite.Sprite):
         time1 = pygame.time.get_ticks()
 
         if time1 - self.time0 > self.reload:
-            enemy_missile.append(Object([missile_icon], [0, 0], 4))
+            enemy_missile.append(Object(missile_icon, [0, 0], 4))
 
             launch_x = (self.icon[0].get_width() / 2) - \
                 (enemy_missile[-1].icon[0].get_width() / 2)
