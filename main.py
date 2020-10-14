@@ -3,7 +3,7 @@
 import pygame
 from pygame import mixer
 
-from game2 import game2
+from game import game
 from menu import menu
 from game_over import game_over
 from toolbox import load_img, load_sound, load_music
@@ -32,6 +32,6 @@ while True:
     enter_game.set_volume(vol)
     enter_game.play()
 
-    score, vol = game2(scrn, vol)
+    score, vol = game(scrn, vol)
 
     game_over(score, scrn)

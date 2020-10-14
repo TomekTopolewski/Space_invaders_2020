@@ -7,9 +7,9 @@ from objects import Object
 class Player(pygame.sprite.Sprite):
     """Player"""
 
-    def __init__(self, vel, hpoints, icon):
+    def __init__(self, vel, hpoints, icon = None):
         self.icon = icon
-        self.pos = [370, 780]
+        self.pos = [0, 0]
         self.vel = vel
         self.hpoints = hpoints
         self.reload = 1000

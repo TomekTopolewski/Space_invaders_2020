@@ -20,7 +20,7 @@ class Object(pygame.sprite.Sprite):
         self.pos[1] += self.vel
         scrn.blit(self.icon[0], self.pos)
 
-    def open(self, player, obj_icons, adv_missile):
+    def open(self, player):
         """(for boxes) self, player"""
 
         if self.type == 0:
@@ -32,9 +32,3 @@ class Object(pygame.sprite.Sprite):
 
         elif self.type == 2:
             player.hpoints += 1
-
-        elif self.type == 3:
-            player.icon = obj_icons[8]
-            adv_missile = True
-
-        return adv_missile
