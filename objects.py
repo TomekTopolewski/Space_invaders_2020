@@ -14,11 +14,11 @@ class Object(pygame.sprite.Sprite):
         self.hpoints = 1
         self.time0 = pygame.time.get_ticks()
 
-    def move(self, scrn):
+    def move(self, scrn_surf):
         """self, scrn"""
 
         self.pos[1] += self.vel
-        scrn.blit(self.icon[0], self.pos)
+        scrn_surf.blit(self.icon[0], self.pos)
 
     def open(self, player):
         """(for boxes) self, player"""

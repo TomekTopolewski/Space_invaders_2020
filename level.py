@@ -47,8 +47,9 @@ def level(data, obj_icons, obj_sounds):
 
     bkgd_pos = [0, -scrn[0][1]]
 
-    while len(asteroids) < 8:
-        asteroids.append(Object(obj_icons[4], list(rand_pos(scrn[0])), 0.5))
+    while len(asteroids) < 10:
+        rand_icon = random.choice(obj_icons[4])
+        asteroids.append(Object(rand_icon, list(rand_pos(scrn[0])), 0.5))
 
     while True:
         clock.tick(60)
@@ -63,9 +64,10 @@ def level(data, obj_icons, obj_sounds):
                 if event.key == pygame.K_p:
                     vol = pause(scrn, score, hpoints, vol)
 
-        if random.randint(0, 100) == 1:
+        if random.randint(0, 50) == 1:
             pos = rand_pos(scrn[0])
-            asteroids.append(Object(obj_icons[4], [pos[0], - 50], 0.5))
+            rand_icon = random.choice(obj_icons[4])
+            asteroids.append(Object(rand_icon, [pos[0], - 50], 0.5))
 
         for asteroid in asteroids:
             asteroid.move(scrn[1])

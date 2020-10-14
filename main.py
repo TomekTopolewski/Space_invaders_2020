@@ -16,7 +16,7 @@ pygame.display.set_icon(window_icon)
 
 scrn = [(827, 880)]
 scrn.append(pygame.display.set_mode((scrn[0][0], scrn[0][1])))
-scrn.append(load_img('data/images/background_004.jpg'))
+scrn.append(load_img('data/images/background_000.jpg'))
 
 pygame.mouse.set_visible(0)
 
