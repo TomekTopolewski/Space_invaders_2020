@@ -7,7 +7,6 @@ from objects import Object
 
 class Enemy(pygame.sprite.Sprite):
     """Enemy"""
-
     def __init__(self, pos, icon, reload0, hpoints):
         self.icon = icon
         self.pos = pos
@@ -21,25 +20,21 @@ class Enemy(pygame.sprite.Sprite):
 
     def shoot(self, enemy_missile, missile_icon):
         """self, enemy_missile, missile_icon"""
-
         time1 = pygame.time.get_ticks()
 
         if time1 - self.time0 > self.reload:
-            enemy_missile.append(Object([missile_icon], [0, 0], 4))
+            enemy_missile.append(Object(missile_icon, [0, 0], 4))
 
-            launch_x = (self.icon[0].get_width() / 2) - \
-                (enemy_missile[-1].icon[0].get_width() / 2)
+            pos_x = (self.icon[0].get_width() / 2) - (enemy_missile[-1].icon[0].get_width() / 2)
 
-            launch_y = (self.icon[0].get_height() / 2) - \
-                (enemy_missile[-1].icon[0].get_height() / 2)
+            pos_y = (self.icon[0].get_height() / 2) - (enemy_missile[-1].icon[0].get_height() / 2)
 
-            enemy_missile[-1].pos[0] = self.pos[0] + launch_x
-            enemy_missile[-1].pos[1] = self.pos[1] + launch_y
+            enemy_missile[-1].pos[0] = self.pos[0] + pos_x
+            enemy_missile[-1].pos[1] = self.pos[1] + pos_y
             self.time0 = pygame.time.get_ticks()
 
     def draw_hp(self, scrn):
         """self, scrn"""
-
         surface = pygame.Surface((self.icon[0].get_width(), 4))
 
         pygame.draw.rect(surface, (255, 80, 80), (0, 0, self.icon[0].get_width(), 4))
@@ -49,14 +44,12 @@ class Enemy(pygame.sprite.Sprite):
 
     def _forward(self, scrn):
         """self, scrn"""
-
         self.pos[1] += self.vel
         scrn.blit(self.icon[0], (self.pos[0], self.pos[1]))
         self.step += 1
 
     def _diagonal_right_down(self, scrn):
         """self, scrn"""
-
         self._check_right(scrn[0])
         self.pos[0] += self.vel
         self.pos[1] += self.vel
@@ -65,7 +58,7 @@ class Enemy(pygame.sprite.Sprite):
 
     def _diagonal_rigt_up(self, scrn):
         """self, scrn"""
-
+        self._check_up()
         self._check_left()
         self.pos[0] -= self.vel
         self.pos[1] -= self.vel
@@ -74,7 +67,6 @@ class Enemy(pygame.sprite.Sprite):
 
     def _diagonal_left_down(self, scrn):
         """self, scrn"""
-
         self._check_left()
         self.pos[0] -= self.vel
         self.pos[1] += self.vel
@@ -83,7 +75,7 @@ class Enemy(pygame.sprite.Sprite):
 
     def _diagonal_left_up(self, scrn):
         """self, scrn"""
-
+        self._check_up()
         self._check_right(scrn[0])
         self.pos[0] += self.vel
         self.pos[1] -= self.vel
@@ -92,7 +84,6 @@ class Enemy(pygame.sprite.Sprite):
 
     def _right(self, scrn):
         """self, scrn"""
-
         self._check_right(scrn[0])
         self.pos[0] += self.vel
         scrn[1].blit(self.icon[2], (self.pos[0], self.pos[1]))
@@ -100,7 +91,6 @@ class Enemy(pygame.sprite.Sprite):
 
     def _left(self, scrn):
         """self, scrn"""
-
         self._check_left()
         self.pos[0] -= self.vel
         scrn.blit(self.icon[1], (self.pos[0], self.pos[1]))
@@ -108,7 +98,6 @@ class Enemy(pygame.sprite.Sprite):
 
     def _check_right(self, scrn):
         """self, scrn"""
-
         if self.pos[0] >= scrn[0] - self.icon[0].get_width():
             self.pos[0] -= self.vel
             self.step = 0
@@ -121,9 +110,15 @@ class Enemy(pygame.sprite.Sprite):
             self.step = 0
             self.move_type = random.randint(0, 4)
 
+    def _check_up(self):
+        """Check up"""
+        if self.pos[1] <= 0:
+            self.pos[1] += self.vel
+            self.step = 0
+            self.move_type = random.randint(0, 4)
+
     def move(self, scrn):
         """self, scrn"""
-
         if self.step == 100:
             self.step = 0
             self.move_type = random.randint(0, 6)

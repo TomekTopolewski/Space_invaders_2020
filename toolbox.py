@@ -20,7 +20,6 @@ class NoneSound:
 
 def load_img(fname):
     """fname"""
-
     try:
         img = pygame.image.load(fname)
     except pygame.error:
@@ -33,7 +32,6 @@ def load_img(fname):
 
 def load_sound(fname):
     """fname"""
-
     try:
         sound = mixer.Sound(fname)
     except FileNotFoundError:
@@ -42,33 +40,30 @@ def load_sound(fname):
 
 def load_music(fname):
     """fname"""
-
     try:
         music = mixer.music.load(fname)
     except pygame.error:
         music = False
     return music
 
-def moving_bkgd(scrn, bkgd):
-    """scrn, bkgd"""
+def moving_bkgd(scrn_surf, scrn_param, bkgd_img, bkgd_pos):
+    """scrn, bkgd_pos"""
+    bkgd_pos[0] += 0.5
+    bkgd_pos[1] += 0.5
 
-    bkgd[0] += 0.5
-    bkgd[1] += 0.5
+    if bkgd_pos[0] > scrn_param[1]:
+        bkgd_pos[0] = scrn_param[1] * -1
 
-    if bkgd[0] > scrn[0][1]:
-        bkgd[0] = scrn[0][1] * -1
+    if bkgd_pos[1] > scrn_param[1]:
+        bkgd_pos[1] = scrn_param[1] * -1
 
-    if bkgd[1] > scrn[0][1]:
-        bkgd[1] = scrn[0][1] * -1
+    scrn_surf.blit(bkgd_img, (0, bkgd_pos[0]))
+    scrn_surf.blit(bkgd_img, (0, bkgd_pos[1]))
 
-    scrn[1].blit(scrn[2], (0, bkgd[0]))
-    scrn[1].blit(scrn[2], (0, bkgd[1]))
-
-    return bkgd
+    return bkgd_pos
 
 def is_collision(obj_one, obj_two, rng):
     """obj_one, obj_two, rng"""
-
     o1x = obj_one.pos[0] + (obj_one.icon[0].get_width() / 2)
     o1y = obj_one.pos[1] + (obj_one.icon[0].get_height() / 2)
 
@@ -81,7 +76,6 @@ def is_collision(obj_one, obj_two, rng):
 
 def vol_buttons_def(scrn):
     """scrn"""
-
     vol_up = ButtonImg([0, 10], load_img('data/icons/speaker_001.png'))
     vol_down = ButtonImg([0, 60], load_img('data/icons/speaker_002.png'))
     vol_off = ButtonImg([0, 110], load_img('data/icons/speaker_003.png'))
@@ -95,7 +89,6 @@ def vol_buttons_def(scrn):
 
 def vol_buttons_act(vol_buttons, mouse, click, vol):
     """vol_buttons, mouse, click, vol"""
-
     if vol_buttons[0].inside(mouse) and click[0] == 1 and not vol_buttons[0].state:
         vol_buttons[0].state = True
         if vol <= 1.00:
@@ -121,7 +114,6 @@ def vol_buttons_act(vol_buttons, mouse, click, vol):
 def button_act(button, mouse, click):
     """button, mouse, click"""
     status = False
-
     if button.inside(mouse):
         button.color = (255, 255, 255)
         if click[0] == 1:

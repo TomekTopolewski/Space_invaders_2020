@@ -7,9 +7,9 @@ from objects import Object
 class Player(pygame.sprite.Sprite):
     """Player"""
 
-    def __init__(self, vel, hpoints, icon):
+    def __init__(self, vel, hpoints, icon = None):
         self.icon = icon
-        self.pos = [370, 780]
+        self.pos = [0, 0]
         self.vel = vel
         self.hpoints = hpoints
         self.reload = 1000
@@ -63,7 +63,7 @@ class Player(pygame.sprite.Sprite):
 
         if keys[pygame.K_SPACE] or keys[pygame.K_LSHIFT]:
             if time1 - self.time0 > self.reload:
-                player_missile.append(Object([missile_icon], [0, 0], -10, missile_sound))
+                player_missile.append(Object(missile_icon, [0, 0], -10, missile_sound))
 
                 launch_x = (self.icon[0].get_width() / 2) - \
                     (player_missile[-1].icon[0].get_width() / 2)
