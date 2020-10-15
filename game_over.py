@@ -7,37 +7,33 @@ from text import Text
 from button import Button
 from toolbox import load_img, button_act
 
-def menu_buttons_def(scrn):
+def menu_buttons_def(scrn_param):
     """scrn"""
-
     again = Button([0, 0], "Main menu", 36)
     end = Button([0, 0], "Quit", 36)
     menu_buttons = [again, end]
 
-    pos = [0, scrn[0][1] - 100]
+    pos = [0, scrn_param[1] - 100]
     for button in menu_buttons:
         button.render()
-        button.pos[0] = scrn[0][0] - button.line.get_width() - 15
+        button.pos[0] = scrn_param[0] - button.line.get_width() - 15
         button.pos[1] = pos[1]
         pos[1] += 50
 
     return menu_buttons
 
-def game_over(score, scrn):
+def game_over(score, scrn_param, scrn_surf, bkgd_img):
     """score, scrn"""
-
     clock = pygame.time.Clock()
-
     cursor = load_img('data/icons/cursor.png')
 
     title = Text(72, (255, 255, 255), 'data/fonts/space_age.ttf')
     title.text = "Game Over!"
 
-    menu_buttons = menu_buttons_def(scrn)
+    menu_buttons = menu_buttons_def(scrn_param)
 
     while True:
         clock.tick(60)
-
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
 
@@ -51,14 +47,14 @@ def game_over(score, scrn):
         if button_act(menu_buttons[1], mouse, click):
             sys.exit()
 
-        scrn[1].blit(scrn[2], (0, 0))
-        title.draw_center(scrn[1], 120)
-        score.draw(scrn[1], [320, 180])
+        scrn_surf.blit(bkgd_img, (0, 0))
+        title.draw_center(scrn_surf, scrn_param, 120)
+        score.draw(scrn_surf, [320, 180])
 
         for button in menu_buttons:
             button.render()
-            button.draw(scrn[1])
+            button.draw(scrn_surf)
 
-        scrn[1].blit(cursor, mouse)
+        scrn_surf.blit(cursor, mouse)
 
         pygame.display.update()

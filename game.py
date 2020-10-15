@@ -71,30 +71,48 @@ def game(scrn, vol):
     data = (scrn, score, vol, player, 5, 2, bkgd_img[0])
     score, player, vol = level(data, obj_icons, obj_sounds)
 
+    if player.hpoints == 0:
+        return score, vol
+
     obj_icons = (enemy2, player1, missile1, missile, asteroid, explosion, box)
     obj_sounds = (m_sound[0], exp_sound, box_sound)
     data = (scrn, score, vol, player, 6, 2, bkgd_img[1])
     score, player, vol = level(data, obj_icons, obj_sounds)
+
+    if player.hpoints == 0:
+        return score, vol
 
     obj_icons = (enemy3, player1, missile1, missile, asteroid, explosion, box)
     obj_sounds = (m_sound[0], exp_sound, box_sound)
     data = (scrn, score, vol, player, 7, 2, bkgd_img[2])
     score, player, vol = level(data, obj_icons, obj_sounds)
 
+    if player.hpoints == 0:
+        return score, vol
+
     obj_icons = (enemy4, player1, missile1, missile, asteroid, explosion, box)
     obj_sounds = (m_sound[0], exp_sound, box_sound)
     data = (scrn, score, vol, player, 8, 2, bkgd_img[3])
     score, player, vol = level(data, obj_icons, obj_sounds)
+
+    if player.hpoints == 0:
+        return score, vol
 
     obj_icons = (enemy5, player1, missile1, missile, asteroid, explosion, box)
     obj_sounds = (m_sound[0], exp_sound, box_sound)
     data = (scrn, score, vol, player, 9, 2, bkgd_img[4])
     score, player, vol = level(data, obj_icons, obj_sounds)
 
+    if player.hpoints == 0:
+        return score, vol
+
     obj_icons = (enemy6, player1, missile1, missile, asteroid, explosion, box)
     obj_sounds = (m_sound[0], exp_sound, box_sound)
     data = (scrn, score, vol, player, 10, 2, bkgd_img[5])
     score, player, vol = level(data, obj_icons, obj_sounds)
+
+    if player.hpoints == 0:
+        return score, vol
 
     obj_icons = (enemy7, player2, missile2, missile, asteroid, explosion, box)
     obj_sounds = (m_sound[1], exp_sound, box_sound)

@@ -15,45 +15,44 @@ class Player(pygame.sprite.Sprite):
         self.reload = 1000
         self.time0 = -self.reload
 
-    def move(self, scrn):
+    def move(self, scrn_param, scrn_surf):
         """self, scrn"""
-
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_LEFT] and self.pos[0] > self.vel:
             self.pos[0] -= self.vel
-            scrn[1].blit(self.icon[1], (self.pos))
+            scrn_surf.blit(self.icon[1], (self.pos))
 
             if keys[pygame.K_UP] and self.pos[1] > self.vel:
                 self.pos[1] -= self.vel
 
-            if keys[pygame.K_DOWN] and self.pos[1] < scrn[0][1] - \
+            if keys[pygame.K_DOWN] and self.pos[1] < scrn_param[1] - \
                                         self.icon[0].get_height() - self.vel:
                 self.pos[1] += self.vel
 
-        elif keys[pygame.K_RIGHT] and self.pos[0] < scrn[0][0] - \
+        elif keys[pygame.K_RIGHT] and self.pos[0] < scrn_param[0] - \
                                         self.icon[0].get_width() - self.vel:
             self.pos[0] += self.vel
-            scrn[1].blit(self.icon[2], (self.pos))
+            scrn_surf.blit(self.icon[2], (self.pos))
 
             if keys[pygame.K_UP] and self.pos[1] > self.vel:
                 self.pos[1] -= self.vel
 
-            if keys[pygame.K_DOWN] and self.pos[1] < scrn[0][1] - \
+            if keys[pygame.K_DOWN] and self.pos[1] < scrn_param[1] - \
                                         self.icon[0].get_height() - self.vel:
                 self.pos[1] += self.vel
 
         elif keys[pygame.K_UP] and self.pos[1] > self.vel:
             self.pos[1] -= self.vel
-            scrn[1].blit(self.icon[0], (self.pos))
+            scrn_surf.blit(self.icon[0], (self.pos))
 
-        elif keys[pygame.K_DOWN] and self.pos[1] < scrn[0][1] - \
+        elif keys[pygame.K_DOWN] and self.pos[1] < scrn_param[1] - \
                                         self.icon[0].get_height() - self.vel:
             self.pos[1] += self.vel
-            scrn[1].blit(self.icon[0], (self.pos))
+            scrn_surf.blit(self.icon[0], (self.pos))
 
         else:
-            scrn[1].blit(self.icon[0], (self.pos))
+            scrn_surf.blit(self.icon[0], (self.pos))
 
     def shoot(self, player_missile, missile_icon, missile_sound):
         """self, player_missile, missile_icon, missile_sound"""

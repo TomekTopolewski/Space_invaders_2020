@@ -8,25 +8,24 @@ from text import Text
 from toolbox import load_img, vol_buttons_def, vol_buttons_act, button_act
 from button import Button
 
-def menu_buttons_def(scrn):
+def menu_buttons_def(scrn_param):
     """scrn"""
-
     play = Button([0, 0], "Play", 36)
     about = Button([0, 0], "About", 36)
     end = Button([0, 0], "Quit", 36)
     opt = Button([0, 0], "Options", 36)
     menu_buttons = [play, about, opt, end]
 
-    pos = [0, scrn[0][1] - 200]
+    pos = [0, scrn_param[1] - 200]
     for button in menu_buttons:
         button.render()
-        button.pos[0] = scrn[0][0] - button.line.get_width() - 15
+        button.pos[0] = scrn_param[0] - button.line.get_width() - 15
         button.pos[1] = pos[1]
         pos[1] += 50
 
     return menu_buttons
 
-def sh_text(fname, font, scrn):
+def sh_text(fname, font, scrn_surf):
     """fname, font, scrn"""
     try:
         txt = open(fname, 'r').readlines()
@@ -36,14 +35,12 @@ def sh_text(fname, font, scrn):
     pos = [5, 70]
     for line in txt:
         line = font.font.render(line.strip(), True, font.color)
-        scrn[1].blit(line, (pos))
+        scrn_surf.blit(line, (pos))
         pos[1] += 30
 
-def menu(scrn, vol):
+def menu(scrn_param, scrn_surf, bkgd_img, vol):
     """Menu"""
-
     clock = pygame.time.Clock()
-
     cursor = load_img('data/icons/cursor.png')
 
     font = Text(22, (200, 200, 200), "data/fonts/BebasNeue-Regular.ttf")
@@ -51,14 +48,13 @@ def menu(scrn, vol):
     title = Text(38, (125, 125, 125), 'data/fonts/space_age.ttf')
     title.text = "Space Invaders 2020"
 
-    vol_buttons = vol_buttons_def(scrn)
-    menu_buttons = menu_buttons_def(scrn)
+    vol_buttons = vol_buttons_def(scrn_param)
+    menu_buttons = menu_buttons_def(scrn_param)
 
     sh_txt = [False, False]
 
     while True:
         clock.tick(60)
-
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
 
@@ -84,22 +80,22 @@ def menu(scrn, vol):
 
         mixer.music.set_volume(vol)
 
-        scrn[1].blit(scrn[2], (0, 0))
-        title.draw_center(scrn[1], 5)
+        scrn_surf.blit(bkgd_img, (0, 0))
+        title.draw_center(scrn_surf, scrn_param, 5)
 
         for button in menu_buttons:
             button.render()
-            button.draw(scrn[1])
+            button.draw(scrn_surf)
 
         for button in vol_buttons:
-            button.draw(scrn[1])
+            button.draw(scrn_surf)
 
         if sh_txt[0]:
-            sh_text('data/text/about.txt', font, scrn)
+            sh_text('data/text/about.txt', font, scrn_surf)
 
         if sh_txt[1]:
-            sh_text('data/text/options.txt', font, scrn)
+            sh_text('data/text/options.txt', font, scrn_surf)
 
-        scrn[1].blit(cursor, mouse)
+        scrn_surf.blit(cursor, mouse)
 
         pygame.display.update()

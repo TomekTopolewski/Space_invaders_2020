@@ -20,16 +20,13 @@ class Button():
 
     def render(self):
         """self"""
-
         self.line = self.font.render(self.msg, True, self.color)
 
     def draw(self, scrn):
         """self, scrn"""
-
         scrn.blit(self.line, (self.pos))
 
     def inside(self, mouse):
         """self, mouse"""
-
         return bool(self.pos[0] + self.line.get_width() > mouse[0] > self.pos[0] and \
             self.pos[1] + self.line.get_height() > mouse[1] > self.pos[1])

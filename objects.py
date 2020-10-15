@@ -4,7 +4,6 @@ import pygame
 
 class Object(pygame.sprite.Sprite):
     """Object"""
-
     def __init__(self, icon, pos, vel = None, sound = None):
         self.pos = pos
         self.vel = vel
@@ -16,13 +15,11 @@ class Object(pygame.sprite.Sprite):
 
     def move(self, scrn_surf):
         """self, scrn"""
-
         self.pos[1] += self.vel
         scrn_surf.blit(self.icon[0], self.pos)
 
     def open(self, player):
         """(for boxes) self, player"""
-
         if self.type == 0:
             if player.reload > 500:
                 player.reload -= 50

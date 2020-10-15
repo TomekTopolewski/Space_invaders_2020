@@ -62,7 +62,7 @@ def level(data, obj_icons, obj_sounds):
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p:
-                    vol = pause(scrn, score, hpoints, vol)
+                    vol = pause(scrn[0], scrn[1], scrn[2], score, hpoints, vol)
 
         if random.randint(0, 50) == 1:
             pos = rand_pos(scrn[0])
@@ -103,7 +103,7 @@ def level(data, obj_icons, obj_sounds):
                 if player.hpoints == 0:
                     return score, player, vol
 
-        player.move(scrn[:2])
+        player.move(scrn[0], scrn[1])
         player.shoot(player_missiles, obj_icons[2], obj_sounds[0])
 
         for missile in player_missiles:

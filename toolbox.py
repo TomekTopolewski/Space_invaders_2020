@@ -64,18 +64,18 @@ def moving_bkgd(scrn_surf, scrn_param, bkgd_img, bkgd_pos):
 
 def is_collision(obj_one, obj_two, rng):
     """obj_one, obj_two, rng"""
-    o1x = obj_one.pos[0] + (obj_one.icon[0].get_width() / 2)
-    o1y = obj_one.pos[1] + (obj_one.icon[0].get_height() / 2)
+    obj1x = obj_one.pos[0] + (obj_one.icon[0].get_width() / 2)
+    obj1y = obj_one.pos[1] + (obj_one.icon[0].get_height() / 2)
 
-    o2x = obj_two.pos[0] + (obj_two.icon[0].get_width() / 2)
-    o2y = obj_two.pos[1] + (obj_two.icon[0].get_height() / 2)
+    obj2x = obj_two.pos[0] + (obj_two.icon[0].get_width() / 2)
+    obj2y = obj_two.pos[1] + (obj_two.icon[0].get_height() / 2)
 
-    distance = math.sqrt(math.pow(o1x - o2x, 2) + (math.pow(o1y - o2y, 2)))
+    distance = math.sqrt(math.pow(obj1x - obj2x, 2) + (math.pow(obj1y - obj2y, 2)))
 
     return bool(distance < rng)
 
-def vol_buttons_def(scrn):
-    """scrn"""
+def vol_buttons_def(scrn_param):
+    """scrn_param"""
     vol_up = ButtonImg([0, 10], load_img('data/icons/speaker_001.png'))
     vol_down = ButtonImg([0, 60], load_img('data/icons/speaker_002.png'))
     vol_off = ButtonImg([0, 110], load_img('data/icons/speaker_003.png'))
@@ -83,7 +83,7 @@ def vol_buttons_def(scrn):
     vol_buttons = [vol_up, vol_down, vol_off]
 
     for button in vol_buttons:
-        button.pos[0] = scrn[0][0] - button.img.get_width() - 15
+        button.pos[0] = scrn_param[0] - button.img.get_width() - 15
 
     return vol_buttons
 

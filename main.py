@@ -27,11 +27,11 @@ if load_music('data/sound/background.wav') is not False:
     mixer.music.play(-1)
 
 while True:
-    vol = menu(scrn, 0.2)
+    vol = menu(scrn[0], scrn[1], scrn[2], 0.2)
 
     enter_game.set_volume(vol)
     enter_game.play()
 
     score, vol = game(scrn, vol)
 
-    game_over(score, scrn)
+    game_over(score, scrn[0], scrn[1], scrn[2])
