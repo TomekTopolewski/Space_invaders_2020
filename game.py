@@ -1,9 +1,28 @@
 """Game"""
+import pygame
 
 from text import Text
 from level import level
 from player import Player
 from toolbox import load_img, load_sound
+
+def transition(scrn):
+    """scrn"""
+    scrn_param, scrn_surf, _ = scrn
+    clock = pygame.time.Clock()
+    time0 = pygame.time.get_ticks()
+
+    next_level = Text(32, (255, 255, 255), 'data/fonts/space_age.ttf')
+    next_level.text = "Next level..."
+
+    while True:
+        clock.tick(60)
+        scrn_surf.fill((0, 0, 0))
+        next_level.draw_center(scrn_surf, scrn_param, 100)
+        pygame.display.update()
+
+        if pygame.time.get_ticks() - time0 >= 3000:
+            return False
 
 def game(scrn, vol):
     """scrn, vol"""
@@ -74,6 +93,8 @@ def game(scrn, vol):
     if player.hpoints == 0:
         return score, vol
 
+    transition(scrn)
+
     obj_icons = (enemy2, player1, missile1, missile, asteroid, explosion, box)
     obj_sounds = (m_sound[0], exp_sound, box_sound)
     data = (scrn, score, vol, player, 6, 2, bkgd_img[1])
@@ -81,6 +102,8 @@ def game(scrn, vol):
 
     if player.hpoints == 0:
         return score, vol
+
+    transition(scrn)
 
     obj_icons = (enemy3, player1, missile1, missile, asteroid, explosion, box)
     obj_sounds = (m_sound[0], exp_sound, box_sound)
@@ -90,6 +113,8 @@ def game(scrn, vol):
     if player.hpoints == 0:
         return score, vol
 
+    transition(scrn)
+
     obj_icons = (enemy4, player1, missile1, missile, asteroid, explosion, box)
     obj_sounds = (m_sound[0], exp_sound, box_sound)
     data = (scrn, score, vol, player, 8, 2, bkgd_img[3])
@@ -97,6 +122,8 @@ def game(scrn, vol):
 
     if player.hpoints == 0:
         return score, vol
+
+    transition(scrn)
 
     obj_icons = (enemy5, player1, missile1, missile, asteroid, explosion, box)
     obj_sounds = (m_sound[0], exp_sound, box_sound)
@@ -106,6 +133,8 @@ def game(scrn, vol):
     if player.hpoints == 0:
         return score, vol
 
+    transition(scrn)
+
     obj_icons = (enemy6, player1, missile1, missile, asteroid, explosion, box)
     obj_sounds = (m_sound[0], exp_sound, box_sound)
     data = (scrn, score, vol, player, 10, 2, bkgd_img[5])
@@ -113,6 +142,8 @@ def game(scrn, vol):
 
     if player.hpoints == 0:
         return score, vol
+
+    transition(scrn)
 
     obj_icons = (enemy7, player2, missile2, missile, asteroid, explosion, box)
     obj_sounds = (m_sound[1], exp_sound, box_sound)
